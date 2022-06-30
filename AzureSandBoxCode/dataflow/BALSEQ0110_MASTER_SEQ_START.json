@@ -1,0 +1,57 @@
+{
+	"name": "BALSEQ0110_MASTER_SEQ_START",
+	"properties": {
+		"folder": {
+			"name": "PGMP/Sequence"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getExecutionSignatureData"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "storeExecution"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          IS_CURR_IND as string,",
+				"          CRETD_USER_ID as string,",
+				"          UPDTD_USER_ID as string,",
+				"          ETL_EXCTN_START_TMS as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select \\n     cast(\\'Y\\' as char(1)) as IS_CURR_IND,\\n     CURRENT_USER as CRETD_USER_ID,\\n     CURRENT_USER as UPDTD_USER_ID,\\n     CURRENT_TIMESTAMP as ETL_EXCTN_START_TMS',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getExecutionSignatureData",
+				"getExecutionSignatureData sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'ZAUX_ETL_EXCTN',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> storeExecution"
+			]
+		}
+	}
+}

@@ -1,0 +1,48 @@
+{
+	"name": "PgMP_Test_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Test Job",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "00:30:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0270_GOVRNNC_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"current_user": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "PGMP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-30T05:49:36Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

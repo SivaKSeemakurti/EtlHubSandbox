@@ -1,0 +1,216 @@
+{
+	"name": "PgMP_CPSummary_and_Field_Audit_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "CNTRCT CHNG RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0001_CP_CNTRCT_CHNG_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "RISK RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "PCR RPT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0006_CP_RISK_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CSTM KYNDRYL ONLY AUDIT RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "CSTM PUBLIC AUDIT RPT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0008_CSTM_DATA_KYNDRTL_ONLY_AUDIT_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CNTRY CSTM KYNDRYL ONLY AUDIT RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "CNTRY CSTM PUBLIC AUDIT RPT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0010_CNTRY_CSTM_DATA_KYNDRTL_ONLY_AUDIT_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CSTM PUBLIC AUDIT RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0007_CSTM_DATA_PUBLIC_AUDIT_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CNTRY CSTM PUBLIC AUDIT RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "CSTM KYNDRYL ONLY AUDIT RPT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0009_CNTRY_CSTM_DATA_PUBLIC_AUDIT_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "PCR RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "CNTRCT CHNG RPT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0002_CP_PCR_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "PGMP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-23T10:30:41Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

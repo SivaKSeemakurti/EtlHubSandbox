@@ -1,0 +1,265 @@
+{
+	"name": "DF_BALD0290_ISSUE_DIM",
+	"properties": {
+		"description": "Job creation:29-06-2022\nJob name: DF_BALD0290_ISSUE_DIM\nCreatedBy: Varaprasad\n\n",
+		"folder": {
+			"name": "PGMP/Dimension"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "srcissuedim"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "srtgtissuedimlkp"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "srcissuesmpl"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "Tgtupdibmcommdimtable"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InsTgtibmcommsDim"
+				}
+			],
+			"transformations": [
+				{
+					"name": "mergeddata"
+				},
+				{
+					"name": "srtdtgtIbmcomm"
+				},
+				{
+					"name": "split"
+				},
+				{
+					"name": "rowstat"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "rowstatIns"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "union2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ISSUE_DIM_UID as integer,",
+				"          PRJCT_ID as string,",
+				"          ISSUE_REM_TXT as string,",
+				"          RESOLUTION_txt as string,",
+				"          SRC_CRETD_TMS as timestamp,",
+				"          SRC_CRETD_USER_ID as string,",
+				"          SRC_UPDTD_TMS as timestamp,",
+				"          SRC_UPDTD_USER_ID as string,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          IS_DELETED as integer,",
+				"          ORIG_ORG as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'select\\n     ISS.PROC_ID as ISSUE_DIM_UID,\\n     ISS.PROJECT_ID as PRJCT_ID,\\n     cast(ISS.REMARKS as varchar(1024)) as ISSUE_REM_TXT,\\n     --SYSIBM.ENCRYPT(APPFUN.DECRYPTDATA(ISS.ISSUE_OWNER, PWD.MIS_REP_REF_CD), PWD.MIS_REP_REF_CD) as ISSUE_OWNR_TXT,\\n  \\n     CAST(ISS.RESOLUTION as varchar(7024)) as RESOLUTION_txt,\\n\\n     ISS.CREATED_TS as SRC_CRETD_TMS,\\n     ISS.CREATED_USERID as SRC_CRETD_USER_ID,\\n     ISS.UPDATED_TS as SRC_UPDTD_TMS,\\n     ISS.UPDATED_USERID as SRC_UPDTD_USER_ID,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID,\\n     case when PDEL.PROC_ID is null then 0 else 1 end as IS_DELETED,\\ncast (ISS.ORIG_ORG as varchar(200)) as ORIG_ORG\\n\\nfrom\\n     APPFUN.ISSUE ISS\\n     cross join\\n     (select\\n               MIS_REP_REF_CD\\n          from\\n               PGMPDM.MISC_REP_REF\\n          where\\n               MIS_REP_REF_UID = 3     )PWD\\n                inner join\\n     PGMPDM.ZAUX_DATE_TRIGGERS ZDT\\n     on ISS.PROC_ID = ZDT.PROC_ID\\n     left join\\n     PGMPDM.ZAUX_DELD_PROC_ID PDEL\\n     on ISS.PROC_ID = PDEL.PROC_ID\\n     left join\\n     (select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          from\\n               PGMPDM.ZAUX_ETL_JOBS\\n          where\\n               ETL_JOB_NM = \\'#DSJobName#\\')JOB\\n     on 1 = 1\\n     left join\\n     (select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          where\\n               IS_CURR_IND = \\'Y\\')FIL\\n     on 1 = 1\\n     left join\\n     (select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          from\\n               PGMPDM.SRC_SYS_DIM\\n          where\\n               SRC_SYS_CD = \\'PGMP\\'     )SYS\\n     on 1 = 1',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> srcissuedim",
+				"source(output(",
+				"          LKP_ISSUE_DIM_UID as integer,",
+				"          LKP_PRJCT_ID as string,",
+				"          LKP_ISSUE_REM_TXT as string,",
+				"          LKP_ISSUE_OWNR_TXT as binary,",
+				"          LKP_RESOLUTION_TXT as string,",
+				"          LKP_SRC_CRETD_TMS as timestamp,",
+				"          LKP_SRC_CRETD_USER_ID as string,",
+				"          LKP_SRC_UPDTD_TMS as timestamp,",
+				"          LKP_SRC_UPDTD_USER_ID as string,",
+				"          LKP_SRC_SYS_DIM_UID as integer,",
+				"          LKP_ETL_JOB_ID as integer,",
+				"          LKP_ORIG_ORG as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'select\\n     S.ISSUE_DIM_UID AS LKP_ISSUE_DIM_UID,\\n     S.PRJCT_ID AS LKP_PRJCT_ID,\\n     S.ISSUE_REM_TXT AS LKP_ISSUE_REM_TXT,\\n     S.ISSUE_OWNR_TXT AS LKP_ISSUE_OWNR_TXT,\\n     S.RESOLUTION_TXT AS LKP_RESOLUTION_TXT,\\n     S.SRC_CRETD_TMS AS LKP_SRC_CRETD_TMS,\\n     S.SRC_CRETD_USER_ID AS LKP_SRC_CRETD_USER_ID,\\n     S.SRC_UPDTD_TMS AS LKP_SRC_UPDTD_TMS,\\n     S.SRC_UPDTD_USER_ID AS LKP_SRC_UPDTD_USER_ID,\\n     S.SRC_SYS_DIM_UID AS LKP_SRC_SYS_DIM_UID,\\n     S.ETL_JOB_ID AS LKP_ETL_JOB_ID,\\n     S.ORIG_ORG  AS LKP_ORIG_ORG\\nfrom\\n     PGMPDM.ISSUE_DIM S\\n     inner join\\n     PGMPDM.ZAUX_DATE_TRIGGERS ZDT\\n     on S.ISSUE_DIM_UID = ZDT.PROC_ID',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> srtgtissuedimlkp",
+				"source(output(",
+				"          ISSUE_DIM_UID as integer,",
+				"          PRJCT_ID as string,",
+				"          ISSUE_REM_TXT as string,",
+				"          RESOLUTION_TXT as string,",
+				"          SRC_CRETD_TMS as timestamp,",
+				"          SRC_CRETD_USER_ID as string,",
+				"          SRC_UPDTD_TMS as timestamp,",
+				"          SRC_UPDTD_USER_ID as string,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          IS_DELETED as integer,",
+				"          ORIG_ORG as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: '\\n\\nselect\\n     ISS.PROC_ID as ISSUE_DIM_UID,\\n     \\'\\' as PRJCT_ID,\\n     \\'\\'as ISSUE_REM_TXT,\\n     --SYSIBM.ENCRYPT(APPFUN.DECRYPTDATA(ISS.ISSUE_OWNER, PWD.MIS_REP_REF_CD), PWD.MIS_REP_REF_CD) as ISSUE_OWNR_TXT,\\n                      cast(ISS.RESOLUTION as varchar(7000)) as RESOLUTION_TXT,\\n     ISS.CREATED_TS as SRC_CRETD_TMS,\\n     ISS.CREATED_USERID as SRC_CRETD_USER_ID,\\n     ISS.UPDATED_TS as SRC_UPDTD_TMS,\\n     ISS.UPDATED_USERID as SRC_UPDTD_USER_ID,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID,\\n     case when PDEL.PROC_ID is null then 0 else 1 end as IS_DELETED,\\n                    \\'NA\\' as ORIG_ORG\\n     from\\n     APPFUN.ISSUE_SMPL ISS\\n     cross join\\n     (select\\n               MIS_REP_REF_CD\\n          from\\n               PGMPDM.MISC_REP_REF\\n          where\\n               MIS_REP_REF_UID = 3     )PWD\\n     inner join\\n     PGMPDM.ZAUX_DATE_TRIGGERS ZDT\\n     on ISS.PROC_ID = ZDT.PROC_ID\\n     left join\\n     PGMPDM.ZAUX_DELD_PROC_ID PDEL\\n     on ISS.PROC_ID = PDEL.PROC_ID\\n     left join\\n     (select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          from\\n               PGMPDM.ZAUX_ETL_JOBS\\n          where\\n               ETL_JOB_NM = \\'#DSJobName#\\'     )JOB\\n     on 1 = 1\\n     left join\\n     (select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          where\\n               IS_CURR_IND = \\'Y\\')FIL\\n     on 1 = 1\\n     left join\\n     (select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          from\\n               PGMPDM.SRC_SYS_DIM\\n          where\\n               SRC_SYS_CD = \\'PGMP\\'          )SYS\\n     on 1 = 1\\n\\n',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> srcissuesmpl",
+				"union2, srtdtgtIbmcomm join(ISSUE_DIM_UID == LKP_ISSUE_DIM_UID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> mergeddata",
+				"srtgtissuedimlkp sort(asc(LKP_ISSUE_DIM_UID, true)) ~> srtdtgtIbmcomm",
+				"mergeddata split(ISSUE_DIM_UID==LKP_ISSUE_DIM_UID,",
+				"     disjoint: false) ~> split@(datatobeupdted, datatobeinserted)",
+				"split@datatobeupdted derive(DM_CRETD_USER_ID = \"dsadm\",",
+				"          DM_UPDTD_USER_ID = \"dsadm\",",
+				"          ROW_STAT_CD = iif(IS_DELETED == 1, 'D', 'U'),",
+				"          DM_UPDTD_TMS = currentTimestamp()) ~> rowstat",
+				"rowstat select(mapColumn(",
+				"          ISSUE_DIM_UID,",
+				"          PRJCT_ID,",
+				"          ISSUE_REM_TXT,",
+				"          RESOLUTION_txt = split@datatobeupdted@RESOLUTION_txt,",
+				"          SRC_CRETD_TMS,",
+				"          SRC_CRETD_USER_ID,",
+				"          SRC_UPDTD_TMS,",
+				"          SRC_UPDTD_USER_ID,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          IS_DELETED,",
+				"          ORIG_ORG,",
+				"          RESOLUTION_TXT = split@datatobeupdted@RESOLUTION_TXT,",
+				"          DM_CRETD_USER_ID,",
+				"          DM_UPDTD_USER_ID,",
+				"          ROW_STAT_CD,",
+				"          DM_UPDTD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 alterRow(updateIf(true())) ~> alterRow1",
+				"split@datatobeinserted derive(DM_CRETD_USER_ID = \"dsadm\",",
+				"          DM_UPDTD_USER_ID = \"dsadm\",",
+				"          ROW_STAT_CD = iif(IS_DELETED == 1, 'D', 'I'),",
+				"          DM_CRETD_TMS = currentTimestamp(),",
+				"          DM_UPDTD_TMS = currentTimestamp()) ~> rowstatIns",
+				"rowstatIns select(mapColumn(",
+				"          ISSUE_DIM_UID,",
+				"          PRJCT_ID,",
+				"          ISSUE_REM_TXT,",
+				"          RESOLUTION_txt = split@datatobeinserted@RESOLUTION_txt,",
+				"          SRC_CRETD_TMS,",
+				"          SRC_CRETD_USER_ID,",
+				"          SRC_UPDTD_TMS,",
+				"          SRC_UPDTD_USER_ID,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          IS_DELETED,",
+				"          ORIG_ORG,",
+				"          RESOLUTION_TXT = split@datatobeinserted@RESOLUTION_TXT,",
+				"          DM_CRETD_USER_ID,",
+				"          DM_UPDTD_USER_ID,",
+				"          ROW_STAT_CD,",
+				"          DM_CRETD_TMS,",
+				"          DM_UPDTD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"srcissuedim, srcissuesmpl union(byName: true)~> union2",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          GEO_DIM_UID as integer,",
+				"          IOT_RGN_CD as string,",
+				"          IOT_RGN_NM as string,",
+				"          IMT_RGN_CD as string,",
+				"          IMT_SRGN_NM as string,",
+				"          SRGN_CD as string,",
+				"          SRGNCTRY_CD as string,",
+				"          SRGNCTRY_NM as string,",
+				"          IOTSORT_NUM as integer,",
+				"          GEO_CD as string,",
+				"          GEO_TYP_CD as string,",
+				"          GMR_RGN_CD as string,",
+				"          GMR_RGN_NM as string,",
+				"          IOT_SHORT_NM as string,",
+				"          IMT_SHORT_NM as string,",
+				"          ROW_STAT_CD as string,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          DM_CRETD_TMS as timestamp,",
+				"          DM_CRETD_USER_ID as string,",
+				"          DM_UPDTD_TMS as timestamp,",
+				"          DM_UPDTD_USER_ID as string,",
+				"          KYNDRYL_GLBL_ORG as string,",
+				"          KYNDRYL_ORG_CD as string,",
+				"          KYNDRYL_RGN as string,",
+				"          KYNDRYL_RGN_CD as string",
+				"     ),",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'ISSUE_DIM',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['ISSUE_DIM_UID'],",
+				"     skipKeyWrites:true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> Tgtupdibmcommdimtable",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'ISSUE_DIM',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> InsTgtibmcommsDim"
+			]
+		}
+	}
+}

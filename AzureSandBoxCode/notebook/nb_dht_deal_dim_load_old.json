@@ -1,0 +1,585 @@
+{
+	"name": "nb_dht_deal_dim_load_old",
+	"properties": {
+		"folder": {
+			"name": "Srilatha"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "1300b974-68ab-45eb-b9d8-ef8847889aa3"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"**DEAL Dimension load**\n",
+					"\n",
+					"This notebook loads data to deltalake table etlhubconfirme.dht_deal_dim by sourceing data from DCA deal data.\n",
+					"Since DCA is not accessible from Azure, a datastage job src_DCA_DEAL_Azure is executed on datastage to push the DCA extract to adls.\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Import all the necessary libraries"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from azure.storage.blob import BlobClient\n",
+					"import pandas as pd\n",
+					"from io import StringIO\n",
+					"from pyspark.sql.functions import md5, concat_ws\n",
+					"from sqlite3 import connect\n",
+					"from pyspark.sql import functions as F\n",
+					"#conn = connect(':memory:')\n",
+					"\n",
+					"from pyspark.sql import SparkSession \n",
+					"from pyspark.sql.types import * \n",
+					"from delta.tables import *\n",
+					"from pyspark.sql.types import *\n",
+					"#import os\n",
+					"import sys"
+				],
+				"attachments": null,
+				"execution_count": 205
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Define Parameters"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"tags": []
+				},
+				"source": [
+					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
+					"container_name = 'etlhubfilestorage' # fill in your container name \n",
+					"relative_path = 'extract/DCA/' # fill in your relative folder path \n",
+					"file_name='DS_DEALS_DATA_UPD4.csv' \n",
+					"natural_key=\"DEAL_ID\"\n",
+					"tablename=\"etlhubConfirmed.dht_deal_dim1\"\n",
+					"keycolumn=\"DEAL_KEY\""
+				],
+				"attachments": null,
+				"execution_count": 206
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\n",
+					"#Read data from adls csv file extracted from source at \n",
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/DCA/DS_DEALS_DATA.csv"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
+					"print('Primary storage account path: ' + adls_path) \n",
+					"\n",
+					"# Read a csv file \n",
+					"csv_path = adls_path + file_name\n",
+					"#incrementalData_DF = spark.read.csv(csv_path, header = 'true',quote='\"')\n",
+					"incrementalData_DF=spark.read.load(csv_path,format=\"csv\", sep=\"||\", inferSchema=\"true\", header=\"true\")\n",
+					"incrementalData_DF.createOrReplaceTempView('DF_req')\n",
+					"#incrementalData_DF.printSchema()\n",
+					"incrementalData_Srcreq_DF=spark.sql(\"select DEAL_ID,BID_SUPPORT_INET_ID,BID_SUPPORT_NOTES_ID,BUS_UNIT_ID,CLNT_NM,CLNT_NUM,COMPLEXITY,COMNTS_TXT,CMPLXTY_CMMNT_TXT,CMPLXTY_OVERRD,CNTRCT_TYP_DESC,ENGG_SPPRT_TXN_LINK_TXT,ENGG_SPPRT_TXN_NUM,INDSTRY_NM,INIT_SIEBEL_IND,CNTRY_ID,LEAD_ACCT_PRTNR_BTT_CD,LEAD_PRTNR_BTT_CD,LEAD_PRTNR_NOTES_ID,OLD_OWNR_INET_ID,OWNR_INET_ID,PROJ_DESC,OPPTNY_ID,OWNR_NOTES_ID,PARENT_DEAL_ID,PRPSL_MGR_NOTES_ID,REAS_TXT,RMVD_IND,RISK_RTNG,RISK_RTNG_CMNT_TXT,RSK_RTNG_OVERRD,SALES_STAGE_CD,SECONDARY_SERVICE,SCTR_NM,SVC_NM,SIEBEL_IND,SRC_CD,STAT_CD,RCA1_ANSWR_TXT,RCA1_ANSWR_CMMNT,RCA2_ANSWR_TXT,RCA2_ANSWR_CMMNT,RCA3_ANSWR_TXT,RCA3_ANSWR_CMMNT,RCA4_ANSWR_TXT,RCA4_ANSWR_CMMNT,RCA5_ANSWR_TXT,RCA5_ANSWR_CMMNT,RCA6_ANSWR_TXT,RCA6_ANSWR_CMMNT,RCA7_ANSWR_TXT,RCA7_ANSWR_CMMNT,RCA8_ANSWR_TXT,RCA8_ANSWR_CMMNT,APPRVR_CNT,RVWR_CNT,DEAL_TYPE,GEO_CD,HYBRD_TYPE_A,HYBRD_TYPE_B,LOAD_LOB,CRDT_RTNG,DD_OFFERG_CS_USD_AMT,DD_OFFERG_IS_USD_AMT,DD_OFFERG_SS_USD_AMT,DD_OFFERG_WCP_USD_AMT,RISK_CONSULTANT_NOTES_ID,SENIOR_SOLUTION_MANAGER_NOTES_ID,SIH_GM_NOTES_ID,RULES_EFFECTIVE_DATE,DEAL_LEAD_NOTES_ID,CNTRCT_SIGNOFF_APPRVL_STAT_CD,PAYBACK_TXT from DF_req\")\n",
+					"#incrementalData_Srcreq_DF.show()\n",
+					"changedTypedf = incrementalData_Srcreq_DF.withColumn(natural_key, incrementalData_Srcreq_DF[natural_key].cast(StringType()))\n",
+					"#changedTypedf.printSchema()\n",
+					"\n",
+					"# Get column list for creating Rec_Checksum\n",
+					"col_list=[]\n",
+					"for i in incrementalData_Srcreq_DF.columns:\n",
+					"    col_list.append(i)\n",
+					"    #print (col_list)\n",
+					"\n",
+					"# Add a checsum column to help identify the changed rows\n",
+					"\n",
+					"incrementalData_DF1=changedTypedf.withColumn(\"nk_hash\",md5(natural_key))\n",
+					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+					"#incrementalData_DF2.printSchema()\n",
+					"incrementalData_DF2.createOrReplaceTempView('incrementalData_SrcDF')\n",
+					"\n",
+					"#Create a deltalake table with necessary columns\n",
+					"\n",
+					"existingDataDF=spark.sql(\"SELECT DEAL_KEY,DEAL_VERSION_NUMBER,trim(DEAL_IDENTIFIER) as DEAL_ID,REC_CHECKSUM,IMG_CREATED_DT,REC_START_DT FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
+					"existingDataDF.createOrReplaceTempView('existingDF')\n",
+					"\n",
+					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
+					"\n",
+					"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
+					"\n",
+					"existingDataDF1 = existingDataDF.select([F.col(c).alias('existing_'+c) for c in existingDataDF.columns])\n",
+					"\n",
+					"#existingDataDF1.printSchema()\n",
+					"#incrementalData_DF2.printSchema()\n",
+					"\n",
+					"existingDataDF1.createOrReplaceTempView('existingDataTgtDF')\n",
+					"\n",
+					"fullJoin1=incrementalData_DF2.join(existingDataDF1,incrementalData_DF2.DEAL_ID == existingDataDF1.existing_DEAL_ID, \"fullouter\") \n",
+					"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
+					"\n",
+					"fullJoin2.createOrReplaceTempView('fullJoin')\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 207
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Data Validation Checks :\n",
+					"\n",
+					"- Check for duplicates in Source data based on natural key\n",
+					"- Check for duplicates in target delta lake table based on natural key\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry3=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT, {} FROM incrementalData_SrcDF GROUP BY {} HAVING COUNT(*)>1\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"df3=spark.sql(qry3.format(natural_key,natural_key))\r\n",
+					"cnt1=df3.count()\r\n",
+					"\r\n",
+					"print (cnt1)\r\n",
+					"if cnt1 == 0:\r\n",
+					"    print(\"No Duplicates in source data\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"    print(\"Below are the duplicates in source:\")\r\n",
+					"    df3.show()\r\n",
+					"    status = 'fail'\r\n",
+					"    #os.abort() this will take the spark cluster also down\r\n",
+					"    sys.exit(1)\r\n",
+					"    print(\"This will not be printed\")\r\n",
+					"\r\n",
+					"qry4=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT, {} FROM existingDataTgtDF GROUP BY {} HAVING COUNT(*)>1;\r\n",
+					"\"\"\"\r\n",
+					"df4=spark.sql(qry4.format('existing_'+natural_key,'existing_'+natural_key))\r\n",
+					"cnt2=df4.count()\r\n",
+					"print (cnt2)\r\n",
+					"if cnt2 == 0:\r\n",
+					"    print(\"no duplicates in target delta lake table\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"    print(\"Below are the duplicates in target delta lake table:\")\r\n",
+					"    df4.show()\r\n",
+					"    status = 'fail'\r\n",
+					"    #os.abort() this will take the spark cluster also down\r\n",
+					"    sys.exit(2)\r\n",
+					"    print(\"This will not be printed\")"
+				],
+				"attachments": null,
+				"execution_count": 208
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Insert for New rows which are missing in target and present in source based on Natural Key.\r\n",
+					"#delete FROM etlhubconfirmed.dht_employee;\r\n",
+					"qry_insert=\"\"\"\r\n",
+					"INSERT INTO etlhubConfirmed.dht_deal_dim1\r\n",
+					"select COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS DEAL_KEY,1 as DEAL_VERSION_NUMBER , \r\n",
+					"A.DEAL_ID,\r\n",
+					"A.BID_SUPPORT_INET_ID,\r\n",
+					"A.BID_SUPPORT_NOTES_ID,\r\n",
+					"A.BUS_UNIT_ID,\r\n",
+					"A.CLNT_NM,\r\n",
+					"A.CLNT_NUM,\r\n",
+					"REPLACE(A.COMPLEXITY,'\"','') as COMPLEXITY,\r\n",
+					"REPLACE(A.COMNTS_TXT,'\"','') as COMNTS_TXT,\r\n",
+					"REPLACE(A.CMPLXTY_CMMNT_TXT,'\"','') as CMPLXTY_CMMNT_TXT,\r\n",
+					"REPLACE(A.CMPLXTY_OVERRD,'\"','') as CMPLXTY_OVERRD,\r\n",
+					"REPLACE(A.CNTRCT_TYP_DESC,'\"','') as CNTRCT_TYP_DESC,\r\n",
+					"REPLACE(A.ENGG_SPPRT_TXN_LINK_TXT,'\"','') as ENGG_SPPRT_TXN_LINK_TXT,\r\n",
+					"REPLACE(A.ENGG_SPPRT_TXN_NUM,'\"','') as ENGG_SPPRT_TXN_NUM,\r\n",
+					"REPLACE(A.INDSTRY_NM,'\"','') as INDSTRY_NM,\r\n",
+					"REPLACE(A.INIT_SIEBEL_IND,'\"','') as INIT_SIEBEL_IND,\r\n",
+					"REPLACE(A.CNTRY_ID,'\"','') as CNTRY_ID,\r\n",
+					"REPLACE(A.LEAD_ACCT_PRTNR_BTT_CD,'\"','') as LEAD_ACCT_PRTNR_BTT_CD,\r\n",
+					"REPLACE(A.LEAD_PRTNR_BTT_CD,'\"','') as LEAD_PRTNR_BTT_CD,\r\n",
+					"REPLACE(A.LEAD_PRTNR_NOTES_ID,'\"','') as LEAD_PRTNR_NOTES_ID,\r\n",
+					"REPLACE(A.OLD_OWNR_INET_ID,'\"','') as OLD_OWNR_INET_ID,\r\n",
+					"REPLACE(A.OWNR_INET_ID,'\"','') as OWNR_INET_ID,\r\n",
+					"REPLACE(A.proj_desc,'\"','') as PROJ_DESC,\r\n",
+					"REPLACE(A.OPPTNY_ID,'\"','') as OPPTNY_ID,\r\n",
+					"REPLACE(A.OWNR_NOTES_ID,'\"','') as OWNR_NOTES_ID,\r\n",
+					"REPLACE(A.PARENT_DEAL_ID,'\"','') as PARENT_DEAL_ID,\r\n",
+					"REPLACE(A.PRPSL_MGR_NOTES_ID,'\"','') as PRPSL_MGR_NOTES_ID,\r\n",
+					"REPLACE(A.REAS_TXT,'\"','') as REAS_TXT,\r\n",
+					"REPLACE(A.RMVD_IND,'\"','') as RMVD_IND,\r\n",
+					"REPLACE(A.RISK_RTNG,'\"','') as RISK_RTNG,\r\n",
+					"REPLACE(A.RISK_RTNG_CMNT_TXT,'\"','') as RISK_RTNG_CMNT_TXT,\r\n",
+					"REPLACE(A.RSK_RTNG_OVERRD,'\"','') as RSK_RTNG_OVERRD,\r\n",
+					"REPLACE(A.SALES_STAGE_CD,'\"','') as SALES_STAGE_CD,\r\n",
+					"REPLACE(A.SECONDARY_SERVICE,'\"','') as SECONDARY_SERVICE,\r\n",
+					"REPLACE(A.SCTR_NM,'\"','') as SCTR_NM,\r\n",
+					"REPLACE(A.SVC_NM,'\"','') as SVC_NM,\r\n",
+					"REPLACE(A.SIEBEL_IND,'\"','') as SIEBEL_IND,\r\n",
+					"REPLACE(A.SRC_CD,'\"','') as SRC_CD,\r\n",
+					"REPLACE(A.STAT_CD,'\"','') as STAT_CD,\r\n",
+					"'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,current_timestamp as IMG_LST_UPD_DT,\r\n",
+					"'9999-12-31 00:00:00.000' as REC_END_DT,CURRENT_TIMESTAMP AS REC_START_DT,  A.column_hash as REC_CHECKSUM,'I' as REC_STATUS, 'DCA' AS SOURCE_SYSTEM, \r\n",
+					"REPLACE(A.RCA1_ANSWR_TXT,'\"','') as RCA1_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA1_ANSWR_CMMNT,'\"','') as RCA1_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.RCA2_ANSWR_TXT,'\"','') as RCA2_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA2_ANSWR_CMMNT,'\"','') as RCA2_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.RCA3_ANSWR_TXT,'\"','') as RCA3_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA3_ANSWR_CMMNT,'\"','') as RCA3_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.RCA4_ANSWR_TXT,'\"','') as RCA4_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA4_ANSWR_CMMNT,'\"','') as RCA4_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.RCA5_ANSWR_TXT,'\"','') as RCA5_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA5_ANSWR_CMMNT,'\"','') as RCA5_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.RCA6_ANSWR_TXT,'\"','') as RCA6_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA6_ANSWR_CMMNT,'\"','') as RCA6_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.RCA7_ANSWR_TXT,'\"','') as RCA7_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA7_ANSWR_CMMNT,'\"','') as RCA7_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.RCA8_ANSWR_TXT,'\"','') as RCA8_ANSWR_TXT,\r\n",
+					"REPLACE(A.RCA8_ANSWR_CMMNT,'\"','') as RCA8_ANSWR_CMMNT,\r\n",
+					"REPLACE(A.APPRVR_CNT,'\"','') as APPRVR_CNT,\r\n",
+					"REPLACE(A.RVWR_CNT,'\"','') as RVWR_CNT,\r\n",
+					"REPLACE(A.DEAL_TYPE,'\"','') as DEAL_TYPE,\r\n",
+					"REPLACE(A.GEO_CD,'\"','') as GEO_CD,\r\n",
+					"REPLACE(A.HYBRD_TYPE_A,'\"','') as HYBRD_TYPE_A,\r\n",
+					"REPLACE(A.HYBRD_TYPE_B,'\"','') as HYBRD_TYPE_B,\r\n",
+					"REPLACE(A.LOAD_LOB,'\"','') as LOAD_LOB,\r\n",
+					"REPLACE(A.CRDT_RTNG,'\"','') as CRDT_RTNG,\r\n",
+					"A.DD_OFFERG_CS_USD_AMT,\r\n",
+					"A.DD_OFFERG_IS_USD_AMT,\r\n",
+					"A.DD_OFFERG_SS_USD_AMT,\r\n",
+					"A.DD_OFFERG_WCP_USD_AMT,\r\n",
+					"REPLACE(A.RISK_CONSULTANT_NOTES_ID,'\"','') as RISK_CONSULTANT_NOTES_ID,\r\n",
+					"REPLACE(A.SENIOR_SOLUTION_MANAGER_NOTES_ID,'\"','') as SENIOR_SOLUTION_MANAGER_NOTES_ID,\r\n",
+					"REPLACE(A.SIH_GM_NOTES_ID,'\"','') as SIH_GM_NOTES_ID,\r\n",
+					"A.RULES_EFFECTIVE_DATE,\r\n",
+					"REPLACE(A.DEAL_LEAD_NOTES_ID,'\"','') as DEAL_LEAD_NOTES_ID,\r\n",
+					"REPLACE(A.CNTRCT_SIGNOFF_APPRVL_STAT_CD,'\"','') as CNTRCT_SIGNOFF_APPRVL_STAT_CD,\r\n",
+					"REPLACE(A.PAYBACK_TXT,'\"','') as PAYBACK_TXT,\r\n",
+					"'LG' AS DATA_IND, \r\n",
+					"'Y' AS ACTIVE_IN_SOURCE_IND \r\n",
+					"from fullJoin A \r\n",
+					"LEFT JOIN etlhubConfirmed.dht_deal_dim1 B\r\n",
+					"ON TRIM(A.DEAL_ID)=TRIM(B.DEAL_IDENTIFIER)\r\n",
+					"AND CURRENT_IND='Y'\r\n",
+					"WHERE existing_REC_CHECKSUM is null\r\n",
+					"AND COALESCE(B.REC_CHECKSUM,'') <> COALESCE(A.column_hash,'');\r\n",
+					"\"\"\"\r\n",
+					"d=spark.sql(qry_insert)\r\n",
+					"#d.show(10)"
+				],
+				"attachments": null,
+				"execution_count": 209
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#update the existing rows in target table with new values and record status as U and expiry the existing records with current indicator as N.\r\n",
+					"#delete FROM etlhubconfirmed.dht_employee;\r\n",
+					"\r\n",
+					"updins=\"\"\"\r\n",
+					"INSERT INTO etlhubConfirmed.dht_deal_dim1 \r\n",
+					"select existing_DEAL_KEY,1+existing_DEAL_VERSION_NUMBER as DEAL_VERSION_NUMBER , \r\n",
+					"A.DEAL_ID,\r\n",
+					"A.BID_SUPPORT_INET_ID,\r\n",
+					"A.BID_SUPPORT_NOTES_ID,\r\n",
+					"A.BUS_UNIT_ID,\r\n",
+					"A.CLNT_NM,\r\n",
+					"A.CLNT_NUM,\r\n",
+					"A.COMPLEXITY,\r\n",
+					"A.COMNTS_TXT,\r\n",
+					"A.CMPLXTY_CMMNT_TXT,\r\n",
+					"A.CMPLXTY_OVERRD,\r\n",
+					"A.CNTRCT_TYP_DESC,\r\n",
+					"A.ENGG_SPPRT_TXN_LINK_TXT,\r\n",
+					"A.ENGG_SPPRT_TXN_NUM,\r\n",
+					"A.INDSTRY_NM,\r\n",
+					"A.INIT_SIEBEL_IND,\r\n",
+					"A.CNTRY_ID,\r\n",
+					"A.LEAD_ACCT_PRTNR_BTT_CD,\r\n",
+					"A.LEAD_PRTNR_BTT_CD,\r\n",
+					"A.LEAD_PRTNR_NOTES_ID,\r\n",
+					"A.OLD_OWNR_INET_ID,\r\n",
+					"A.OWNR_INET_ID,\r\n",
+					"A.proj_desc,\r\n",
+					"A.OPPTNY_ID,\r\n",
+					"A.OWNR_NOTES_ID,\r\n",
+					"A.PARENT_DEAL_ID,\r\n",
+					"A.PRPSL_MGR_NOTES_ID,\r\n",
+					"A.REAS_TXT,\r\n",
+					"A.RMVD_IND,\r\n",
+					"A.RISK_RTNG,\r\n",
+					"A.RISK_RTNG_CMNT_TXT,\r\n",
+					"A.RSK_RTNG_OVERRD,\r\n",
+					"A.SALES_STAGE_CD,\r\n",
+					"A.SECONDARY_SERVICE,\r\n",
+					"A.SCTR_NM,\r\n",
+					"A.SVC_NM,\r\n",
+					"A.SIEBEL_IND,\r\n",
+					"A.SRC_CD,\r\n",
+					"A.STAT_CD,\r\n",
+					"'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,current_timestamp as IMG_LST_UPD_DT,\r\n",
+					"'9999-12-31 00:00:00.000' as REC_END_DT,CURRENT_TIMESTAMP AS REC_START_DT,  A.column_hash as REC_CHECKSUM, \r\n",
+					"'U' as REC_STATUS, 'DCA' AS SOURCE_SYSTEM,\r\n",
+					"A.RCA1_ANSWR_TXT,\r\n",
+					"A.RCA1_ANSWR_CMMNT,\r\n",
+					"A.RCA2_ANSWR_TXT,\r\n",
+					"A.RCA2_ANSWR_CMMNT, \r\n",
+					"A.RCA3_ANSWR_TXT,\r\n",
+					"A.RCA3_ANSWR_CMMNT,\r\n",
+					"A.RCA4_ANSWR_TXT,\r\n",
+					"A.RCA4_ANSWR_CMMNT,\r\n",
+					"A.RCA5_ANSWR_TXT,\r\n",
+					"A.RCA5_ANSWR_CMMNT,\r\n",
+					"A.RCA6_ANSWR_TXT,\r\n",
+					"A.RCA6_ANSWR_CMMNT,\r\n",
+					"A.RCA7_ANSWR_TXT,\r\n",
+					"A.RCA7_ANSWR_CMMNT,\r\n",
+					"A.RCA8_ANSWR_TXT,\r\n",
+					"A.RCA8_ANSWR_CMMNT,\r\n",
+					"A.APPRVR_CNT,\r\n",
+					"A.RVWR_CNT,\r\n",
+					"A.DEAL_TYPE,\r\n",
+					"A.GEO_CD,\r\n",
+					"A.HYBRD_TYPE_A,\r\n",
+					"A.HYBRD_TYPE_B,\r\n",
+					"A.LOAD_LOB,\r\n",
+					"A.CRDT_RTNG,\r\n",
+					"A.DD_OFFERG_CS_USD_AMT,\r\n",
+					"A.DD_OFFERG_IS_USD_AMT,\r\n",
+					"A.DD_OFFERG_SS_USD_AMT,\r\n",
+					"A.DD_OFFERG_WCP_USD_AMT,\r\n",
+					"A.RISK_CONSULTANT_NOTES_ID,\r\n",
+					"A.SENIOR_SOLUTION_MANAGER_NOTES_ID,\r\n",
+					"A.SIH_GM_NOTES_ID,\r\n",
+					"A.RULES_EFFECTIVE_DATE,\r\n",
+					"A.DEAL_LEAD_NOTES_ID,\r\n",
+					"A.CNTRCT_SIGNOFF_APPRVL_STAT_CD,\r\n",
+					"A.PAYBACK_TXT,\r\n",
+					"'LG' AS DATA_IND, \r\n",
+					"'Y' AS ACTIVE_IN_SOURCE_IND \r\n",
+					"from fullJoin A \r\n",
+					"WHERE DEAL_ID = existing_DEAL_ID and LOWER(column_hash) <> LOWER(existing_REC_CHECKSUM)\r\n",
+					"AND NOT EXISTS\r\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_deal_dim1 B\r\n",
+					"WHERE TRIM(A.DEAL_ID)=TRIM(B.DEAL_IDENTIFIER)\r\n",
+					"and b.CURRENT_IND='Y'\r\n",
+					"AND coalesce(A.column_hash,'')=coalesce(B.REC_CHECKSUM,'')) ;\r\n",
+					"\"\"\"\r\n",
+					"d1=spark.sql(updins)\r\n",
+					"#d1.show()\r\n",
+					"\r\n",
+					"expqry=\"\"\"\r\n",
+					"MERGE INTO etlhubConfirmed.dht_deal_dim1 A\r\n",
+					"USING fullJoin B\r\n",
+					"ON B.DEAL_ID = A.DEAL_IDENTIFIER\r\n",
+					"AND LOWER(A.DEAL_IDENTIFIER) = LOWER(B.existing_DEAL_ID) and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\r\n",
+					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\r\n",
+					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\r\n",
+					",REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds\r\n",
+					",IMG_LST_UPD_DT=current_timestamp;\r\n",
+					"\"\"\"\r\n",
+					"d2=spark.sql(expqry)\r\n",
+					"#d2.show()\r\n",
+					"\r\n",
+					"#Soft deletes or no longer active in source\r\n",
+					"softdelqry=\"\"\"\r\n",
+					"MERGE INTO etlhubConfirmed.dht_deal_dim1  A\r\n",
+					"USING fullJoin B\r\n",
+					"ON A.DEAL_IDENTIFIER = B.existing_DEAL_ID\r\n",
+					"AND B.DEAL_ID is NULL\r\n",
+					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\r\n",
+					"WHEN MATCHED THEN UPDATE SET ACTIVE_IN_SOURCE_IND='N' ,IMG_LST_UPD_DT=current_timestamp;\r\n",
+					"\"\"\"\r\n",
+					"df3=spark.sql(softdelqry)"
+				],
+				"attachments": null,
+				"execution_count": 210
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from etlhubConfirmed.dht_deal_dim1 where DEAL_IDENTIFIER in (7840900,7840899)"
+				],
+				"attachments": null,
+				"execution_count": 211
+			}
+		]
+	}
+}

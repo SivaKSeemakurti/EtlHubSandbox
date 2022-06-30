@@ -1,0 +1,99 @@
+{
+	"name": "CP_SUMMRY_SEQ",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_CNTRCT_CHNG_RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0001_CP_CNTRCT_CHNG_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Cp_PCR_RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "CP_CNTRCT_CHNG_RPT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0002_CP_PCR_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CP_RISK_RPT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Cp_PCR_RPT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0006_CP_RISK_RPT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "PGMP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-06-22T14:19:57Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}
