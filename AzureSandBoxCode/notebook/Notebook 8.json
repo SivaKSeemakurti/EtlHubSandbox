@@ -18,18 +18,15 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "816a925d-f2c7-4d76-b316-b400c3cfbdc4"
+				"spark.autotune.trackingId": "80ad3657-db50-47cb-96bf-0d8afa57a113"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
-				"name": "synapse_pyspark",
-				"display_name": "Synapse PySpark"
+				"name": "synapse_sparksql",
+				"display_name": "sql"
 			},
 			"language_info": {
 				"name": "sql"
@@ -47,7 +44,7 @@
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -61,9 +58,9 @@
 				},
 				"source": [
 					"%%pyspark\n",
+					"# this is latest commit 11th Jul 2022 8:29 PM IST\n",
 					"spark.sql(\"CREATE TABLE etlhubconfirmed.sell_cycle (SIEBEL_SALES_STAGE_CODE string, SIEBEL_SALES_STAGE_NAME string, SSM_STEP_NO string, SSM_STEP_NAME string)\")"
 				],
-				"attachments": null,
 				"execution_count": 1
 			}
 		]
