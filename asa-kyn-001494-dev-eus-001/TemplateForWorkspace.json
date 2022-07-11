@@ -20755,7 +20755,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "587b379b-b0f2-42de-9e7e-de8fbcccac5f"
+						"spark.autotune.trackingId": "b170a8e7-39b5-468a-98fe-3d6037ec9a38"
 					}
 				},
 				"metadata": {
@@ -20796,6 +20796,7 @@
 						"source": [
 							"%%pyspark\n",
 							"# this is latest commit 11th Jul 2022 8:29 PM IST\n",
+							"#\n",
 							"spark.sql(\"CREATE TABLE etlhubconfirmed.sell_cycle (SIEBEL_SALES_STAGE_CODE string, SIEBEL_SALES_STAGE_NAME string, SSM_STEP_NO string, SSM_STEP_NAME string)\")"
 						],
 						"outputs": [],
