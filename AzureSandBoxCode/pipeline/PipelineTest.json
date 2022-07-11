@@ -46,10 +46,80 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "Application/Json"
+					},
+					"body": {
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('Copy data1').output}\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Web1_copy1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "Application/Json"
+					},
+					"body": {
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('Copy data1').output},\n        \"JobStatus\" : \"Success\"\n}",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"annotations": [],
-		"lastPublishTime": "2022-05-16T11:57:44Z"
+		"lastPublishTime": "2022-07-11T10:31:08Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

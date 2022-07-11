@@ -1,5 +1,5 @@
 {
-	"name": "nb_dht_employee_load",
+	"name": "nb_dht_opportunity_role_load",
 	"properties": {
 		"folder": {
 			"name": "ETLHub/Dimensions&Facts"
@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "180bc052-304e-4cd8-92cb-86c06c1aeff9"
+				"spark.autotune.trackingId": "b7ef967c-79cb-40e7-8c34-c6e086b9c8e8"
 			}
 		},
 		"metadata": {
@@ -65,10 +65,10 @@
 					}
 				},
 				"source": [
-					"**Employeed Dimension load**\n",
+					"**Opportunity Role Dimension load**\n",
 					"\n",
-					"This notebook loads data to deltalake table etlhubconfirmed.dht_employee by sourceing data from BMSIW's EMF datamart.\n",
-					"Since BMSIW is not accessible from Azure, a datastage job src_BMSIW_Employee_Azure is executed on datastage to push the BMSIW extract to adls.\n",
+					"This notebook loads data to deltalake table etlhubconfirmed.dht_opportunity_role by sourceing data from ESA database.\n",
+					"Since ESA is not accessible from Azure, a datastage job src_ESA_opportunityRole_Azure is executed on datastage to push the ESA extract to adls.\n",
 					""
 				],
 				"attachments": null
@@ -104,7 +104,7 @@
 					"from azure.storage.blob import BlobClient\n",
 					"import pandas as pd\n",
 					"from io import StringIO\n",
-					"from pyspark.sql.functions import md5, concat_ws\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
 					"from sqlite3 import connect\n",
 					"from pyspark.sql import functions as F\n",
 					"#conn = connect(':memory:')\n",
@@ -117,7 +117,7 @@
 					"from datetime import datetime"
 				],
 				"attachments": null,
-				"execution_count": 51
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
@@ -150,17 +150,17 @@
 				"source": [
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
-					"relative_path = 'extract/BMSIW/' # fill in your relative folder path \n",
+					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='DS_EMPLOYEE_DATA.csv' \n",
-					"natural_key=\"EMPLOYEE_BUSINESS_CD\"\n",
-					"tablename=\"etlhubConfirmed.dht_employee\"\n",
-					"#natural_key=\"BUSINESS_PARTNER_ID\"\n",
-					"keycolumn=\"EMPLOYEE_KEY\"\n",
+					"file_name='DS_OPPORTUNITY_ROLE_DATA.csv' \n",
+					"natural_key=\"ROLE_CD\"\n",
+					"tablename=\"etlhubConfirmed.dht_opportunity_role\"\n",
+					"#natural_key=\"ROLE_CD\"\n",
+					"keycolumn=\"OPPORTUNITY_ROLE_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 				],
 				"attachments": null,
-				"execution_count": 52
+				"execution_count": 18
 			},
 			{
 				"cell_type": "markdown",
@@ -188,7 +188,7 @@
 				"source": [
 					"\n",
 					"#Read data from adls csv file extracted from source at \n",
-					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/BMSIW/DS_EMPLOYEE_DATA.csv"
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_OPPORTUNITY_ROLE_DATA.csv"
 				],
 				"attachments": null
 			},
@@ -219,7 +219,7 @@
 					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 					"print (csv_archive_path)\n",
 					"\n",
-					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
+					"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
 					"\n",
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"\n",
@@ -241,7 +241,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
 				"attachments": null,
-				"execution_count": 53
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -261,11 +261,9 @@
 					"#Create a dataframe with target deltalake table data with necessary columns\n",
 					"\n",
 					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
-					"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
+					"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.dht_opportunity_role tgt WHERE CURRENT_IND='Y'\")\n",
 					"\n",
 					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
-					"\n",
-					"#existingMaxKeyDF=spark.sql(\"SELECT MAX(EMPLOYEE_KEY) existing_MAX_KEY from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
 					"\n",
 					"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
 					"\n",
@@ -273,7 +271,7 @@
 					"\n",
 					"existingDataDF1.createOrReplaceTempView('existingDataDF1')\n",
 					"\n",
-					"fullJoin1=incrementalData_DF2.join(existingDataDF1,incrementalData_DF2.EMPLOYEE_BUSINESS_CD == existingDataDF1.existing_EMPLOYEE_BUSINESS_CD, \"fullouter\") \n",
+					"fullJoin1=incrementalData_DF2.join(existingDataDF1,trim(incrementalData_DF2.ROLE_CD) == trim(existingDataDF1.existing_ROLE_CD), \"fullouter\") \n",
 					"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
 					"\n",
 					"fullJoin2.createOrReplaceTempView('fullJoin')\n",
@@ -282,12 +280,12 @@
 					"  .format(\"delta\") \\\n",
 					"  .mode(\"overwrite\") \\\n",
 					"  .option(\"overwriteSchema\", \"true\") \\\n",
-					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_EMPLOYEE\") \\\n",
-					"  .saveAsTable(\"DHTS_EMPLOYEE\")\n",
+					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_OPPORTUNITY_ROLE\") \\\n",
+					"  .saveAsTable(\"DHTS_OPPORTUNITY_ROLE\")\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
 				"attachments": null,
-				"execution_count": 54
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -307,11 +305,11 @@
 					"collapsed": false
 				},
 				"source": [
-					"%%sql\n",
-					"select * from existingDataDF1 where EXISTING_employee_serial_num='001518' and EXISTING_employee_country_code='661'"
+					"%%sql\r\n",
+					"select * from DHTS_OPPORTUNITY_ROLE"
 				],
 				"attachments": null,
-				"execution_count": 55
+				"execution_count": 22
 			},
 			{
 				"cell_type": "markdown",
@@ -389,32 +387,7 @@
 					""
 				],
 				"attachments": null,
-				"execution_count": 56
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"select * from etlhubconfirmed.dht_employee where EMPLOYEE_BUSINESS_CD='ZZ03FP~693~NEWIS'\n",
-					"    --AND CURRENT_IND='Y'"
-				],
-				"attachments": null,
-				"execution_count": 43
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -432,11 +405,11 @@
 				"source": [
 					"qry_4_recon1=\"\"\"\n",
 					"\n",
-					"SELECT COUNT(*) from DHTS_EMPLOYEE A \n",
+					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
-					"WHERE A.EMPLOYEE_BUSINESS_CD=B.EMPLOYEE_BUSINESS_CD\n",
+					"WHERE A.ROLE_CD=B.ROLE_CD\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					"\n",
@@ -447,12 +420,12 @@
 					"\n",
 					"qry_4_recon2=\"\"\"\n",
 					"\n",
-					"SELECT COUNT(*) from DHTS_EMPLOYEE A \n",
-					"WHERE LOWER(EMPLOYEE_BUSINESS_CD) = LOWER(existing_EMPLOYEE_BUSINESS_CD) \n",
+					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
+					"WHERE LOWER(ROLE_CD) = LOWER(existing_ROLE_CD) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
-					"WHERE LOWER(A.EMPLOYEE_BUSINESS_CD)=LOWER(B.EMPLOYEE_BUSINESS_CD)\n",
+					"WHERE TRIM(LOWER(A.ROLE_CD))=TRIM(LOWER(B.ROLE_CD))\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM\n",
 					")\n",
@@ -465,7 +438,7 @@
 					"\n",
 					"qry_4_recon3=\"\"\"\n",
 					"SELECT COUNT(*) from \n",
-					"etlhubconfirmed.DHT_EMPLOYEE A\n",
+					"etlhubconfirmed.DHT_OPPORTUNITY_ROLE A\n",
 					"join fullJoin B\n",
 					"ON A.{} = B.existing_{}\n",
 					"AND B.{} is NULL\n",
@@ -479,7 +452,7 @@
 					"df_4_recon3.show()"
 				],
 				"attachments": null,
-				"execution_count": 66
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -498,14 +471,14 @@
 				"source": [
 					"\n",
 					"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
-					"#delete FROM etlhubconfirmed.dht_employee;\n",
+					"#delete FROM etlhubconfirmed.dht_opportunity_role;\n",
 					"\n",
 					"qry_4_recon1=\"\"\"\n",
-					"SELECT COUNT(*) from DHTS_EMPLOYEE A \n",
+					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
-					"WHERE A.EMPLOYEE_BUSINESS_CD=B.EMPLOYEE_BUSINESS_CD\n",
+					"WHERE A.ROLE_CD=B.ROLE_CD\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					"\n",
@@ -514,86 +487,27 @@
 					"\n",
 					"qry_ins_new_rows=\"\"\"\n",
 					"\n",
-					"INSERT INTO etlhubconfirmed.dht_employee\n",
+					"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
 					"select \n",
-					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \n",
-					",EMPLOYEE_SERIAL_NUM\n",
-					",EMPLOYEE_COUNTRY_CODE\n",
-					",EMPLOYEE_COMPANY_CD\n",
-					",EMPLOYEE_BUSINESS_CD\n",
-					",NOTES_ID_RAW\n",
-					",NULL AS NOTES_ID\n",
+					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \n",
+					",ROLE_CD\n",
+					",ROLE_DESC\n",
 					",'Y' AS CURRENT_IND\n",
 					",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					",CURRENT_TIMESTAMP AS REC_START_DT\n",
 					",'9999-12-31 00:00:00.000' as REC_END_DT\n",
-					",'BMSIW' AS SOURCE_SYSTEM\n",
+					",'ESA' AS SOURCE_SYSTEM\n",
 					",column_hash as REC_CHECKSUM\n",
 					",'I' as REC_STATUS\n",
 					",current_timestamp as IMG_LST_UPD_DT\n",
 					",CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-					",A.EMPLOYEE_INITIAL as EMPLOYEE_INITIALS\n",
-					",EMPLOYEE_LAST_NAME\n",
-					",CASE WHEN EMPLOYEE_DISCON_DT='0001-01-01 00:00:00' THEN NULL ELSE EMPLOYEE_DISCON_DT END AS EMPLOYEE_DISCON_DT\n",
-					",CASE WHEN EMPLOYEE_EFF_DT='0001-01-01 00:00:00' THEN NULL ELSE EMPLOYEE_EFF_DT END AS EMPLOYEE_EFF_DT\n",
-					",EMPLOYEE_STATUS\n",
-					",EMPLOYEE_LEVEL_CD\n",
-					",EMPLOYEE_USER_ID\n",
-					",NULL AS MANAGER_IND\n",
-					",HOME_NODE_ID\n",
-					",HOME_USER_ID\n",
-					",BURDEN_CD\n",
-					",BURDEN_CD_UPD_IND\n",
-					",FIN_ADMIN_CD\n",
-					",LONGEVITY_CD\n",
-					",GROUP_ID\n",
-					",JOB_FAMILY_CD\n",
-					",PROFESSION_CD\n",
-					",EMF_SOURCE_CD\n",
-					",LBR_RPT_IND\n",
-					",INET_MAIL_ADDR\n",
-					",TEAM_ID\n",
-					",'' AS SITE_LOC_CD\n",
-					",EMP_NODE_ID\n",
-					",CNUM_ID\n",
-					",WEEK_SCHEDULE_HRS\n",
-					",UNIT_PRICE_AMT\n",
-					",SHIFT_1_RATE\n",
-					",SHIFT_2_RATE\n",
-					",SHIFT_3_RATE\n",
-					",STANDBY_RATE\n",
-					",OVERTIME_AMT\n",
-					",COMPETENCY_SEGMENT_CD\n",
-					",PROFESSION_NAME\n",
-					",ORIG_LOC_CD\n",
-					",DEPT_CATG_CD\n",
-					",LOB_ID\n",
-					",SAP_IND\n",
-					",CHARGE_GROUP_CD\n",
-					",SAP_COMPANY_CD\n",
-					",WORK_WEEK_HRS_MIN\n",
-					",WORK_WEEK_HRS_MAX\n",
-					",'Y' AS IMG_ACTIVE_EMPLOYEE_STATUS_CD\n",
-					",EMP_FIRST_NM\n",
-					",ISO_CTRY_CD\n",
-					",MGR_CTRY_CD\n",
-					",MGR_CMPNY_CD\n",
-					",MGR_SER_NUM\n",
-					",RDM_CTRY_CD\n",
-					",RDM_CMPNY_CD\n",
-					",RDM_SER_NUM\n",
-					",NULL AS DIVISION_CODE\n",
-					",DEPT_NUMBER\n",
-					",MGR_CNUM_ID\n",
-					",NULL AS JOB_ROLE\n",
 					",'ED' AS DATA_IND\n",
 					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-					"\n",
-					"from DHTS_EMPLOYEE A \n",
+					"from DHTS_OPPORTUNITY_ROLE A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.DHT_EMPLOYEE B\n",
-					"WHERE A.EMPLOYEE_BUSINESS_CD=B.EMPLOYEE_BUSINESS_CD\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
+					"WHERE A.ROLE_CD=B.ROLE_CD\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					"\n",
@@ -606,7 +520,7 @@
 					"#d.show(10)"
 				],
 				"attachments": null,
-				"execution_count": 58
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -626,7 +540,7 @@
 					"qry_4_upd_changes_rows=\"\"\"\n",
 					"\n",
 					"MERGE INTO {} A\n",
-					"USING DHTS_EMPLOYEE B\n",
+					"USING DHTS_OPPORTUNITY_ROLE B\n",
 					"ON A.{} = B.{}\n",
 					"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
@@ -640,7 +554,7 @@
 					""
 				],
 				"attachments": null,
-				"execution_count": 60
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -653,163 +567,44 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"microsoft": {
-						"language": "sparksql"
 					},
 					"collapsed": false
 				},
 				"source": [
-					"%%sql\n",
-					"select count(*) from DHTS_EMPLOYEE where existing_CURRENT_IND='Y';\n",
-					"\n",
-					"select * from etlhubconfirmed.dht_employee\n",
-					"where employee_serial_num='001518' and employee_country_code='661'\n",
-					"    ;\n",
-					"select * from DHTS_EMPLOYEE where existing_employee_serial_num='001518' \n",
-					"    and existing_employee_country_code='661'\n",
-					"    ;\n",
-					"\n",
-					" select * from DHTS_EMPLOYEE where existing_employee_serial_num='001518' \n",
-					"    and existing_employee_country_code='661'\n",
-					"    ;   \n",
-					"select count(*)\n",
-					"from etlhubConfirmed.DHT_EMPLOYEE B\n",
-					"join\n",
-					"DHTS_EMPLOYEE A \n",
-					"WHERE A.EMPLOYEE_BUSINESS_CD = B.EMPLOYEE_BUSINESS_CD\n",
-					"and LOWER(A.EMPLOYEE_BUSINESS_CD) = LOWER(A.existing_EMPLOYEE_BUSINESS_CD) \n",
-					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
-					"AND B.REC_START_DT=A.existing_REC_START_DT\n",
-					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.DHT_EMPLOYEE B\n",
-					"WHERE LOWER(A.EMPLOYEE_BUSINESS_CD)=LOWER(B.EMPLOYEE_BUSINESS_CD)\n",
-					"and b.CURRENT_IND='Y'\n",
-					"AND A.column_hash=B.REC_CHECKSUM\n",
-					")\n",
-					";\n",
-					"\n",
-					"SELECT COUNT(*) FROM etlhubConfirmed.DHT_EMPLOYEE A\n",
-					"JOIN DHTS_EMPLOYEE B\n",
-					"ON A.EMPLOYEE_BUSINESS_CD = B.EMPLOYEE_BUSINESS_CD\n",
-					"AND LOWER(B.EMPLOYEE_BUSINESS_CD) = LOWER(B.existing_EMPLOYEE_BUSINESS_CD) \n",
-					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
-					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					";"
-				],
-				"attachments": null,
-				"execution_count": 61
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
 					"#Insert for changed rows which are missing in target and present in source based on Natural Key.\n",
-					"\n",
 					"qry_ins_changed_rows=\"\"\"\n",
-					"\n",
-					"INSERT INTO etlhubconfirmed.dht_employee\n",
-					"select \n",
-					"existing_EMPLOYEE_KEY\n",
-					",1 + existing_EMPLOYEE_VERSION as VERSION\n",
-					",EMPLOYEE_SERIAL_NUM\n",
-					",EMPLOYEE_COUNTRY_CODE\n",
-					",EMPLOYEE_COMPANY_CD\n",
-					",EMPLOYEE_BUSINESS_CD\n",
-					",NOTES_ID_RAW\n",
-					",NULL AS NOTES_ID\n",
+					"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
+					"select A.existing_OPPORTUNITY_ROLE_KEY\n",
+					",1 + existing_OPPORTUNITY_ROLE_VERSION as OPPORTUNITY_ROLE_VERSION\n",
+					",ROLE_CD\n",
+					",ROLE_DESC\n",
 					",'Y' AS CURRENT_IND\n",
 					",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					",CURRENT_TIMESTAMP AS REC_START_DT\n",
 					",'9999-12-31 00:00:00.000' as REC_END_DT\n",
-					",'BMSIW' AS SOURCE_SYSTEM\n",
+					",'ESA' AS SOURCE_SYSTEM\n",
 					",column_hash as REC_CHECKSUM\n",
 					",'U' as REC_STATUS\n",
-					",CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
-					",CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-					",A.EMPLOYEE_INITIAL as EMPLOYEE_INITIALS\n",
-					",EMPLOYEE_LAST_NAME\n",
-					",CASE WHEN EMPLOYEE_DISCON_DT='0001-01-01 00:00:00' THEN NULL ELSE EMPLOYEE_DISCON_DT END AS EMPLOYEE_DISCON_DT\n",
-					",CASE WHEN EMPLOYEE_EFF_DT='0001-01-01 00:00:00' THEN NULL ELSE EMPLOYEE_EFF_DT END AS EMPLOYEE_EFF_DT\n",
-					",EMPLOYEE_STATUS\n",
-					",EMPLOYEE_LEVEL_CD\n",
-					",EMPLOYEE_USER_ID\n",
-					",NULL AS MANAGER_IND\n",
-					",HOME_NODE_ID\n",
-					",HOME_USER_ID\n",
-					",BURDEN_CD\n",
-					",BURDEN_CD_UPD_IND\n",
-					",FIN_ADMIN_CD\n",
-					",LONGEVITY_CD\n",
-					",GROUP_ID\n",
-					",JOB_FAMILY_CD\n",
-					",PROFESSION_CD\n",
-					",EMF_SOURCE_CD\n",
-					",LBR_RPT_IND\n",
-					",INET_MAIL_ADDR\n",
-					",TEAM_ID\n",
-					",'' AS SITE_LOC_CD\n",
-					",EMP_NODE_ID\n",
-					",CNUM_ID\n",
-					",WEEK_SCHEDULE_HRS\n",
-					",UNIT_PRICE_AMT\n",
-					",SHIFT_1_RATE\n",
-					",SHIFT_2_RATE\n",
-					",SHIFT_3_RATE\n",
-					",STANDBY_RATE\n",
-					",OVERTIME_AMT\n",
-					",COMPETENCY_SEGMENT_CD\n",
-					",PROFESSION_NAME\n",
-					",ORIG_LOC_CD\n",
-					",DEPT_CATG_CD\n",
-					",LOB_ID\n",
-					",SAP_IND\n",
-					",CHARGE_GROUP_CD\n",
-					",SAP_COMPANY_CD\n",
-					",WORK_WEEK_HRS_MIN\n",
-					",WORK_WEEK_HRS_MAX\n",
-					",'Y' AS IMG_ACTIVE_EMPLOYEE_STATUS_CD\n",
-					",EMP_FIRST_NM\n",
-					",ISO_CTRY_CD\n",
-					",MGR_CTRY_CD\n",
-					",MGR_CMPNY_CD\n",
-					",MGR_SER_NUM\n",
-					",RDM_CTRY_CD\n",
-					",RDM_CMPNY_CD\n",
-					",RDM_SER_NUM\n",
-					",NULL AS DIVISION_CODE\n",
-					",DEPT_NUMBER\n",
-					",MGR_CNUM_ID\n",
-					",NULL AS JOB_ROLE\n",
-					",'ED' AS DATA_IND\n",
+					", CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
+					",A.existing_IMG_CREATED_DT AS IMG_CREATED_DT\n",
+					",'LG' AS DATA_IND\n",
 					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-					"from DHTS_EMPLOYEE A \n",
-					"WHERE LOWER(EMPLOYEE_BUSINESS_CD) = LOWER(existing_EMPLOYEE_BUSINESS_CD) \n",
+					"from DHTS_OPPORTUNITY_ROLE A \n",
+					"WHERE TRIM(LOWER(ROLE_CD)) = TRIM(LOWER(existing_ROLE_CD)) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.DHT_EMPLOYEE B\n",
-					"WHERE LOWER(A.EMPLOYEE_BUSINESS_CD)=LOWER(B.EMPLOYEE_BUSINESS_CD)\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
+					"WHERE TRIM(LOWER(A.ROLE_CD))=TRIM(LOWER(B.ROLE_CD))\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM\n",
 					")\n",
 					";\n",
 					"\"\"\"\n",
-					"\n",
 					"e=spark.sql(qry_ins_changed_rows)\n",
 					"#e.show(4)"
 				],
 				"attachments": null,
-				"execution_count": 62
+				"execution_count": 32
 			},
 			{
 				"cell_type": "code",
@@ -830,7 +625,7 @@
 					"qry_4_upd_deleted_rows=\"\"\"\n",
 					"\n",
 					"MERGE INTO {} A\n",
-					"USING DHTS_EMPLOYEE B\n",
+					"USING DHTS_OPPORTUNITY_ROLE B\n",
 					"ON A.{} = B.existing_{}\n",
 					"AND B.{} is NULL\n",
 					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
@@ -843,7 +638,7 @@
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 				],
 				"attachments": null,
-				"execution_count": 63
+				"execution_count": 33
 			},
 			{
 				"cell_type": "code",
@@ -864,86 +659,39 @@
 				},
 				"source": [
 					"%%sql\n",
-					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
+					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
 					";\n",
 					"\n",
-					"\n",
-					"select 'Duplicate Rows based on surrogate key' as Title,EMPLOYEE_KEY,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
-					"    group by EMPLOYEE_KEY\n",
+					"select 'Duplicate Rows based on surrogate key' as Title,OPPORTUNITY_ROLE_KEY,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
+					"    group by OPPORTUNITY_ROLE_KEY\n",
 					"    having count(*)>1\n",
 					";\n",
 					"\n",
-					"select 'Duplicate Rows based on natural key' as Title,EMPLOYEE_BUSINESS_CD,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
-					"    group by EMPLOYEE_BUSINESS_CD\n",
+					"select 'Duplicate Rows based on natural key' as Title,ROLE_CD,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
+					"    group by ROLE_CD\n",
 					"    having count(*)>1\n",
 					";\n",
 					"\n",
-					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)='2022-07-01' and rec_status='I'\n",
+					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
+					"    and date(extract_dt)=CURRENT_DATE and rec_status='I'\n",
 					";\n",
 					"\n",
-					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)='2022-07-01' and rec_status='U'\n",
+					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
+					"    and date(extract_dt)=current_date and rec_status='U'\n",
 					";\n",
 					"\n",
-					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='N'\n",
-					"    and date(REC_END_DT)='2022-07-01' --and rec_status='I'\n",
+					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='N'\n",
+					"    and date(REC_END_DT)=CURRENT_DATE --and rec_status='I'\n",
 					";\n",
 					"\n",
-					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
+					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
 					"    AND \n",
-					"     date(REC_END_DT)='2022-07-01' --and rec_status='I'\n",
+					"     date(REC_END_DT)=current_date --and rec_status='I'\n",
 					";\n",
 					""
 				],
 				"attachments": null,
-				"execution_count": 64
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT COUNT(*) FROM etlhubconfirmed.dht_employee\n",
-					"WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
-					"    and date(img_lst_upd_dt)='2022-06-30'\n",
-					"        limit 1\n",
-					";\n",
-					"select * from etlhubconfirmed.dht_employee\n",
-					"where employee_serial_num='001518' and employee_country_code='661'\n",
-					"    ;\n",
-					"\n",
-					"select count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
-					"   and date(extract_dt)='2022-06-30' --and rec_status='I'\n",
-					";\n",
-					"\n",
-					"select count(*) from etlhubconfirmed.dht_employee\n",
-					"WHERE ACTIVE_IN_SOURCE_IND='N'\n",
-					"    and date(IMG_LST_UPD_DT)=current_date\n",
-					"    ;\n",
-					"UPDATE etlhubconfirmed.dht_employee\n",
-					"set CURRENT_IND='Y', \n",
-					"REC_END_DT='9999-12-31'\n",
-					"  WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
-					"    and date(img_lst_upd_dt)='2022-06-30'\n",
-					"        ;  "
-				],
-				"attachments": null,
-				"execution_count": 65
+				"execution_count": 35
 			}
 		]
 	}

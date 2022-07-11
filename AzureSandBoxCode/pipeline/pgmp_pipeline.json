@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_BALD0290_ISSUE_DIM",
+						"referenceName": "DF_BALD0020_ACCTSPFC_DIM",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -28,7 +28,7 @@
 			}
 		],
 		"annotations": [],
-		"lastPublishTime": "2022-06-29T14:02:15Z"
+		"lastPublishTime": "2022-07-06T06:46:59Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

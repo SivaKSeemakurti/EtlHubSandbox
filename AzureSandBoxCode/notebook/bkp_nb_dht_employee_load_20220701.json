@@ -1,5 +1,5 @@
 {
-	"name": "nb_dht_employee_load",
+	"name": "bkp_nb_dht_employee_load_20220701",
 	"properties": {
 		"folder": {
 			"name": "ETLHub/Dimensions&Facts"
@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "180bc052-304e-4cd8-92cb-86c06c1aeff9"
+				"spark.autotune.trackingId": "fbab19b2-e4ab-4041-a548-82c556b5d8b4"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from datetime import datetime"
 				],
 				"attachments": null,
-				"execution_count": 51
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -151,16 +151,14 @@
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/BMSIW/' # fill in your relative folder path \n",
-					"relative_archive_path='archive/'\n",
 					"file_name='DS_EMPLOYEE_DATA.csv' \n",
 					"natural_key=\"EMPLOYEE_BUSINESS_CD\"\n",
 					"tablename=\"etlhubConfirmed.dht_employee\"\n",
 					"#natural_key=\"BUSINESS_PARTNER_ID\"\n",
-					"keycolumn=\"EMPLOYEE_KEY\"\n",
-					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
+					"keycolumn=\"EMPLOYEE_KEY\""
 				],
 				"attachments": null,
-				"execution_count": 52
+				"execution_count": 203
 			},
 			{
 				"cell_type": "markdown",
@@ -175,6 +173,33 @@
 					"Copy source CSV file to archive folder including timestamp in file name"
 				],
 				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
+					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")\n",
+					"csv_path = adls_path + file_name\n",
+					"csv_archive_path = adls_path + file_name + date\n",
+					"print (csv_path,csv_archive_path)\n",
+					"#dbutils.fs.mv(csv_path, csv_archive_path )\n",
+					"#os.rename(csv_path, csv_archive_path )\n",
+					"#dbutils.fs.mv('abfss://<container-name>@<storage-account-name>.dfs.core.windows.net/<directory-name>/demo/test.csv', 'abfss://<container-name>@<storage-account-name>.dfs.core.windows.net/<directory-name>/destination/renamedtest.csv')\n",
+					"#%fs cp csv_path csv_archive_path"
+				],
+				"attachments": null,
+				"execution_count": 204
 			},
 			{
 				"cell_type": "markdown",
@@ -209,19 +234,10 @@
 					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
 					"print('Primary storage account path: ' + adls_path) \n",
 					"\n",
-					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
-					"print('Primary storage account path: ' + adls_path) \n",
-					"\n",
-					"relative_archive_path\n",
 					"# Read a csv file \n",
 					"csv_path = adls_path + file_name\n",
-					"arch_fil_name=file_name.rsplit(\".\")\n",
-					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
-					"print (csv_archive_path)\n",
-					"\n",
 					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 					"\n",
-					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"\n",
 					"# Get column list for creating Rec_Checksum\n",
 					"\n",
@@ -241,7 +257,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
 				"attachments": null,
-				"execution_count": 53
+				"execution_count": 205
 			},
 			{
 				"cell_type": "code",
@@ -287,7 +303,7 @@
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
 				"attachments": null,
-				"execution_count": 54
+				"execution_count": 215
 			},
 			{
 				"cell_type": "code",
@@ -311,7 +327,7 @@
 					"select * from existingDataDF1 where EXISTING_employee_serial_num='001518' and EXISTING_employee_country_code='661'"
 				],
 				"attachments": null,
-				"execution_count": 55
+				"execution_count": 216
 			},
 			{
 				"cell_type": "markdown",
@@ -345,6 +361,7 @@
 					}
 				},
 				"source": [
+					"\n",
 					"qry3=\"\"\"\n",
 					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
 					";\n",
@@ -389,32 +406,7 @@
 					""
 				],
 				"attachments": null,
-				"execution_count": 56
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"select * from etlhubconfirmed.dht_employee where EMPLOYEE_BUSINESS_CD='ZZ03FP~693~NEWIS'\n",
-					"    --AND CURRENT_IND='Y'"
-				],
-				"attachments": null,
-				"execution_count": 43
+				"execution_count": 217
 			},
 			{
 				"cell_type": "code",
@@ -432,7 +424,7 @@
 				"source": [
 					"qry_4_recon1=\"\"\"\n",
 					"\n",
-					"SELECT COUNT(*) from DHTS_EMPLOYEE A \n",
+					"SELECT COUNT(*) from fullJoin A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
@@ -447,7 +439,7 @@
 					"\n",
 					"qry_4_recon2=\"\"\"\n",
 					"\n",
-					"SELECT COUNT(*) from DHTS_EMPLOYEE A \n",
+					"SELECT COUNT(*) from fullJoin A \n",
 					"WHERE LOWER(EMPLOYEE_BUSINESS_CD) = LOWER(existing_EMPLOYEE_BUSINESS_CD) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 					"AND NOT EXISTS\n",
@@ -479,7 +471,7 @@
 					"df_4_recon3.show()"
 				],
 				"attachments": null,
-				"execution_count": 66
+				"execution_count": 218
 			},
 			{
 				"cell_type": "code",
@@ -501,7 +493,7 @@
 					"#delete FROM etlhubconfirmed.dht_employee;\n",
 					"\n",
 					"qry_4_recon1=\"\"\"\n",
-					"SELECT COUNT(*) from DHTS_EMPLOYEE A \n",
+					"SELECT COUNT(*) from fullJoin A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
@@ -589,7 +581,7 @@
 					",'ED' AS DATA_IND\n",
 					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
 					"\n",
-					"from DHTS_EMPLOYEE A \n",
+					"from fullJoin A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM etlhubConfirmed.DHT_EMPLOYEE B\n",
@@ -606,41 +598,7 @@
 					"#d.show(10)"
 				],
 				"attachments": null,
-				"execution_count": 58
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"#Update or expire the rows with existing instance of the changed rows:\n",
-					"qry_4_upd_changes_rows=\"\"\"\n",
-					"\n",
-					"MERGE INTO {} A\n",
-					"USING DHTS_EMPLOYEE B\n",
-					"ON A.{} = B.{}\n",
-					"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
-					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
-					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-					"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
-					"    ,IMG_LST_UPD_DT=current_timestamp\n",
-					";\n",
-					"\"\"\"\n",
-					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
-					""
-				],
-				"attachments": null,
-				"execution_count": 60
+				"execution_count": 219
 			},
 			{
 				"cell_type": "code",
@@ -661,12 +619,12 @@
 				},
 				"source": [
 					"%%sql\n",
-					"select count(*) from DHTS_EMPLOYEE where existing_CURRENT_IND='Y';\n",
+					"select count(*) from fullJoin where existing_CURRENT_IND='Y';\n",
 					"\n",
 					"select * from etlhubconfirmed.dht_employee\n",
 					"where employee_serial_num='001518' and employee_country_code='661'\n",
 					"    ;\n",
-					"select * from DHTS_EMPLOYEE where existing_employee_serial_num='001518' \n",
+					"select * from fullJoin where existing_employee_serial_num='001518' \n",
 					"    and existing_employee_country_code='661'\n",
 					"    ;\n",
 					"\n",
@@ -676,7 +634,7 @@
 					"select count(*)\n",
 					"from etlhubConfirmed.DHT_EMPLOYEE B\n",
 					"join\n",
-					"DHTS_EMPLOYEE A \n",
+					"fullJoin A \n",
 					"WHERE A.EMPLOYEE_BUSINESS_CD = B.EMPLOYEE_BUSINESS_CD\n",
 					"and LOWER(A.EMPLOYEE_BUSINESS_CD) = LOWER(A.existing_EMPLOYEE_BUSINESS_CD) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
@@ -690,7 +648,7 @@
 					";\n",
 					"\n",
 					"SELECT COUNT(*) FROM etlhubConfirmed.DHT_EMPLOYEE A\n",
-					"JOIN DHTS_EMPLOYEE B\n",
+					"JOIN fullJoin B\n",
 					"ON A.EMPLOYEE_BUSINESS_CD = B.EMPLOYEE_BUSINESS_CD\n",
 					"AND LOWER(B.EMPLOYEE_BUSINESS_CD) = LOWER(B.existing_EMPLOYEE_BUSINESS_CD) \n",
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
@@ -698,7 +656,99 @@
 					";"
 				],
 				"attachments": null,
-				"execution_count": 61
+				"execution_count": 220
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Update or expire the rows with existing instance of the changed rows:\n",
+					"qry_4_upd_changes_rows=\"\"\"\n",
+					"\n",
+					"MERGE INTO {} A\n",
+					"USING fullJoin B\n",
+					"ON A.{} = B.{}\n",
+					"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
+					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
+					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
+					"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+					"    ,IMG_LST_UPD_DT=current_timestamp\n",
+					";\n",
+					"\"\"\"\n",
+					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 221
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select count(*) from fullJoin where existing_CURRENT_IND='Y';\n",
+					"\n",
+					"select * from etlhubconfirmed.dht_employee\n",
+					"where employee_serial_num='001518' and employee_country_code='661'\n",
+					"    ;\n",
+					"select * from fullJoin where existing_employee_serial_num='001518' \n",
+					"    and existing_employee_country_code='661'\n",
+					"    ;\n",
+					"\n",
+					" select * from DHTS_EMPLOYEE where existing_employee_serial_num='001518' \n",
+					"    and existing_employee_country_code='661'\n",
+					"    ;   \n",
+					"select count(*)\n",
+					"from etlhubConfirmed.DHT_EMPLOYEE B\n",
+					"join\n",
+					"fullJoin A \n",
+					"WHERE A.EMPLOYEE_BUSINESS_CD = B.EMPLOYEE_BUSINESS_CD\n",
+					"and LOWER(A.EMPLOYEE_BUSINESS_CD) = LOWER(A.existing_EMPLOYEE_BUSINESS_CD) \n",
+					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
+					"AND B.REC_START_DT=A.existing_REC_START_DT\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM etlhubConfirmed.DHT_EMPLOYEE B\n",
+					"WHERE LOWER(A.EMPLOYEE_BUSINESS_CD)=LOWER(B.EMPLOYEE_BUSINESS_CD)\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM\n",
+					")\n",
+					";\n",
+					"\n",
+					"SELECT COUNT(*) FROM etlhubConfirmed.DHT_EMPLOYEE A\n",
+					"JOIN fullJoin B\n",
+					"ON A.EMPLOYEE_BUSINESS_CD = B.EMPLOYEE_BUSINESS_CD\n",
+					"AND LOWER(B.EMPLOYEE_BUSINESS_CD) = LOWER(B.existing_EMPLOYEE_BUSINESS_CD) \n",
+					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
+					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					";"
+				],
+				"attachments": null,
+				"execution_count": 222
 			},
 			{
 				"cell_type": "code",
@@ -809,7 +859,7 @@
 					"#e.show(4)"
 				],
 				"attachments": null,
-				"execution_count": 62
+				"execution_count": 223
 			},
 			{
 				"cell_type": "code",
@@ -830,7 +880,7 @@
 					"qry_4_upd_deleted_rows=\"\"\"\n",
 					"\n",
 					"MERGE INTO {} A\n",
-					"USING DHTS_EMPLOYEE B\n",
+					"USING fullJoin B\n",
 					"ON A.{} = B.existing_{}\n",
 					"AND B.{} is NULL\n",
 					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
@@ -843,7 +893,7 @@
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 				],
 				"attachments": null,
-				"execution_count": 63
+				"execution_count": 224
 			},
 			{
 				"cell_type": "code",
@@ -879,25 +929,25 @@
 					";\n",
 					"\n",
 					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)='2022-07-01' and rec_status='I'\n",
+					"    and date(extract_dt)='2022-06-30' and rec_status='I'\n",
 					";\n",
 					"\n",
 					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)='2022-07-01' and rec_status='U'\n",
+					"    and date(extract_dt)='2022-06-30' and rec_status='U'\n",
 					";\n",
 					"\n",
 					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='N'\n",
-					"    and date(REC_END_DT)='2022-07-01' --and rec_status='I'\n",
+					"    and date(REC_END_DT)='2022-06-30' --and rec_status='I'\n",
 					";\n",
 					"\n",
 					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_employee where CURRENT_IND='Y'\n",
 					"    AND \n",
-					"     date(REC_END_DT)='2022-07-01' --and rec_status='I'\n",
+					"     date(REC_END_DT)='2022-06-30' --and rec_status='I'\n",
 					";\n",
 					""
 				],
 				"attachments": null,
-				"execution_count": 64
+				"execution_count": 225
 			},
 			{
 				"cell_type": "code",
@@ -943,7 +993,7 @@
 					"        ;  "
 				],
 				"attachments": null,
-				"execution_count": 65
+				"execution_count": 226
 			}
 		]
 	}

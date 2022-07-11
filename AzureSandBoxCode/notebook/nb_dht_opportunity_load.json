@@ -16,11 +16,12 @@
 			"executorMemory": "56g",
 			"executorCores": 8,
 			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "326711f8-2463-4996-b0fd-7c4b552b1505"
+				"spark.autotune.trackingId": "25eb72e4-ec41-4ab6-b6f8-3ac4365facf5"
 			}
 		},
 		"metadata": {
@@ -116,7 +117,7 @@
 					"import sys"
 				],
 				"attachments": null,
-				"execution_count": 1
+				"execution_count": 128
 			},
 			{
 				"cell_type": "markdown",
@@ -150,14 +151,14 @@
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
-					"file_name='DS_OPPORTUNITY_DATA.csv' \n",
+					"file_name='DS_OPPORTUNITY_DATA_UPD.csv' \n",
 					"natural_key=\"OPPORTUNITY_NUM\"\n",
 					"#tgt_natural_key=\"DEAL_IDENTIFIER\"\n",
 					"tablename=\"etlhubConfirmed.dht_opportunity\"\n",
 					"keycolumn=\"OPPORTUNITY_KEY\""
 				],
 				"attachments": null,
-				"execution_count": 3
+				"execution_count": 129
 			},
 			{
 				"cell_type": "markdown",
@@ -194,7 +195,7 @@
 					"\n",
 					"# Read a csv file \n",
 					"csv_path = adls_path + file_name\n",
-					"incrementalData_DF=spark.read.load(csv_path,format=\"csv\", sep=\"~^\", inferSchema=\"true\", header=\"true\")\n",
+					"incrementalData_DF=spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
 					"#incrementalData_DF.printSchema()\n",
 					"incrementalData_DF.createOrReplaceTempView(\"incrementalSrcData_DF\")\n",
 					"\n",
@@ -234,7 +235,31 @@
 					""
 				],
 				"attachments": null,
-				"execution_count": 4
+				"execution_count": 130
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from incrementalData_SrcDF where opportunity_num in ('SOC-0XKCQTT','SOC-0TYPD7Z')"
+				],
+				"attachments": null,
+				"execution_count": 131
 			},
 			{
 				"cell_type": "markdown",
@@ -305,7 +330,7 @@
 					"    print(\"This will not be printed\")"
 				],
 				"attachments": null,
-				"execution_count": 5
+				"execution_count": 132
 			},
 			{
 				"cell_type": "code",
@@ -336,15 +361,15 @@
 					"from fullJoin A \r\n",
 					"LEFT JOIN etlhubConfirmed.dht_opportunity B\r\n",
 					"ON TRIM(A.OPPORTUNITY_NUM)=TRIM(B.OPPORTUNITY_NUM)\r\n",
-					"AND CURRENT_IND='Y'\r\n",
+					"AND CURRENT_IND='Y' \r\n",
 					"WHERE existing_REC_CHECKSUM is null\r\n",
 					"AND COALESCE(B.REC_CHECKSUM,'') <> COALESCE(A.column_hash,'');\r\n",
 					"\"\"\"\r\n",
-					"d=spark.sql(qry_insert)\r\n",
+					"#d=spark.sql(qry_insert)\r\n",
 					"#d.show(10)"
 				],
 				"attachments": null,
-				"execution_count": null
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -365,26 +390,10 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"INSERT INTO etlhubConfirmed.dht_opportunity\r\n",
-					"select COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION , \r\n",
-					"A.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
-					"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, A.column_hash as REC_CHECKSUM, \r\n",
-					"'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
-					"A.ISA_CODE,A.ARCHIVE_REASON_CODE,A.BUSINESS_TRANSACTION_TYPE,A.CLIENT_REPRESENTATIVE_NAME,A.COMPETITOR_LIST, \r\n",
-					"A.IDENTIFIER_NAME,A.OPPORTUNITY_NAME,A.OPPORTUNITY_SOURCE_CODE,A.SBS_SOL_VALID_IND, \r\n",
-					"A.OPPORTUNITY_IDENTIFIER,A.ROGUE_IND,A.REASON_TO_ACT,A.SOLUTION_CATG,A.BRAND_SPONSOR_LIST,A.GBS_GEOGRAPHY_NAME, \r\n",
-					"A.GBS_BUSINESS_UNIT_GROUP_NAME,A.GBS_BUSINESS_UNIT_NAME,A.TAG_LIST,A.OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
-					"'Y' AS ACTIVE_IN_SOURCE_IND  \r\n",
-					"from fullJoin A \r\n",
-					"LEFT JOIN etlhubConfirmed.dht_opportunity B\r\n",
-					"ON TRIM(A.OPPORTUNITY_NUM)=TRIM(B.OPPORTUNITY_NUM)\r\n",
-					"AND CURRENT_IND='Y'\r\n",
-					"WHERE existing_REC_CHECKSUM is null\r\n",
-					"AND COALESCE(B.REC_CHECKSUM,'') <> COALESCE(A.column_hash,'');\r\n",
-					""
+					"select count(*) from etlhubConfirmed.dht_opportunity "
 				],
 				"attachments": null,
-				"execution_count": 10
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -404,91 +413,21 @@
 					"#delete FROM etlhubconfirmed.dht_employee;\r\n",
 					"\r\n",
 					"updins=\"\"\"\r\n",
-					"INSERT INTO etlhubConfirmed.dht_deal_dim \r\n",
-					"select existing_DEAL_KEY,1+existing_DEAL_VERSION_NUMBER as DEAL_VERSION_NUMBER , \r\n",
-					"A.DEAL_ID,\r\n",
-					"A.BID_SUPPORT_INET_ID,\r\n",
-					"A.BID_SUPPORT_NOTES_ID,\r\n",
-					"A.BUS_UNIT_ID,\r\n",
-					"A.CLNT_NM,\r\n",
-					"A.CLNT_NUM,\r\n",
-					"A.COMPLEXITY,\r\n",
-					"A.COMNTS_TXT,\r\n",
-					"A.CMPLXTY_CMMNT_TXT,\r\n",
-					"A.CMPLXTY_OVERRD,\r\n",
-					"A.CNTRCT_TYP_DESC,\r\n",
-					"A.ENGG_SPPRT_TXN_LINK_TXT,\r\n",
-					"A.ENGG_SPPRT_TXN_NUM,\r\n",
-					"A.INDSTRY_NM,\r\n",
-					"A.INIT_SIEBEL_IND,\r\n",
-					"A.CNTRY_ID,\r\n",
-					"A.LEAD_ACCT_PRTNR_BTT_CD,\r\n",
-					"A.LEAD_PRTNR_BTT_CD,\r\n",
-					"A.LEAD_PRTNR_NOTES_ID,\r\n",
-					"A.OLD_OWNR_INET_ID,\r\n",
-					"A.OWNR_INET_ID,\r\n",
-					"A.proj_desc,\r\n",
-					"A.OPPTNY_ID,\r\n",
-					"A.OWNR_NOTES_ID,\r\n",
-					"A.PARENT_DEAL_ID,\r\n",
-					"A.PRPSL_MGR_NOTES_ID,\r\n",
-					"A.REAS_TXT,\r\n",
-					"A.RMVD_IND,\r\n",
-					"A.RISK_RTNG,\r\n",
-					"A.RISK_RTNG_CMNT_TXT,\r\n",
-					"A.RSK_RTNG_OVERRD,\r\n",
-					"A.SALES_STAGE_CD,\r\n",
-					"A.SECONDARY_SERVICE,\r\n",
-					"A.SCTR_NM,\r\n",
-					"A.SVC_NM,\r\n",
-					"A.SIEBEL_IND,\r\n",
-					"A.SRC_CD,\r\n",
-					"A.STAT_CD,\r\n",
-					"'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,current_timestamp as IMG_LST_UPD_DT,\r\n",
-					"'9999-12-31 00:00:00.000' as REC_END_DT,CURRENT_TIMESTAMP AS REC_START_DT,  A.column_hash as REC_CHECKSUM, \r\n",
-					"'U' as REC_STATUS, 'DCA' AS SOURCE_SYSTEM,\r\n",
-					"A.RCA1_ANSWR_TXT,\r\n",
-					"A.RCA1_ANSWR_CMMNT,\r\n",
-					"A.RCA2_ANSWR_TXT,\r\n",
-					"A.RCA2_ANSWR_CMMNT, \r\n",
-					"A.RCA3_ANSWR_TXT,\r\n",
-					"A.RCA3_ANSWR_CMMNT,\r\n",
-					"A.RCA4_ANSWR_TXT,\r\n",
-					"A.RCA4_ANSWR_CMMNT,\r\n",
-					"A.RCA5_ANSWR_TXT,\r\n",
-					"A.RCA5_ANSWR_CMMNT,\r\n",
-					"A.RCA6_ANSWR_TXT,\r\n",
-					"A.RCA6_ANSWR_CMMNT,\r\n",
-					"A.RCA7_ANSWR_TXT,\r\n",
-					"A.RCA7_ANSWR_CMMNT,\r\n",
-					"A.RCA8_ANSWR_TXT,\r\n",
-					"A.RCA8_ANSWR_CMMNT,\r\n",
-					"A.APPRVR_CNT,\r\n",
-					"A.RVWR_CNT,\r\n",
-					"A.DEAL_TYPE,\r\n",
-					"A.GEO_CD,\r\n",
-					"A.HYBRD_TYPE_A,\r\n",
-					"A.HYBRD_TYPE_B,\r\n",
-					"A.LOAD_LOB,\r\n",
-					"A.CRDT_RTNG,\r\n",
-					"A.DD_OFFERG_CS_USD_AMT,\r\n",
-					"A.DD_OFFERG_IS_USD_AMT,\r\n",
-					"A.DD_OFFERG_SS_USD_AMT,\r\n",
-					"A.DD_OFFERG_WCP_USD_AMT,\r\n",
-					"A.RISK_CONSULTANT_NOTES_ID,\r\n",
-					"A.SENIOR_SOLUTION_MANAGER_NOTES_ID,\r\n",
-					"A.SIH_GM_NOTES_ID,\r\n",
-					"A.RULES_EFFECTIVE_DATE,\r\n",
-					"A.DEAL_LEAD_NOTES_ID,\r\n",
-					"A.CNTRCT_SIGNOFF_APPRVL_STAT_CD,\r\n",
-					"A.PAYBACK_TXT,\r\n",
-					"'LG' AS DATA_IND, \r\n",
-					"'Y' AS ACTIVE_IN_SOURCE_IND \r\n",
+					"INSERT INTO etlhubConfirmed.dht_opportunity\r\n",
+					"select COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION , \r\n",
+					"A.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
+					"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, A.column_hash as REC_CHECKSUM, \r\n",
+					"'U' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
+					"A.ISA_CODE,A.ARCHIVE_REASON_CODE,A.BUSINESS_TRANSACTION_TYPE,A.CLIENT_REPRESENTATIVE_NAME,A.COMPETITOR_LIST, \r\n",
+					"A.IDENTIFIER_NAME,A.OPPORTUNITY_NAME,A.OPPORTUNITY_SOURCE_CODE,A.SBS_SOL_VALID_IND, \r\n",
+					"A.OPPORTUNITY_IDENTIFIER,A.ROGUE_IND,A.REASON_TO_ACT,A.SOLUTION_CATG,A.BRAND_SPONSOR_LIST,A.GBS_GEOGRAPHY_NAME, \r\n",
+					"A.GBS_BUSINESS_UNIT_GROUP_NAME,A.GBS_BUSINESS_UNIT_NAME,A.TAG_LIST,A.OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
+					"'Y' AS ACTIVE_IN_SOURCE_IND  \r\n",
 					"from fullJoin A \r\n",
-					"WHERE DEAL_ID = existing_DEAL_ID and LOWER(column_hash) <> LOWER(existing_REC_CHECKSUM)\r\n",
+					"WHERE TRIM(OPPORTUNITY_NUM) = TRIM(existing_OPPORTUNITY_NUM) and LOWER(column_hash) <> LOWER(existing_REC_CHECKSUM)\r\n",
 					"AND NOT EXISTS\r\n",
-					"(SELECT 1 FROM etlhubConfirmed.dht_deal_dim B\r\n",
-					"WHERE TRIM(A.DEAL_ID)=TRIM(B.DEAL_IDENTIFIER)\r\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity B\r\n",
+					"WHERE TRIM(A.OPPORTUNITY_NUM)=TRIM(B.OPPORTUNITY_NUM)\r\n",
 					"and b.CURRENT_IND='Y'\r\n",
 					"AND coalesce(A.column_hash,'')=coalesce(B.REC_CHECKSUM,'')) ;\r\n",
 					"\"\"\"\r\n",
@@ -496,10 +435,10 @@
 					"#d1.show()\r\n",
 					"\r\n",
 					"expqry=\"\"\"\r\n",
-					"MERGE INTO etlhubConfirmed.dht_deal_dim A\r\n",
+					"MERGE INTO etlhubConfirmed.dht_opportunity A\r\n",
 					"USING fullJoin B\r\n",
-					"ON B.DEAL_ID = A.DEAL_IDENTIFIER\r\n",
-					"AND LOWER(A.DEAL_IDENTIFIER) = LOWER(B.existing_DEAL_ID) and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\r\n",
+					"ON B.OPPORTUNITY_NUM = A.OPPORTUNITY_NUM\r\n",
+					"AND TRIM(A.OPPORTUNITY_NUM) = TRIM(B.existing_OPPORTUNITY_NUM) and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\r\n",
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\r\n",
 					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\r\n",
 					",REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds\r\n",
@@ -510,10 +449,10 @@
 					"\r\n",
 					"#Soft deletes or no longer active in source\r\n",
 					"softdelqry=\"\"\"\r\n",
-					"MERGE INTO etlhubConfirmed.dht_deal_dim  A\r\n",
+					"MERGE INTO etlhubConfirmed.dht_opportunity  A\r\n",
 					"USING fullJoin B\r\n",
-					"ON A.DEAL_IDENTIFIER = B.existing_DEAL_ID\r\n",
-					"AND B.DEAL_ID is NULL\r\n",
+					"ON A.OPPORTUNITY_NUM = B.existing_OPPORTUNITY_NUM\r\n",
+					"AND B.OPPORTUNITY_NUM is NULL\r\n",
 					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\r\n",
 					"WHEN MATCHED THEN UPDATE SET ACTIVE_IN_SOURCE_IND='N' ,IMG_LST_UPD_DT=current_timestamp;\r\n",
 					"\"\"\"\r\n",

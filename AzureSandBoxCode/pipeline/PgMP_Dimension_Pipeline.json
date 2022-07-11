@@ -733,19 +733,49 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "APPRVL STATE DIM",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0050_APPRVL_STATE_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"parameters": {
 			"current_user": {
 				"type": "string",
-				"defaultValue": "'pgmpetl'"
+				"defaultValue": "pgmpetl"
 			}
 		},
 		"folder": {
 			"name": "PGMP"
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-06-30T07:00:49Z"
+		"lastPublishTime": "2022-07-04T09:40:25Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

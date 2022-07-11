@@ -16,11 +16,12 @@
 			"executorMemory": "56g",
 			"executorCores": 8,
 			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a33f4bcd-8b71-4390-924e-80fc6ab5eed5"
+				"spark.autotune.trackingId": "c7b31756-beac-4457-baf7-0056603ce502"
 			}
 		},
 		"metadata": {
@@ -99,7 +100,7 @@
 					"#joining with dimension tables\r\n",
 					"DIMDataDF=spark.sql(\"SELECT OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM FROM etlhubConfirmed.opportunity WHERE CURRENT_IND='Y'\")\r\n",
 					"DIMDataDF1=spark.sql(\"SELECT BUSINESS_PARTNER_KEY,BUSINESS_PARTNER_VERSION,BUSINESS_PARTNER_ID FROM etlhubConfirmed.business_partner WHERE CURRENT_IND='Y'\")\r\n",
-					"DIMJoin=incrementalData_DF.join(DIMDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM)), \"fullouter\") \r\n",
+					"DIMJoin=incrementalData_DF.join(DIMDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM), \"fullouter\") \r\n",
 					"DIMJoin1=DIMJoin.join(DIMDataDF1,DIMJoin.BUSINESS_PARTNER_ID == DIMDataDF1.BUSINESS_PARTNER_ID, \"fullouter\") \r\n",
 					"DIMJoin1.createOrReplaceTempView('fullJoin')\r\n",
 					"DIMFinalJoinDF=spark.sql(\"select OPPORTUNITY_KEY,BUSINESS_PARTNER_KEY,INFLUENCER_ROLE_CODE from fulljoin\")\r\n",

@@ -1,6 +1,7 @@
 {
-	"name": "Notebook 8",
+	"name": "Test",
 	"properties": {
+		"description": "Test",
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -18,7 +19,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "816a925d-f2c7-4d76-b316-b400c3cfbdc4"
+				"spark.autotune.trackingId": "2d586a7e-e32c-4274-86f0-3c5b02d837e0"
 			}
 		},
 		"metadata": {
@@ -32,7 +33,7 @@
 				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
-				"name": "sql"
+				"name": "python"
 			},
 			"a365ComputeOptions": {
 				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
@@ -53,18 +54,52 @@
 		},
 		"cells": [
 			{
-				"cell_type": "code",
+				"cell_type": "markdown",
 				"metadata": {
-					"microsoft": {
-						"language": "python"
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
 					}
 				},
 				"source": [
-					"%%pyspark\n",
-					"spark.sql(\"CREATE TABLE etlhubconfirmed.sell_cycle (SIEBEL_SALES_STAGE_CODE string, SIEBEL_SALES_STAGE_NAME string, SSM_STEP_NO string, SSM_STEP_NAME string)\")"
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import pandas as pd\r\n",
+					"print(\"Hello Kitty!\")"
 				],
 				"attachments": null,
 				"execution_count": 1
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"attachments": null
 			}
 		]
 	}

@@ -1,5 +1,5 @@
 {
-	"name": "DHT_OPPORTUNITY_ddl",
+	"name": "DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT_ddl",
 	"properties": {
 		"folder": {
 			"name": "ETLHub/CreateTableScripts"
@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "992c4269-9d1c-4683-b6af-6fac9a6eb1d7"
+				"spark.autotune.trackingId": "93174975-a652-4579-b492-874e76cbb4cd"
 			}
 		},
 		"metadata": {
@@ -65,45 +65,31 @@
 				},
 				"source": [
 					"%%sql\n",
-					"-- DBXDH.DHT_OPPORTUNITY definition\n",
-					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_OPPORTUNITY  (\n",
-					"\t\t  OPPORTUNITY_KEY INTEGER NOT NULL , \n",
-					"\t\t  OPPORTUNITY_VERSION INTEGER NOT NULL , \n",
-					"\t\t  OPPORTUNITY_NUM VARCHAR(50)  , \n",
-					"\t\t  CURRENT_IND VARCHAR(1) NOT NULL, \n",
-					"\t\t  EXTRACT_DT TIMESTAMP  , \n",
-					"\t\t  REC_START_DT TIMESTAMP  , \n",
-					"\t\t  REC_END_DT TIMESTAMP  , \n",
-					"\t\t  SOURCE_SYSTEM VARCHAR(50)  , \n",
-					"\t\t  REC_CHECKSUM VARCHAR(32)  , \n",
-					"\t\t  REC_STATUS VARCHAR(1)  , \n",
-					"\t\t  IMG_LST_UPD_DT TIMESTAMP, \n",
-					"\t\t  IMG_CREATED_DT TIMESTAMP , \n",
-					"\t\t  ISA_CODE VARCHAR(10)  , \n",
-					"\t\t  ARCH_REASON_CD VARCHAR(20)  , \n",
-					"\t\t  BUSINESS_TRANSACTION_TYPE VARCHAR(1)  , \n",
-					"\t\t  CLIENT_REPRESENTATIVE_NAME VARCHAR(100)  , \n",
-					"\t\t  COMPETITOR_LIST VARCHAR(100)  , \n",
-					"\t\t  IDENTIFIER_USER_NAME VARCHAR(100)  , \n",
-					"\t\t  OPPORTUNITY_NAME VARCHAR(100)  , \n",
-					"\t\t  OPPORTUNITY_SOURCE_CD VARCHAR(20)  , \n",
-					"\t\t  SBS_SOL_VALID_IND VARCHAR(1)  , \n",
-					"\t\t  OPPORTUNITY_IDENTIFIER VARCHAR(100)  , \n",
-					"\t\t  ROGUE_IND VARCHAR(1)  , \n",
-					"\t\t  REASON_TO_ACT VARCHAR(255) , \n",
-					"\t\t  SOLUTION_CATG VARCHAR(1024) , \n",
-					"\t\t  BRAND_SPONSOR_LIST VARCHAR(500) , \n",
-					"\t\t  GBS_GEOGRAPHY_NAME VARCHAR(60) , \n",
-					"\t\t  GBS_BUSINESS_UNIT_GROUP_NAME VARCHAR(60) , \n",
-					"\t\t  GBS_BUSINESS_UNIT_NAME VARCHAR(60) , \n",
-					"\t\t  TAG_LIST VARCHAR(1000) , \n",
-					"\t\t  OPPORTUNITY_LEGACY_NO VARCHAR(100)  ,\n",
+					"-- DBXDH.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT definition\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT  (\n",
+					"\t\t  OPPORTUNITY_ASSIGNMENT_KEY INTEGER NOT NULL , \n",
+					"\t\t  OPPORTUNITY_ASSIGNMENT_VERSION INTEGER NOT NULL , \n",
+					"\t\t  OPPORTUNITY_KEY INTEGER , \n",
+					"\t\t  OPPORTUNITY_ROLE_KEY INTEGER , \n",
+					"\t\t  CRM_ROLE_KEY INTEGER , \n",
+					"\t\t  EMPLOYEE_KEY INTEGER , \n",
+					"\t\t  CURRENT_IND VARCHAR(1) , \n",
+					"\t\t  EXTRACT_DT TIMESTAMP , \n",
+					"\t\t  REC_START_DT TIMESTAMP , \n",
+					"\t\t  REC_END_DT TIMESTAMP , \n",
+					"\t\t  SOURCE_SYSTEM VARCHAR(50) , \n",
+					"\t\t  REC_CHECKSUM VARCHAR(32) , \n",
+					"\t\t  REC_STATUS VARCHAR(1) , \n",
+					"\t\t  IMG_LST_UPD_DT TIMESTAMP  , \n",
+					"\t\t  IMG_CREATED_DT TIMESTAMP  ,\n",
 					"          DATA_IND varchar(10)  ,\n",
 					"\t      ACTIVE_IN_SOURCE_IND char(1) )   \n",
-					"\tUSING DELTA\n",
+					"USING DELTA\n",
 					"PARTITIONED BY (CURRENT_IND)\n",
-					"\t-- specify data lake folder location\n",
-					"\tLOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_OPPORTUNITY'"
+					"-- specify data lake folder location\n",
+					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/data/DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT'      \n",
+					""
 				],
 				"attachments": null,
 				"execution_count": 1
@@ -127,7 +113,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"DROP TABLE etlhubconfirmed.dht_opportunity"
+					"DROP TABLE etlhubconfirmed.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT"
 				],
 				"attachments": null,
 				"execution_count": 45
@@ -151,7 +137,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"DELETE FROM etlhubconfirmed.dht_opportunity"
+					"DELETE FROM etlhubconfirmed.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT"
 				],
 				"attachments": null,
 				"execution_count": 9

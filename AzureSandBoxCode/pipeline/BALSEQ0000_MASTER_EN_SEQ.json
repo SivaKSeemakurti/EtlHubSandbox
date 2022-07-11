@@ -110,11 +110,32 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "PgMP_Dimension_Pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "MASTER_SET_LIMITS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PgMP_Dimension_Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"parameters": {
 			"BLOCK_SIZE": {
-				"type": "int"
+				"type": "int",
+				"defaultValue": 1000
 			},
 			"PROCESS_CTR_IND": {
 				"type": "string"
@@ -134,7 +155,7 @@
 			"name": "PGMP/Sequence"
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-06-29T16:09:41Z"
+		"lastPublishTime": "2022-07-04T10:18:39Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }
