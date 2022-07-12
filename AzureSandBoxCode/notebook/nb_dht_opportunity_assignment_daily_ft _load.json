@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1e8f8043-2026-4e18-92a1-a309b149c25e"
+				"spark.autotune.trackingId": "3113c9fa-ac91-476b-8afa-7432c268c49e"
 			}
 		},
 		"metadata": {
@@ -473,8 +473,10 @@
 					"INSERT INTO etlhubconfirmed.dht_opportunity_assignment_daily_ft\n",
 					"select \n",
 					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ASSIGNMENT_KEY,1 as OPPORTUNITY_ASSIGNMENT_VERSION \n",
-					",ROLE_CD\n",
-					",ROLE_DESC\n",
+					",OPPORTUNITY_KEY\n",
+					",OPPORTUNITY_ROLE_KEY\n",
+					",CRM_ROLE_KEY\n",
+					",EMPLOYEE_KEY\n",
 					",'Y' AS CURRENT_IND\n",
 					",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					",CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -486,11 +488,12 @@
 					",CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
 					",'ED' AS DATA_IND\n",
 					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-					"from DHTS_OPPORTUNITY_ROLE A \n",
+					"from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
-					"WHERE A.ROLE_CD=B.ROLE_CD\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_assignment_daily_ft B\n",
+					"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+					"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					"\n",
