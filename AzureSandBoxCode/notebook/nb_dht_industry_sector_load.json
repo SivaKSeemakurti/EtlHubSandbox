@@ -21,14 +21,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b43a9e77-5dc8-456c-a3ba-c2d5ffe137fe"
+				"spark.autotune.trackingId": "b0b5ccfb-a571-42fe-b1ee-5c24589376ef"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -50,7 +47,7 @@
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -65,13 +62,12 @@
 					}
 				},
 				"source": [
-					"**Market/Customer Dimension load**\n",
+					"**Industry Hierarchy Dimension load**\n",
 					"\n",
 					"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
 					"Since ESA is not accessible from Azure, a datastage job src_ESA_Market_Azure is executed on datastage to push the ESA extract to adls.\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -84,8 +80,7 @@
 				},
 				"source": [
 					"Import all the necessary libraries"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -115,8 +110,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"attachments": null,
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -129,8 +123,7 @@
 				},
 				"source": [
 					"Define Parameters"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -159,7 +152,6 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"attachments": null,
 				"execution_count": 3
 			},
 			{
@@ -173,8 +165,7 @@
 				},
 				"source": [
 					"Copy source CSV file to archive folder including timestamp in file name"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -189,8 +180,7 @@
 					"\n",
 					"#Read data from adls csv file extracted from source at \n",
 					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_MARKET_DATA.csv"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -240,7 +230,6 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"attachments": null,
 				"execution_count": 4
 			},
 			{
@@ -287,7 +276,6 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"attachments": null,
 				"execution_count": 19
 			},
 			{
@@ -305,8 +293,7 @@
 					"- Check for duplicates in Source data based on natural key\n",
 					"- Check for duplicates in target delta lake table based on natural key\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -365,7 +352,6 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 41
 			},
 			{
@@ -430,7 +416,6 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"attachments": null,
 				"execution_count": 44
 			},
 			{
@@ -453,7 +438,6 @@
 					"%%sql\n",
 					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -582,7 +566,6 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 45
 			},
 			{
@@ -606,7 +589,6 @@
 					"%%sql\n",
 					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
 				],
-				"attachments": null,
 				"execution_count": 47
 			},
 			{
@@ -640,7 +622,6 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 60
 			},
 			{
@@ -689,7 +670,6 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
-				"attachments": null,
 				"execution_count": 50
 			},
 			{
@@ -803,7 +783,6 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"attachments": null,
 				"execution_count": 52
 			},
 			{
@@ -837,7 +816,6 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"attachments": null,
 				"execution_count": 53
 			},
 			{
@@ -891,7 +869,6 @@
 					";\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 54
 			},
 			{
@@ -935,7 +912,6 @@
 					"    and date(img_lst_upd_dt)=current_date\n",
 					"        ;  "
 				],
-				"attachments": null,
 				"execution_count": 55
 			},
 			{
@@ -981,7 +957,6 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 62
 			},
 			{
@@ -1007,7 +982,6 @@
 					"    --'008915~613'\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 61
 			}
 		]
