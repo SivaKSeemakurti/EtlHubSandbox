@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4d0107d7-da45-4b12-a852-efb3935af2a4"
+				"spark.autotune.trackingId": "f8b205e9-b627-4ad8-b66b-cef6c1d6ad17"
 			}
 		},
 		"metadata": {
@@ -386,11 +386,12 @@
 				"source": [
 					"qry_4_recon1=\"\"\"\n",
 					"\n",
-					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
+					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
-					"WHERE A.ROLE_CD=B.ROLE_CD\n",
+					"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+					"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					"\n",
@@ -401,7 +402,7 @@
 					"\n",
 					"qry_4_recon2=\"\"\"\n",
 					"\n",
-					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
+					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 					"WHERE LOWER(ROLE_CD) = LOWER(existing_ROLE_CD) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 					"AND NOT EXISTS\n",
