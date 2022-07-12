@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "89960e1b-7713-4db6-beae-6aee002fe00b"
+				"spark.autotune.trackingId": "bcde4389-f330-4202-a5d9-cf9f196308e8"
 			}
 		},
 		"metadata": {
@@ -248,9 +248,11 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from incrementalData_DF2"
+					"select CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY from incrementalData_DF2\r\n",
+					"group by CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY\r\n",
+					"having count(*) > 1"
 				],
-				"execution_count": 26
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
