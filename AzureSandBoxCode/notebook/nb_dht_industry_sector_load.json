@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b0b5ccfb-a571-42fe-b1ee-5c24589376ef"
+				"spark.autotune.trackingId": "e6cea348-1f97-4b40-8109-d55a7ff4d6bd"
 			}
 		},
 		"metadata": {
@@ -64,8 +64,12 @@
 				"source": [
 					"**Industry Hierarchy Dimension load**\n",
 					"\n",
-					"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
-					"Since ESA is not accessible from Azure, a datastage job src_ESA_Market_Azure is executed on datastage to push the ESA extract to adls.\n",
+					"This notebook loads data to deltalake table etlhubConfirmed.DHT_INDUSTRY_SECTOR by sourceing data from ERDM Kyndryl.\n",
+					"\n",
+					"The Industry Hierarchy has been downloaded from ERDM in a CSV format and uploaded to adls for loading to Industry Dimension.\n",
+					"\n",
+					"ERDM Industry Sector Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmStandardDetails/102\n",
+					"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
 					""
 				]
 			},
