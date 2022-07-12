@@ -13633,6 +13633,198 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/DF_BALD0345_PRICE_TYPE_CD_DIM')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "PGMP/Dimension"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "ls_pgmp_rfs_db",
+								"type": "LinkedServiceReference"
+							},
+							"name": "getSourceData"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_pgmp_rfs_db",
+								"type": "LinkedServiceReference"
+							},
+							"name": "getLookupData"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "ls_pgmp_rfs_db",
+								"type": "LinkedServiceReference"
+							},
+							"name": "updateTable"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_pgmp_rfs_db",
+								"type": "LinkedServiceReference"
+							},
+							"name": "insertTable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "sortedLookupData"
+						},
+						{
+							"name": "updateRows"
+						},
+						{
+							"name": "CDC"
+						},
+						{
+							"name": "mergedData"
+						},
+						{
+							"name": "selectInsertData"
+						},
+						{
+							"name": "addColumns1"
+						},
+						{
+							"name": "addColumns2"
+						},
+						{
+							"name": "selectUpdateData"
+						},
+						{
+							"name": "CDCval"
+						},
+						{
+							"name": "dropUnchangedRows"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     current_user as string",
+						"}",
+						"source(output(",
+						"          MAX_ID as integer,",
+						"          ROW_NUM as integer,",
+						"          PRICE_TYPE_CD as string,",
+						"          PRICE_TYPE_DESC as string,",
+						"          ETL_JOB_ID as integer,",
+						"          ETL_EXCTN_ID as integer,",
+						"          SRC_SYS_DIM_UID as integer,",
+						"          HASHED_VAL as binary",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'query',",
+						"     store: 'sqlserver',",
+						"     query: 'Select \\n     (Select coalesce(max(PRICE_TYPE_CD_DIM_UID), 0) from PGMPDM.PRICE_TYPE_CD_DIM) as MAX_ID,\\n     cast(ROW_NUMBER() over (order by S.INTERNAL_VAL) as Integer) as ROW_NUM,\\n     cast(S.INTERNAL_VAL as char(1)) as PRICE_TYPE_CD,\\n     cast(S.TEXT as varchar(100)) as PRICE_TYPE_DESC,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID,\\n     HashBytes(\\'SHA2_256\\',\\n          coalesce(cast(S.INTERNAL_VAL as char(1)), \\'\\') +\\n          coalesce(cast(S.TEXT as varchar(100)), \\'\\') +\\n          coalesce(cast(JOB.ETL_JOB_ID as varchar), \\'\\') +\\n          coalesce(cast(SYS.SRC_SYS_DIM_UID as varchar), \\'\\')\\n     ) as HASHED_VAL\\nFrom\\n     APPFUN.SEL_LIST_REF_V S\\n     left join (\\n          Select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          From\\n               PGMPDM.ZAUX_ETL_JOBS\\n          Where\\n               ETL_JOB_NM = \\'BALD0345_PRICE_TYPE_CD_DIM\\'\\n     ) JOB\\n     on 1 = 1\\n     left join (\\n          Select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          Where\\n               IS_CURR_IND = \\'Y\\'\\n     ) FIL\\n     on 1 = 1\\n     left join (\\n          Select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          From\\n               PGMPDM.SRC_SYS_DIM\\n          Where\\n               SRC_SYS_CD = \\'PGMP\\'\\n     ) SYS\\n     on 1 = 1',",
+						"     isolationLevel: 'READ_UNCOMMITTED') ~> getSourceData",
+						"source(output(",
+						"          LKP_PRICE_TYPE_CD as string,",
+						"          LKP_PRICE_TYPE_DESC as string,",
+						"          LKP_ETL_JOB_ID as integer,",
+						"          LKP_SRC_SYS_DIM_UID as integer,",
+						"          LKP_HASHED_VAL as binary",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'query',",
+						"     store: 'sqlserver',",
+						"     query: 'Select\\n     PRICE_TYPE_CD as LKP_PRICE_TYPE_CD,\\n     PRICE_TYPE_DESC as LKP_PRICE_TYPE_DESC,\\n     ETL_JOB_ID as LKP_ETL_JOB_ID,\\n     SRC_SYS_DIM_UID as LKP_SRC_SYS_DIM_UID,\\n     HashBytes(\\'SHA2_256\\', \\n          coalesce(cast(PRICE_TYPE_CD as varchar), \\'\\') +\\n          coalesce(cast(PRICE_TYPE_DESC as varchar), \\'\\') + \\n          coalesce(cast(ETL_JOB_ID as varchar), \\'\\') + \\n          coalesce(cast(SRC_SYS_DIM_UID as varchar), \\'\\') \\n     ) as LKP_HASHED_VAL\\nFrom\\n     PGMPDM.PRICE_TYPE_CD_DIM',",
+						"     isolationLevel: 'READ_UNCOMMITTED') ~> getLookupData",
+						"getLookupData sort(asc(LKP_PRICE_TYPE_CD, false)) ~> sortedLookupData",
+						"selectUpdateData alterRow(updateIf(true())) ~> updateRows",
+						"dropUnchangedRows split(ROW_STATUS!='I',",
+						"     disjoint: false) ~> CDC@(dataToBeUpdated, dataToBeInserted)",
+						"getSourceData, sortedLookupData join(PRICE_TYPE_CD == LKP_PRICE_TYPE_CD,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> mergedData",
+						"addColumns2 select(mapColumn(",
+						"          PRICE_TYPE_CD_DIM_UID,",
+						"          PRICE_TYPE_CD,",
+						"          PRICE_TYPE_DESC,",
+						"          ETL_JOB_ID,",
+						"          ETL_EXCTN_ID,",
+						"          SRC_SYS_DIM_UID,",
+						"          ROW_STAT_CD = ROW_STATUS,",
+						"          DM_CRETD_USER_ID,",
+						"          DM_CRETD_TMS,",
+						"          DM_UPDTD_USER_ID,",
+						"          DM_UPDTD_TMS",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectInsertData",
+						"CDC@dataToBeUpdated derive(DM_CRETD_USER_ID = $current_user,",
+						"          DM_UPDTD_USER_ID = $current_user,",
+						"          DM_UPDTD_TMS = currentTimestamp()) ~> addColumns1",
+						"CDC@dataToBeInserted derive(PRICE_TYPE_CD_DIM_UID = MAX_ID + ROW_NUM,",
+						"          DM_CRETD_USER_ID = $current_user,",
+						"          DM_CRETD_TMS = currentTimestamp(),",
+						"          DM_UPDTD_USER_ID = $current_user,",
+						"          DM_UPDTD_TMS = currentTimestamp()) ~> addColumns2",
+						"addColumns1 select(mapColumn(",
+						"          PRICE_TYPE_CD,",
+						"          PRICE_TYPE_DESC,",
+						"          ETL_JOB_ID,",
+						"          ETL_EXCTN_ID,",
+						"          SRC_SYS_DIM_UID,",
+						"          ROW_STAT_CD = ROW_STATUS,",
+						"          DM_CRETD_USER_ID,",
+						"          DM_UPDTD_USER_ID,",
+						"          DM_UPDTD_TMS",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectUpdateData",
+						"mergedData derive(ROW_STATUS = case(PRICE_TYPE_CD == toString(null()) && LKP_PRICE_TYPE_CD != toString(null()), 'D', case(PRICE_TYPE_CD != toString(null()) && LKP_PRICE_TYPE_CD == toString(null()), 'I', case(HASHED_VAL == LKP_HASHED_VAL, 'L', 'U')))) ~> CDCval",
+						"CDCval filter(ROW_STATUS != 'L') ~> dropUnchangedRows",
+						"updateRows sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'PGMPDM',",
+						"     tableName: 'PRICE_TYPE_CD_DIM',",
+						"     insertable: false,",
+						"     updateable: true,",
+						"     deletable: false,",
+						"     upsertable: false,",
+						"     keys:['PRICE_TYPE_CD'],",
+						"     skipKeyWrites:true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 0,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     preCommands: [],",
+						"     postCommands: []) ~> updateTable",
+						"selectInsertData sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'PGMPDM',",
+						"     tableName: 'PRICE_TYPE_CD_DIM',",
+						"     insertable: true,",
+						"     updateable: false,",
+						"     deletable: false,",
+						"     upsertable: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> insertTable"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_pgmp_rfs_db')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DF_BALD0600_BIZDEVMT_DIM')]",
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
@@ -19201,7 +19393,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "550ce3b1-36b3-454a-868b-12e2c093d1b1"
+						"spark.autotune.trackingId": "997335c8-9a1e-4a9d-b9a3-309b587c35ec"
 					}
 				},
 				"metadata": {
@@ -19226,8 +19418,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -35686,7 +35877,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b8d89282-9ff9-45d7-9d03-d4932ef7660a"
+						"spark.autotune.trackingId": "42411a1b-a0f0-4fad-aab6-72010002fdac"
 					}
 				},
 				"metadata": {
@@ -35729,8 +35920,12 @@
 						"source": [
 							"**Industry Hierarchy Dimension load**\n",
 							"\n",
-							"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
-							"Since ESA is not accessible from Azure, a datastage job src_ESA_Market_Azure is executed on datastage to push the ESA extract to adls.\n",
+							"This notebook loads data to deltalake table etlhubConfirmed.DHT_INDUSTRY_SECTOR by sourceing data from ERDM Kyndryl.\n",
+							"\n",
+							"The Industry Hierarchy has been downloaded from ERDM in a CSV format and uploaded to adls for loading to Industry Dimension.\n",
+							"\n",
+							"ERDM Industry Sector Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmStandardDetails/102\n",
+							"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
 							""
 						]
 					},
@@ -42835,18 +43030,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
-				"annotations": []
-			},
-			"dependsOn": [],
-			"location": "eastus"
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/sPoolKyn001494')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -42866,6 +43049,18 @@
 				"sparkVersion": "3.1",
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],
