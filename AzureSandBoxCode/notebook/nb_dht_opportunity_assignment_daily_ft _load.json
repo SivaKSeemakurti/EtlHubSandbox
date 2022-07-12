@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "bcde4389-f330-4202-a5d9-cf9f196308e8"
+				"spark.autotune.trackingId": "2e506a29-1a28-4160-b045-d4822fb7e1f0"
 			}
 		},
 		"metadata": {
@@ -240,31 +240,6 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY from incrementalData_DF2\r\n",
-					"group by CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY\r\n",
-					"having count(*) > 1"
-				],
-				"execution_count": 27
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					}
 				},
 				"source": [
@@ -272,7 +247,6 @@
 					"#Create a dataframe with target deltalake table data with necessary columns\n",
 					"\n",
 					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
-					"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.dht_opportunity_role tgt WHERE CURRENT_IND='Y'\")\n",
 					"\n",
 					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
 					"\n",
@@ -282,7 +256,7 @@
 					"\n",
 					"existingDataDF1.createOrReplaceTempView('existingDataDF1')\n",
 					"\n",
-					"fullJoin1=incrementalData_DF2.join(existingDataDF1,trim(incrementalData_DF2.ROLE_CD) == trim(existingDataDF1.existing_ROLE_CD), \"fullouter\") \n",
+					"fullJoin1=incrementalData_DF2.join(existingDataDF1,((incrementalData_DF2.OPPORTUNITY_KEY == existingDataDF1.existing_OPPORTUNITY_KEY) & (incrementalData_DF2.OPPORTUNITY_ROLE_KEY == existingDataDF1.existing_OPPORTUNITY_ROLE_KEY) & (incrementalData_DF2.CRM_ROLE_KEY == existingDataDF1.existing_CRM_ROLE_KEY) & (incrementalData_DF2.EMPLOYEE_KEY == existingDataDF1.existing_EMPLOYEE_KEY)), \"fullouter\") \n",
 					"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
 					"\n",
 					"fullJoin2.createOrReplaceTempView('fullJoin')\n",
@@ -292,7 +266,7 @@
 					"  .mode(\"overwrite\") \\\n",
 					"  .option(\"overwriteSchema\", \"true\") \\\n",
 					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_OPPORTUNITY_ROLE\") \\\n",
-					"  .saveAsTable(\"DHTS_OPPORTUNITY_ROLE\")\n",
+					"  .saveAsTable(\"DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA\")\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
 				"execution_count": 20
