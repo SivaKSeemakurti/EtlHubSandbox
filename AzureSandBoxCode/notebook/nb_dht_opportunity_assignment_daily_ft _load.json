@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b9d12836-df83-4b9e-b3a0-af2d3ad2aebc"
+				"spark.autotune.trackingId": "b337523b-632d-461e-a57b-437094cd8137"
 			}
 		},
 		"metadata": {
@@ -434,37 +434,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 37
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"SELECT COUNT(*) from \r\n",
-					"etlhubconfirmed.dht_opportunity_assignment_daily_ft A\r\n",
-					"join fullJoin B\r\n",
-					"ON A.OPPORTUNITY_KEY=B.existing_OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.existing_OPPORTUNITY_ROLE_KEY \r\n",
-					"AND A.CRM_ROLE_KEY = B.existing_CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.existing_EMPLOYEE_KEY\r\n",
-					"AND B.OPPORTUNITY_KEY is NULL AND B.OPPORTUNITY_ROLE_KEY is null and B.CRM_ROLE_KEY is null and B.EMPLOYEE_KEY is null\r\n",
-					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \r\n",
-					"AND A.REC_START_DT=b.existing_REC_START_DT"
-				],
-				"execution_count": 41
+				"execution_count": 42
 			},
 			{
 				"cell_type": "code",
