@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f8b205e9-b627-4ad8-b66b-cef6c1d6ad17"
+				"spark.autotune.trackingId": "37081a5a-bb15-46d7-bb5f-3615f3d49567"
 			}
 		},
 		"metadata": {
@@ -403,11 +403,13 @@
 					"qry_4_recon2=\"\"\"\n",
 					"\n",
 					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
-					"WHERE LOWER(ROLE_CD) = LOWER(existing_ROLE_CD) \n",
+					"WHERE OPPORTUNITY_KEY=existing_OPPORTUNITY_KEY AND OPPORTUNITY_ROLE_KEY = existing_OPPORTUNITY_ROLE_KEY \n",
+					"AND CRM_ROLE_KEY = existing_CRM_ROLE_KEY AND EMPLOYEE_KEY = existing_EMPLOYEE_KEY\n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
-					"WHERE TRIM(LOWER(A.ROLE_CD))=TRIM(LOWER(B.ROLE_CD))\n",
+					"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+					"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM\n",
 					")\n",
@@ -420,9 +422,10 @@
 					"\n",
 					"qry_4_recon3=\"\"\"\n",
 					"SELECT COUNT(*) from \n",
-					"etlhubconfirmed.DHT_OPPORTUNITY_ROLE A\n",
+					"etlhubconfirmed.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A\n",
 					"join fullJoin B\n",
-					"ON A.{} = B.existing_{}\n",
+					"ON OPPORTUNITY_KEY=existing_OPPORTUNITY_KEY AND OPPORTUNITY_ROLE_KEY = existing_OPPORTUNITY_ROLE_KEY \n",
+					"AND CRM_ROLE_KEY = existing_CRM_ROLE_KEY AND EMPLOYEE_KEY = existing_EMPLOYEE_KEY\n",
 					"AND B.{} is NULL\n",
 					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
 					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
