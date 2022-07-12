@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f848d6f9-13c8-4f20-b854-ffa03b9a00c8"
+				"spark.autotune.trackingId": "1e8f8043-2026-4e18-92a1-a309b149c25e"
 			}
 		},
 		"metadata": {
@@ -470,9 +470,9 @@
 					"\n",
 					"qry_ins_new_rows=\"\"\"\n",
 					"\n",
-					"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
+					"INSERT INTO etlhubconfirmed.dht_opportunity_assignment_daily_ft\n",
 					"select \n",
-					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \n",
+					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ASSIGNMENT_KEY,1 as OPPORTUNITY_ASSIGNMENT_VERSION \n",
 					",ROLE_CD\n",
 					",ROLE_DESC\n",
 					",'Y' AS CURRENT_IND\n",
