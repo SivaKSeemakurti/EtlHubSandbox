@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5753e6f8-930b-4b41-a6d9-78403c5ffeb5"
+				"spark.autotune.trackingId": "95a0d367-61ca-4c4f-8e3c-49353fc016c6"
 			}
 		},
 		"metadata": {
@@ -66,7 +66,7 @@
 					"\n",
 					"\n",
 					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_MARKET  (\t\n",
-					"\t\tMARKET_KEY\tINT \tNOT\tNULL\t,\n",
+					"\tMARKET_KEY\tINT \tNOT\tNULL\t,\n",
 					"\tMARKET_VERSION\tINT \tNOT\tNULL\t,\n",
 					"\tCUSTOMER_NO\tSTRING\t,\t\t\n",
 					"\tCUSTOMER_NM\tSTRING\t,\t\t\n",
