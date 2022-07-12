@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cb2f786a-fb73-4632-ba45-d40699a082ba"
+				"spark.autotune.trackingId": "4d0107d7-da45-4b12-a852-efb3935af2a4"
 			}
 		},
 		"metadata": {
@@ -290,9 +290,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from DHTS_OPPORTUNITY_ROLE"
+					"select * from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA"
 				],
-				"execution_count": 22
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -326,16 +326,16 @@
 				},
 				"source": [
 					"qry3=\"\"\"\n",
-					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
+					"SELECT COUNT(*) as CNT, CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY FROM incrementalData_DF2 GROUP BY CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY HAVING COUNT(*)>1\n",
 					";\n",
 					"\"\"\"\n",
 					"\n",
 					"qry4=\"\"\"\n",
-					"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
+					"SELECT COUNT(*) as CNT, CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY FROM {} WHERE CURRENT_IND='Y' GROUP BY CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY HAVING COUNT(*)>1\n",
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"df3=spark.sql(qry3.format(natural_key,natural_key))\n",
+					"df3=spark.sql(qry3)\n",
 					"cnt1=df3.count()\n",
 					"\n",
 					"print (cnt1)\n",
@@ -350,7 +350,7 @@
 					"    sys.exit(1)\n",
 					"    print(\"This will not be printed\")\n",
 					"\n",
-					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
+					"df4=spark.sql(qry4.format(tablename))\n",
 					"cnt2=df4.count()\n",
 					"\n",
 					"print (cnt2)\n",
@@ -368,7 +368,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 23
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
