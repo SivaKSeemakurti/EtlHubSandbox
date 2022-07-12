@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a537529f-5e74-43b7-8f63-ce56bff6b97c"
+				"spark.autotune.trackingId": "b9d12836-df83-4b9e-b3a0-af2d3ad2aebc"
 			}
 		},
 		"metadata": {
@@ -422,21 +422,49 @@
 					"\n",
 					"qry_4_recon3=\"\"\"\n",
 					"SELECT COUNT(*) from \n",
-					"etlhubconfirmed.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A\n",
+					"etlhubconfirmed.dht_opportunity_assignment_daily_ft A\n",
 					"join fullJoin B\n",
-					"ON OPPORTUNITY_KEY=existing_OPPORTUNITY_KEY AND OPPORTUNITY_ROLE_KEY = existing_OPPORTUNITY_ROLE_KEY \n",
-					"AND CRM_ROLE_KEY = existing_CRM_ROLE_KEY AND EMPLOYEE_KEY = existing_EMPLOYEE_KEY\n",
-					"AND B.OPPORTUNITY_KEY is NULL AND B.OPPORTUNITY_ROLE_KEY is null and B.CRM_ROLE_KEY is null and B.EMPLOYEE_KEY\n",
+					"ON A.OPPORTUNITY_KEY=B.existing_OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.existing_OPPORTUNITY_ROLE_KEY \n",
+					"AND A.CRM_ROLE_KEY = B.existing_CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.existing_EMPLOYEE_KEY\n",
+					"AND B.OPPORTUNITY_KEY is NULL AND B.OPPORTUNITY_ROLE_KEY is null and B.CRM_ROLE_KEY is null and B.EMPLOYEE_KEY is null\n",
 					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
-					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					"\n",
+					"AND A.REC_START_DT=b.existing_REC_START_DT ;\n",
 					"\"\"\"\n",
-					"\n",
 					"df_4_recon3=spark.sql(qry_4_recon3)\n",
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 35
+				"execution_count": 37
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT COUNT(*) from \r\n",
+					"etlhubconfirmed.dht_opportunity_assignment_daily_ft A\r\n",
+					"join fullJoin B\r\n",
+					"ON A.OPPORTUNITY_KEY=B.existing_OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.existing_OPPORTUNITY_ROLE_KEY \r\n",
+					"AND A.CRM_ROLE_KEY = B.existing_CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.existing_EMPLOYEE_KEY\r\n",
+					"AND B.OPPORTUNITY_KEY is NULL AND B.OPPORTUNITY_ROLE_KEY is null and B.CRM_ROLE_KEY is null and B.EMPLOYEE_KEY is null\r\n",
+					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \r\n",
+					"AND A.REC_START_DT=b.existing_REC_START_DT"
+				],
+				"execution_count": 41
 			},
 			{
 				"cell_type": "code",
