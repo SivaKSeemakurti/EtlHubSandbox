@@ -19201,7 +19201,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "bab7530b-d703-4f1e-9f85-790f1e76d1ec"
+						"spark.autotune.trackingId": "550ce3b1-36b3-454a-868b-12e2c093d1b1"
 					}
 				},
 				"metadata": {
@@ -19242,94 +19242,44 @@
 						},
 						"source": [
 							"%%sql\n",
-							"-- DBXDH.DHT_MARKET definition\n",
+							"-- DBXDH.DHT_INDUSTRY_SECTOR definition\n",
 							"\n",
 							"\n",
-							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_MARKET  (\t\n",
-							"\tMARKET_KEY\tINT \tNOT\tNULL\t,\n",
-							"\tMARKET_VERSION\tINT \tNOT\tNULL\t,\n",
-							"\tCUSTOMER_NO\tSTRING\t,\t\t\n",
-							"\tCUSTOMER_NM\tSTRING\t,\t\t\n",
-							"\tINAC_CD\tSTRING\t,\t\t\n",
-							"\tINAC_DESC\tSTRING\t,\t\t\n",
-							"\tCOUNTRY_CD\tSTRING\t,\t\t\n",
-							"\tMARKET_BUSINESS_CD\tSTRING\t,\t\t\n",
-							"\tSMB_IND\tSTRING\t,\t\t\n",
-							"\tCOMPANY_NO\tSTRING\t,\t\t\n",
-							"\tENTERPRISE_NM\tSTRING\t,\t\t\n",
-							"\tENTERPRISE_NO\tSTRING\t,\t\t\n",
-							"\tCUST_CITY_NM\tSTRING\t,\t\t\n",
-							"\tCUST_STATE_PROV_CD\tSTRING\t,\t\t\n",
-							"\tCUST_POSTL_CD\tSTRING\t,\t\t\n",
-							"\tISO_COUNTRY_CD\tSTRING\t,\t\t\n",
-							"\tISO_COUNTRY_DESC\tSTRING\t,\t\t\n",
-							"\tCMR_ISU_CD\tSTRING\t,\t\t\n",
-							"\tSUB_INDUSTRY_CD\tSTRING\t,\t\t\n",
-							"\tCURR_CVRG_TYP_CD\tSTRING\t,\t\t\n",
-							"\tCURR_CVRG_TYP_DESC\tSTRING\t,\t\t\n",
-							"\tCURR_CVRG_ID\tSTRING\t,\t\t\n",
-							"\tCURR_CVRG_NM\tSTRING\t,\t\t\n",
-							"\tDLGTD_CVRG_IND\tSTRING\t,\t\t\n",
-							"\tBASE_CVRG_TYP_CD\tSTRING\t,\t\t\n",
-							"\tBASE_CVRG_TYP_DESC\tSTRING\t,\t\t\n",
-							"\tBASE_CVRG_ID\tSTRING\t,\t\t\n",
-							"\tBASE_CVRG_NM\tSTRING\t,\t\t\n",
-							"\tTERR_ID\tSTRING\t,\t\t\n",
-							"\tTERR_NM\tSTRING\t,\t\t\n",
-							"\tDBCS_CUSTOMER_NM\tSTRING\t,\t\t\n",
-							"\tCLIENT_ID\tSTRING\t,\t\t\n",
-							"\tCLIENT_NM\tSTRING\t,\t\t\n",
-							"\tCVI_BRNCH_ID\tSTRING\t,\t\t\n",
-							"\tCVI_BRNCH_DESC\tSTRING\t,\t\t\n",
-							"\tCVI_BRNCH_GRP_CD\tSTRING\t,\t\t\n",
-							"\tCVI_BRNCH_GRP_DESC\tSTRING\t,\t\t\n",
-							"\tCVI_BRNCH_UNT_ID\tSTRING\t,\t\t\n",
-							"\tCVI_BRNCH_UNT_NM\tSTRING\t,\t\t\n",
-							"\tSMB_QUADTIER_CD\tSTRING\t,\t\t\n",
-							"\tCUST_ACCT_ID\tSTRING\t,\t\t\n",
-							"\tRPTS_TO_IMT_ID\tSTRING\t,\t\t\n",
-							"\tRPTS_TO_SCTR_CD\tSTRING\t,\t\t\n",
-							"\tRPTS_TO_SCTR_DESC\tSTRING\t,\t\t\n",
-							"\tCURRENT_IND\tSTRING\t,\t\t\n",
-							"\tEXTRACT_DT\tTIMESTAMP\t,\t\t\n",
-							"\tREC_START_DT\tTIMESTAMP\t,\t\t\n",
-							"\tREC_END_DT\tTIMESTAMP\t,\t\t\n",
-							"\tREC_CHECKSUM\tSTRING\t,\t\t\n",
-							"\tREC_STATUS\tSTRING\t,\t\t\n",
-							"\tSOURCE_SYSTEM\tSTRING\t,\t\t\n",
-							"\tCUST_INDUSTRY_SECTOR_KEY\tINT \t,\t\t\n",
-							"\tCUST_INDUSTRY_SECTOR_VERSION\tINT \t,\t\t\n",
-							"\tTERRITORY_RGN_KEY\tINT \t,\t\t\n",
-							"\tREPORTS_TO_IMT_GEO_KEY\tINT \t,\t\t\n",
-							"\tFIN_COUNTRY_KEY\tINT \t,\t\t\n",
-							"\tIMG_LST_UPD_DT\tTIMESTAMP\t,\t\t\n",
-							"\tIMG_CREATED_DT\tTIMESTAMP\t,\t\t\n",
-							"\tBOID\tSTRING\t,\t\t\n",
-							"\tDOMESTIC_CLIENT_ID\tSTRING\t,\t\t\n",
-							"\tDOMESTIC_CLIENT_NM\tSTRING\t,\t\t\n",
-							"\tGLOBAL_CLIENT_ID\tSTRING\t,\t\t\n",
-							"\tGLOBAL_CLIENT_NM\tSTRING\t,\t\t\n",
-							"\tGLOBAL_ULTIMATE_CLIENT_ID\tSTRING\t,\t\t\n",
-							"\tGLOBAL_ULTIMATE_CLIENT_NM\tSTRING\t,\t\t\n",
-							"\tDOMESTIC_BUYING_GROUP_ID\tSTRING\t,\t\t\n",
-							"\tDOMESTIC_BUYING_GROUP_NM\tSTRING\t,\t\t\n",
-							"\tGLOBAL_BUYING_GROUP_ID\tSTRING\t,\t\t\n",
-							"\tGLOBAL_BUYING_GROUP_NM\tSTRING\t,\t\t\n",
-							"\tTOP_TREE_ACCT_ID\tSTRING\t,\t\t\n",
-							"\tTOP_TREE_ID\tSTRING\t,\t\t\n",
-							"\tTOP_TREE_NM\tSTRING\t,\t\t\n",
-							"\tSTANDARD_INDUSTRIAL_CLASSIFICATION_CD\tSTRING\t,\t\t\n",
-							"\tCOV_CLIENT_TYPE\tSTRING\t,\t\t\n",
-							"\tCOV_CLIENT_TYPE_DESC\tSTRING\t,\t\t\n",
-							"\tCOV_CLIENT_SUBTYPE\tSTRING\t,\t\t\n",
-							"\tCOV_CLIENT_SUBTYPE_DESC\tSTRING\t,\n",
-							"\tACTIVE_IN_SOURCE_IND STRING )   \n",
+							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_INDUSTRY_SECTOR  (\t\n",
+							"\n",
+							"\tINDUSTRY_SECTOR_KEY\tINT NOT NULL\n",
+							",\tINDUSTRY_SECTOR_VERSION\tINT NOT NULL\n",
+							",\tlevelNum\tSTRING\n",
+							",\tparentCode\tSTRING\n",
+							",\tcode\tSTRING\n",
+							",\tlongDescription\tSTRING\n",
+							",\tmediumDescription\tSTRING\n",
+							",\tshortDescription\tSTRING\n",
+							",\tcomments\tSTRING\n",
+							",\trecordStatus\tSTRING\n",
+							",\trowCreateTs\tSTRING\n",
+							",\trowUpdateTs\tSTRING\n",
+							",\tUSAGE_RULE\tSTRING\n",
+							",\tALT_DESC_FULL_1\tSTRING\n",
+							",\tALT_DESC_FULL_2\tSTRING\n",
+							",\tEFFECTIVE_START_DATE TIMESTAMP\n",
+							",\tEFFECTIVE_END_DATE TIMESTAMP\n",
+							",\tCURRENT_IND\tSTRING\n",
+							",\tEXTRACT_DT TIMESTAMP\n",
+							",\tREC_START_DT TIMESTAMP\n",
+							",\tREC_END_DT TIMESTAMP\n",
+							",\tSOURCE_SYSTEM STRING\n",
+							",\tREC_CHECKSUM STRING\n",
+							",\tREC_STATUS STRING\t\n",
+							",\tIMG_LST_UPD_DT TIMESTAMP\n",
+							",\tIMG_CREATED_DT TIMESTAMP\t\n",
+							") \n",
 							"USING DELTA\n",
 							"PARTITIONED BY (CURRENT_IND)\n",
-							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_MARKET'"
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_INDUSTRY_SECTOR'"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -19350,7 +19300,7 @@
 						},
 						"source": [
 							"%%sql\n",
-							"DROP TABLE etlhubconfirmed.dht_MARKET"
+							"DROP TABLE etlhubConfirmed.DHT_INDUSTRY_SECTOR"
 						],
 						"outputs": [],
 						"execution_count": 2
@@ -19374,7 +19324,7 @@
 						},
 						"source": [
 							"%%sql\n",
-							"DELETE FROM etlhubconfirmed.dht_MARKET"
+							"DELETE FROM etlhubConfirmed.DHT_INDUSTRY_SECTOR"
 						],
 						"outputs": [],
 						"execution_count": 3
@@ -35736,7 +35686,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b0b5ccfb-a571-42fe-b1ee-5c24589376ef"
+						"spark.autotune.trackingId": "b8d89282-9ff9-45d7-9d03-d4932ef7660a"
 					}
 				},
 				"metadata": {
@@ -35761,7 +35711,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -42884,6 +42835,18 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/sPoolKyn001494')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -42903,18 +42866,6 @@
 				"sparkVersion": "3.1",
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": false,
-				"annotations": []
-			},
-			"dependsOn": [],
-			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],
