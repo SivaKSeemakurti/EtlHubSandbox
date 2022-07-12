@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "37081a5a-bb15-46d7-bb5f-3615f3d49567"
+				"spark.autotune.trackingId": "a537529f-5e74-43b7-8f63-ce56bff6b97c"
 			}
 		},
 		"metadata": {
@@ -426,17 +426,17 @@
 					"join fullJoin B\n",
 					"ON OPPORTUNITY_KEY=existing_OPPORTUNITY_KEY AND OPPORTUNITY_ROLE_KEY = existing_OPPORTUNITY_ROLE_KEY \n",
 					"AND CRM_ROLE_KEY = existing_CRM_ROLE_KEY AND EMPLOYEE_KEY = existing_EMPLOYEE_KEY\n",
-					"AND B.{} is NULL\n",
+					"AND B.OPPORTUNITY_KEY is NULL AND B.OPPORTUNITY_ROLE_KEY is null and B.CRM_ROLE_KEY is null and B.EMPLOYEE_KEY\n",
 					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
 					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					"\n",
 					"\"\"\"\n",
 					"\n",
-					"df_4_recon3=spark.sql(qry_4_recon3.format(natural_key,natural_key,natural_key))\n",
+					"df_4_recon3=spark.sql(qry_4_recon3)\n",
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 24
+				"execution_count": 35
 			},
 			{
 				"cell_type": "code",
