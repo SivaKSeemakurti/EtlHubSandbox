@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2e506a29-1a28-4160-b045-d4822fb7e1f0"
+				"spark.autotune.trackingId": "cb2f786a-fb73-4632-ba45-d40699a082ba"
 			}
 		},
 		"metadata": {
@@ -269,7 +269,7 @@
 					"  .saveAsTable(\"DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA\")\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 20
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
