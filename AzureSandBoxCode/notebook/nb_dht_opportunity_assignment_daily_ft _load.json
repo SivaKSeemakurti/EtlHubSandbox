@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b337523b-632d-461e-a57b-437094cd8137"
+				"spark.autotune.trackingId": "f848d6f9-13c8-4f20-b854-ffa03b9a00c8"
 			}
 		},
 		"metadata": {
@@ -453,14 +453,15 @@
 				"source": [
 					"\n",
 					"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
-					"#delete FROM etlhubconfirmed.dht_opportunity_role;\n",
+					"#delete FROM etlhubconfirmed.dht_opportunity_assignment_daily_ft;\n",
 					"\n",
 					"qry_4_recon1=\"\"\"\n",
-					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
+					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
-					"WHERE A.ROLE_CD=B.ROLE_CD\n",
+					"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+					"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					"\n",
