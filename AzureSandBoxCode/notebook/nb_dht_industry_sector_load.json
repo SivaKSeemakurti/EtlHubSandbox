@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e6cea348-1f97-4b40-8109-d55a7ff4d6bd"
+				"spark.autotune.trackingId": "d1ffc297-5425-4728-ad99-1affd697a4a1"
 			}
 		},
 		"metadata": {
@@ -151,12 +151,12 @@
 					"file_name='DS_INDUSTRY_HIERARCHY_DATA.csv' \n",
 					"natural_key=\"code\"\n",
 					"tablename=\"etlhubConfirmed.dht_industry_hierarchy\"\n",
-					"stagingtable=\"DHTS_INDUSTRY_HIERARCHY\"\n",
+					"stagingtable=\"DHTS_INDUSTRY_SECTOR\"\n",
 					"keycolumn=\"INDUSTRY_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 3
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -234,7 +234,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 4
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -280,7 +280,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 19
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
