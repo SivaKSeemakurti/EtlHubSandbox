@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "74f0e9bb-4a9e-46ef-93dd-0b2b0c608b92"
+				"spark.autotune.trackingId": "d6445622-5a04-4123-bb6b-a0185affba08"
 			}
 		},
 		"metadata": {
@@ -62,11 +62,11 @@
 					}
 				},
 				"source": [
-					"**Industry Hierarchy Dimension load**\n",
+					"**Geography Dimension load**\n",
 					"\n",
-					"This notebook loads data to deltalake table etlhubConfirmed.DHT_INDUSTRY_SECTOR by sourceing data from ERDM Kyndryl.\n",
+					"This notebook loads data to deltalake table etlhubConfirmed.DHT_GEOGRAPHY by sourceing data from ERDM Kyndryl.\n",
 					"\n",
-					"The Industry Hierarchy has been downloaded from ERDM in a CSV format and uploaded to adls for loading to Industry Dimension.\n",
+					"The Geography has been downloaded from ERDM in a CSV format and uploaded to adls for loading to Industry Dimension.\n",
 					"\n",
 					"ERDM Industry Sector Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmStandardDetails/102\n",
 					"\n",
