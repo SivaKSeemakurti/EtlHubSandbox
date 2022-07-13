@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2e296bd7-e3a7-4d75-824f-d4d4b3e60147"
+				"spark.autotune.trackingId": "9c2ac56c-d487-4823-b7a0-666c82855159"
 			}
 		},
 		"metadata": {
@@ -585,8 +585,10 @@
 					"INSERT INTO etlhubconfirmed.dht_opportunity_assignment_daily_ft\n",
 					"select A.existing_OPPORTUNITY_ASSIGNMENT_KEY\n",
 					",1 + existing_OPPORTUNITY_ASSIGNMENT_VERSION as OPPORTUNITY_ASSIGNMENT_VERSION\n",
-					",ROLE_CD\n",
-					",ROLE_DESC\n",
+					",OPPORTUNITY_KEY\n",
+					",OPPORTUNITY_ROLE_KEY\n",
+					",CRM_ROLE_KEY\n",
+					",EMPLOYEE_KEY\n",
 					",'Y' AS CURRENT_IND\n",
 					",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					",CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -598,7 +600,7 @@
 					",A.existing_IMG_CREATED_DT AS IMG_CREATED_DT\n",
 					",'LG' AS DATA_IND\n",
 					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-					"from DHTS_OPPORTUNITY_ROLE A \n",
+					"from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 					"WHERE TRIM(LOWER(ROLE_CD)) = TRIM(LOWER(existing_ROLE_CD)) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 					"AND NOT EXISTS\n",
