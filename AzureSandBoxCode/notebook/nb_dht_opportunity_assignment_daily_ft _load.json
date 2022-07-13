@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ec7c7669-9669-400d-b0a8-ba2fb6e49041"
+				"spark.autotune.trackingId": "2e296bd7-e3a7-4d75-824f-d4d4b3e60147"
 			}
 		},
 		"metadata": {
@@ -548,9 +548,11 @@
 					"qry_4_upd_changes_rows=\"\"\"\n",
 					"\n",
 					"MERGE INTO {} A\n",
-					"USING DHTS_OPPORTUNITY_ROLE B\n",
-					"ON A.{} = B.{}\n",
-					"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
+					"USING DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA B\n",
+					"ON A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+					"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
+					"AND B.OPPORTUNITY_KEY=B.existing_OPPORTUNITY_KEY AND B.OPPORTUNITY_ROLE_KEY = B.existing_OPPORTUNITY_ROLE_KEY \n",
+					"AND B.CRM_ROLE_KEY = B.existing_CRM_ROLE_KEY AND B.EMPLOYEE_KEY = B.existing_EMPLOYEE_KEY\n",
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
@@ -558,7 +560,7 @@
 					"    ,IMG_LST_UPD_DT=current_timestamp\n",
 					";\n",
 					"\"\"\"\n",
-					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
+					"f=spark.sql(qry_4_upd_changes_rows.format(tablename))\n",
 					""
 				],
 				"execution_count": 26
@@ -580,9 +582,9 @@
 				"source": [
 					"#Insert for changed rows which are missing in target and present in source based on Natural Key.\n",
 					"qry_ins_changed_rows=\"\"\"\n",
-					"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
-					"select A.existing_OPPORTUNITY_ROLE_KEY\n",
-					",1 + existing_OPPORTUNITY_ROLE_VERSION as OPPORTUNITY_ROLE_VERSION\n",
+					"INSERT INTO etlhubconfirmed.dht_opportunity_assignment_daily_ft\n",
+					"select A.existing_OPPORTUNITY_ASSIGNMENT_KEY\n",
+					",1 + existing_OPPORTUNITY_ASSIGNMENT_VERSION as OPPORTUNITY_ASSIGNMENT_VERSION\n",
 					",ROLE_CD\n",
 					",ROLE_DESC\n",
 					",'Y' AS CURRENT_IND\n",
