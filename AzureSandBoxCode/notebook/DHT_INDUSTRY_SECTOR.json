@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "997335c8-9a1e-4a9d-b9a3-309b587c35ec"
+				"spark.autotune.trackingId": "b9b0cf77-de86-4ce2-a498-81d51cc97178"
 			}
 		},
 		"metadata": {
@@ -92,13 +92,14 @@
 					",\tREC_CHECKSUM STRING\n",
 					",\tREC_STATUS STRING\t\n",
 					",\tIMG_LST_UPD_DT TIMESTAMP\n",
-					",\tIMG_CREATED_DT TIMESTAMP\t\n",
+					",\tIMG_CREATED_DT TIMESTAMP\n",
+					",   ACTIVE_IN_SOURCE_IND STRING\t\n",
 					") \n",
 					"USING DELTA\n",
 					"PARTITIONED BY (CURRENT_IND)\n",
 					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_INDUSTRY_SECTOR'"
 				],
-				"execution_count": 1
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -121,7 +122,7 @@
 					"%%sql\n",
 					"DROP TABLE etlhubConfirmed.DHT_INDUSTRY_SECTOR"
 				],
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
