@@ -35878,7 +35878,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "edb13b4a-d5ef-4c8d-b1c5-7f653dfb2798"
+						"spark.autotune.trackingId": "c2ef83ef-2940-49ce-9f55-3400a73b34e8"
 					}
 				},
 				"metadata": {
@@ -35904,7 +35904,6 @@
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"extraHeader": {},
 						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
@@ -35973,7 +35972,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 7
 					},
 					{
 						"cell_type": "markdown",
@@ -36009,14 +36008,14 @@
 							"relative_archive_path='archive/'\n",
 							"file_name='DS_INDUSTRY_HIERARCHY_DATA.csv' \n",
 							"natural_key=\"code\"\n",
-							"tablename=\"etlhubConfirmed.dht_industry_hierarchy\"\n",
+							"tablename=\"etlhubConfirmed.dht_industry_sector\"\n",
 							"stagingtable=\"DHTS_INDUSTRY_SECTOR\"\n",
 							"keycolumn=\"INDUSTRY_KEY\"\n",
 							"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 8
 					},
 					{
 						"cell_type": "markdown",
