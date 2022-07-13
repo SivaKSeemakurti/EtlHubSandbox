@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0fbbd95d-4a21-4b0d-ad20-251356ba7d8b"
+				"spark.autotune.trackingId": "0b59f1f8-9662-49b7-94ce-e5e45f08972a"
 			}
 		},
 		"metadata": {
@@ -69,6 +69,7 @@
 					"The Industry Hierarchy has been downloaded from ERDM in a CSV format and uploaded to adls for loading to Industry Dimension.\n",
 					"\n",
 					"ERDM Industry Sector Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmStandardDetails/102\n",
+					"\n",
 					"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
 					""
 				]
@@ -114,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 7
+				"execution_count": 9
 			},
 			{
 				"cell_type": "markdown",
@@ -152,11 +153,11 @@
 					"natural_key=\"code\"\n",
 					"tablename=\"etlhubConfirmed.dht_industry_sector\"\n",
 					"stagingtable=\"DHTS_INDUSTRY_SECTOR\"\n",
-					"keycolumn=\"INDUSTRY_KEY\"\n",
+					"keycolumn=\"INDUSTRY_SECTOR_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 8
+				"execution_count": 13
 			},
 			{
 				"cell_type": "markdown",
@@ -234,7 +235,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 3
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -280,7 +281,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 4
+				"execution_count": 12
 			},
 			{
 				"cell_type": "markdown",
