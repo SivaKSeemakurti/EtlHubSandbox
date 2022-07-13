@@ -19393,7 +19393,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "997335c8-9a1e-4a9d-b9a3-309b587c35ec"
+						"spark.autotune.trackingId": "190af898-785b-47dd-a276-d2a3e933124d"
 					}
 				},
 				"metadata": {
@@ -19418,7 +19418,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -19463,14 +19464,15 @@
 							",\tREC_CHECKSUM STRING\n",
 							",\tREC_STATUS STRING\t\n",
 							",\tIMG_LST_UPD_DT TIMESTAMP\n",
-							",\tIMG_CREATED_DT TIMESTAMP\t\n",
+							",\tIMG_CREATED_DT TIMESTAMP\n",
+							",   ACTIVE_IN_SOURCE_IND STRING\t\n",
 							") \n",
 							"USING DELTA\n",
 							"PARTITIONED BY (CURRENT_IND)\n",
 							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_INDUSTRY_SECTOR'"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -19494,7 +19496,7 @@
 							"DROP TABLE etlhubConfirmed.DHT_INDUSTRY_SECTOR"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -35877,7 +35879,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "42411a1b-a0f0-4fad-aab6-72010002fdac"
+						"spark.autotune.trackingId": "e6cea348-1f97-4b40-8109-d55a7ff4d6bd"
 					}
 				},
 				"metadata": {
@@ -35902,8 +35904,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -37901,14 +37902,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "895cd624-5838-45ae-9846-e92708bd5c30"
+						"spark.autotune.trackingId": "ec7c7669-9669-400d-b0a8-ba2fb6e49041"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -37929,8 +37927,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"extraHeader": null
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -37950,8 +37947,7 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_opportunity_assignment_daily_ft by sourceing data from ESA database.\n",
 							"Since ESA is not accessible from Azure, a datastage job srcESA_OpportunityAssignment_DailyFact_Azure is executed on datastage to push the ESA extract to adls.\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -37964,8 +37960,7 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -37996,7 +37991,6 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -38011,8 +38005,7 @@
 						},
 						"source": [
 							"Define Parameters"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -38039,7 +38032,6 @@
 							"keycolumn=\"OPPORTUNITY_ASSIGNMENT_KEY\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 3
 					},
@@ -38054,8 +38046,7 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -38070,8 +38061,7 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_OPPORTUNITY_ROLE_DATA.csv"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -38101,89 +38091,26 @@
 							"print (csv_archive_path)\n",
 							"\n",
 							"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
-							"#incrementalData_DF.show()\n",
+							"incrementalData_DF.createOrReplaceTempView('SourceView')\n",
 							"#joining with dimension tables\n",
-							"DIMOPPDataDF=spark.sql(\"SELECT OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM FROM etlhubConfirmed.dht_opportunity WHERE CURRENT_IND='Y'\")\n",
-							"DIMJoin=incrementalData_DF.join(DIMOPPDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM), \"fullouter\") \n",
-							"DIMJoin.createOrReplaceTempView('fullJoin')\n",
+							"DIMOPPDataDF=spark.sql(\"select distinct OPP.OPPORTUNITY_KEY,role.OPPORTUNITY_ROLE_KEY,crm_role.OPPORTUNITY_ROLE_KEY as CRM_ROLE_KEY,emp.EMPLOYEE_KEY from SourceView src left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM)=trim(OPP.OPPORTUNITY_NUM) left outer join etlhubConfirmed.dht_opportunity_role role on src.OPP_ROLE=role.ROLE_CD left outer join etlhubConfirmed.dht_opportunity_role crm_role on src.CRM_ROLE_CODE=crm_role.ROLE_CD left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y'\")\n",
+							"#DIMJoin=incrementalData_DF.join(DIMOPPDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM), \"fullouter\") \n",
+							"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\n",
+							"\n",
+							"col_list=[]\n",
+							"for i in DIMOPPDataDF.columns:\n",
+							"    col_list.append(i)\n",
+							"# Add a checsum column to help identify the changed rows    \n",
+							"incrementalData_DF2 = DIMOPPDataDF.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+							"\n",
+							"# Get column list for creating Rec_Checksum\n",
+							"# Add a checsum column to help identify the changed rows\n",
+							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 14
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							}
-						},
-						"source": [
-							"%%sql\r\n",
-							"SELECT OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM FROM etlhubConfirmed.dht_opportunity WHERE CURRENT_IND='Y'"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 9
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"DIMJoin1=DIMJoin.join(DIMOPPROLEDataDF,DIMJoin.BUSINESS_PARTNER_ID == DIMDataDF1.BUSINESS_PARTNER_ID, \"fullouter\") \r\n",
-							"DIMJoin1.createOrReplaceTempView('fullJoin')\r\n",
-							"DIMFinalJoinDF=spark.sql(\"select OPPORTUNITY_KEY,BUSINESS_PARTNER_KEY,INFLUENCER_ROLE_CODE from fulljoin\")\r\n",
-							"#DIMFinalJoinDF.show()\r\n",
-							"incrementalData_DF1 = DIMFinalJoinDF.withColumn(\"nk_hash\", md5(concat_ws(\"\", *natural_key)))\r\n",
-							"col_list=[]\r\n",
-							"for i in DIMFinalJoinDF.columns:\r\n",
-							"    col_list.append(i)\r\n",
-							"# Add a checsum column to help identify the changed rows    \r\n",
-							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\r\n",
-							"\r\n",
-							"\r\n",
-							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\r\n",
-							"\r\n",
-							"# Get column list for creating Rec_Checksum\r\n",
-							"\r\n",
-							"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\r\n",
-							"# 2. Dups in target already\r\n",
-							"\r\n",
-							"col_list=[]\r\n",
-							"for i in incrementalData_DF.columns:\r\n",
-							"    col_list.append(i)\r\n",
-							"\r\n",
-							"# Add a checsum column to help identify the changed rows\r\n",
-							"\r\n",
-							"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\r\n",
-							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\r\n",
-							"\r\n",
-							"#sell_cyclecolhashDF.show()\r\n",
-							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": null
+						"execution_count": 25
 					},
 					{
 						"cell_type": "code",
@@ -38203,7 +38130,6 @@
 							"#Create a dataframe with target deltalake table data with necessary columns\n",
 							"\n",
 							"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
-							"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.dht_opportunity_role tgt WHERE CURRENT_IND='Y'\")\n",
 							"\n",
 							"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
 							"\n",
@@ -38213,7 +38139,7 @@
 							"\n",
 							"existingDataDF1.createOrReplaceTempView('existingDataDF1')\n",
 							"\n",
-							"fullJoin1=incrementalData_DF2.join(existingDataDF1,trim(incrementalData_DF2.ROLE_CD) == trim(existingDataDF1.existing_ROLE_CD), \"fullouter\") \n",
+							"fullJoin1=incrementalData_DF2.join(existingDataDF1,((incrementalData_DF2.OPPORTUNITY_KEY == existingDataDF1.existing_OPPORTUNITY_KEY) & (incrementalData_DF2.OPPORTUNITY_ROLE_KEY == existingDataDF1.existing_OPPORTUNITY_ROLE_KEY) & (incrementalData_DF2.CRM_ROLE_KEY == existingDataDF1.existing_CRM_ROLE_KEY) & (incrementalData_DF2.EMPLOYEE_KEY == existingDataDF1.existing_EMPLOYEE_KEY)), \"fullouter\") \n",
 							"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
 							"\n",
 							"fullJoin2.createOrReplaceTempView('fullJoin')\n",
@@ -38223,12 +38149,11 @@
 							"  .mode(\"overwrite\") \\\n",
 							"  .option(\"overwriteSchema\", \"true\") \\\n",
 							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_OPPORTUNITY_ROLE\") \\\n",
-							"  .saveAsTable(\"DHTS_OPPORTUNITY_ROLE\")\n",
+							"  .saveAsTable(\"DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA\")\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 20
+						"execution_count": 28
 					},
 					{
 						"cell_type": "code",
@@ -38249,11 +38174,10 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from DHTS_OPPORTUNITY_ROLE"
+							"select * from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 22
+						"execution_count": null
 					},
 					{
 						"cell_type": "markdown",
@@ -38270,8 +38194,7 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -38288,16 +38211,16 @@
 						},
 						"source": [
 							"qry3=\"\"\"\n",
-							"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
+							"SELECT COUNT(*) as CNT, CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY FROM incrementalData_DF2 GROUP BY CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY HAVING COUNT(*)>1\n",
 							";\n",
 							"\"\"\"\n",
 							"\n",
 							"qry4=\"\"\"\n",
-							"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
+							"SELECT COUNT(*) as CNT, CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY FROM {} WHERE CURRENT_IND='Y' GROUP BY CRM_ROLE_KEY,OPPORTUNITY_KEY,OPPORTUNITY_ROLE_KEY,EMPLOYEE_KEY HAVING COUNT(*)>1\n",
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"df3=spark.sql(qry3.format(natural_key,natural_key))\n",
+							"df3=spark.sql(qry3)\n",
 							"cnt1=df3.count()\n",
 							"\n",
 							"print (cnt1)\n",
@@ -38312,7 +38235,7 @@
 							"    sys.exit(1)\n",
 							"    print(\"This will not be printed\")\n",
 							"\n",
-							"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
+							"df4=spark.sql(qry4.format(tablename))\n",
 							"cnt2=df4.count()\n",
 							"\n",
 							"print (cnt2)\n",
@@ -38330,9 +38253,8 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 23
+						"execution_count": 30
 					},
 					{
 						"cell_type": "code",
@@ -38350,11 +38272,12 @@
 						"source": [
 							"qry_4_recon1=\"\"\"\n",
 							"\n",
-							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
+							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
 							"(SELECT 1 FROM {} B\n",
-							"WHERE A.ROLE_CD=B.ROLE_CD\n",
+							"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+							"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 							"and b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM)\n",
 							"\n",
@@ -38365,12 +38288,14 @@
 							"\n",
 							"qry_4_recon2=\"\"\"\n",
 							"\n",
-							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
-							"WHERE LOWER(ROLE_CD) = LOWER(existing_ROLE_CD) \n",
+							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
+							"WHERE OPPORTUNITY_KEY=existing_OPPORTUNITY_KEY AND OPPORTUNITY_ROLE_KEY = existing_OPPORTUNITY_ROLE_KEY \n",
+							"AND CRM_ROLE_KEY = existing_CRM_ROLE_KEY AND EMPLOYEE_KEY = existing_EMPLOYEE_KEY\n",
 							"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 							"AND NOT EXISTS\n",
 							"(SELECT 1 FROM {} B\n",
-							"WHERE TRIM(LOWER(A.ROLE_CD))=TRIM(LOWER(B.ROLE_CD))\n",
+							"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+							"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 							"and b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM\n",
 							")\n",
@@ -38383,22 +38308,20 @@
 							"\n",
 							"qry_4_recon3=\"\"\"\n",
 							"SELECT COUNT(*) from \n",
-							"etlhubconfirmed.DHT_OPPORTUNITY_ROLE A\n",
+							"etlhubconfirmed.dht_opportunity_assignment_daily_ft A\n",
 							"join fullJoin B\n",
-							"ON A.{} = B.existing_{}\n",
-							"AND B.{} is NULL\n",
+							"ON A.OPPORTUNITY_KEY=B.existing_OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.existing_OPPORTUNITY_ROLE_KEY \n",
+							"AND A.CRM_ROLE_KEY = B.existing_CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.existing_EMPLOYEE_KEY\n",
+							"AND B.OPPORTUNITY_KEY is NULL AND B.OPPORTUNITY_ROLE_KEY is null and B.CRM_ROLE_KEY is null and B.EMPLOYEE_KEY is null\n",
 							"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
-							"AND A.REC_START_DT=b.existing_REC_START_DT\n",
-							"\n",
+							"AND A.REC_START_DT=b.existing_REC_START_DT ;\n",
 							"\"\"\"\n",
-							"\n",
-							"df_4_recon3=spark.sql(qry_4_recon3.format(natural_key,natural_key,natural_key))\n",
+							"df_4_recon3=spark.sql(qry_4_recon3)\n",
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 24
+						"execution_count": 42
 					},
 					{
 						"cell_type": "code",
@@ -38417,14 +38340,15 @@
 						"source": [
 							"\n",
 							"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
-							"#delete FROM etlhubconfirmed.dht_opportunity_role;\n",
+							"#delete FROM etlhubconfirmed.dht_opportunity_assignment_daily_ft;\n",
 							"\n",
 							"qry_4_recon1=\"\"\"\n",
-							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
+							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
 							"(SELECT 1 FROM {} B\n",
-							"WHERE A.ROLE_CD=B.ROLE_CD\n",
+							"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+							"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 							"and b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM)\n",
 							"\n",
@@ -38433,11 +38357,13 @@
 							"\n",
 							"qry_ins_new_rows=\"\"\"\n",
 							"\n",
-							"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
+							"INSERT INTO etlhubconfirmed.dht_opportunity_assignment_daily_ft\n",
 							"select \n",
-							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \n",
-							",ROLE_CD\n",
-							",ROLE_DESC\n",
+							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ASSIGNMENT_KEY,1 as OPPORTUNITY_ASSIGNMENT_VERSION \n",
+							",OPPORTUNITY_KEY\n",
+							",OPPORTUNITY_ROLE_KEY\n",
+							",CRM_ROLE_KEY\n",
+							",EMPLOYEE_KEY\n",
 							",'Y' AS CURRENT_IND\n",
 							",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 							",CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -38449,11 +38375,12 @@
 							",CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
 							",'ED' AS DATA_IND\n",
 							",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-							"from DHTS_OPPORTUNITY_ROLE A \n",
+							"from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
-							"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
-							"WHERE A.ROLE_CD=B.ROLE_CD\n",
+							"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_assignment_daily_ft B\n",
+							"WHERE A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+							"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
 							"and b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM)\n",
 							"\n",
@@ -38465,9 +38392,32 @@
 							"\n",
 							"#d.show(10)"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 25
+						"execution_count": 43
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select count(*) from etlhubConfirmed.dht_opportunity_assignment_daily_ft"
+						],
+						"outputs": [],
+						"execution_count": 44
 					},
 					{
 						"cell_type": "code",
@@ -38500,7 +38450,6 @@
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 26
 					},
@@ -38551,7 +38500,6 @@
 							"e=spark.sql(qry_ins_changed_rows)\n",
 							"#e.show(4)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 32
 					},
@@ -38586,7 +38534,6 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 33
 					},
@@ -38640,7 +38587,6 @@
 							";\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 35
 					}
