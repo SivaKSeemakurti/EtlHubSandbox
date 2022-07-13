@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0b59f1f8-9662-49b7-94ce-e5e45f08972a"
+				"spark.autotune.trackingId": "b496512b-73f7-44be-9423-09dccaebe59a"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 9
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -157,7 +157,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 13
+				"execution_count": 15
 			},
 			{
 				"cell_type": "markdown",
@@ -184,7 +184,9 @@
 				"source": [
 					"\n",
 					"#Read data from adls csv file extracted from source at \n",
-					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_MARKET_DATA.csv"
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ERDM/DS_INDUSTRY_HIERARCHY_DATA.csv\n",
+					"\n",
+					""
 				]
 			},
 			{
@@ -235,7 +237,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 11
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -281,7 +283,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 12
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
@@ -357,7 +359,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 41
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -421,7 +423,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 44
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -437,13 +439,14 @@
 					},
 					"microsoft": {
 						"language": "sparksql"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
+					"SELECT count(*) FROM etlhubconfirmed.dht_industry_sector where current_ind='Y'"
 				],
-				"execution_count": null
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
