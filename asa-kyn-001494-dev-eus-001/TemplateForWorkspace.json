@@ -13724,7 +13724,7 @@
 						"     validateSchema: false,",
 						"     format: 'query',",
 						"     store: 'sqlserver',",
-						"     query: 'Select \\n     (Select coalesce(max(PRICE_TYPE_CD_DIM_UID), 0) from PGMPDM.PRICE_TYPE_CD_DIM) as MAX_ID,\\n     cast(ROW_NUMBER() over (order by S.INTERNAL_VAL) as Integer) as ROW_NUM,\\n     cast(S.INTERNAL_VAL as char(1)) as PRICE_TYPE_CD,\\n     cast(S.TEXT as varchar(100)) as PRICE_TYPE_DESC,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID,\\n     HashBytes(\\'SHA2_256\\',\\n          coalesce(cast(S.INTERNAL_VAL as char(1)), \\'\\') +\\n          coalesce(cast(S.TEXT as varchar(100)), \\'\\') +\\n          coalesce(cast(JOB.ETL_JOB_ID as varchar), \\'\\') +\\n          coalesce(cast(SYS.SRC_SYS_DIM_UID as varchar), \\'\\')\\n     ) as HASHED_VAL\\nFrom\\n     APPFUN.SEL_LIST_REF_V S\\n     left join (\\n          Select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          From\\n               PGMPDM.ZAUX_ETL_JOBS\\n          Where\\n               ETL_JOB_NM = \\'BALD0345_PRICE_TYPE_CD_DIM\\'\\n     ) JOB\\n     on 1 = 1\\n     left join (\\n          Select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          Where\\n               IS_CURR_IND = \\'Y\\'\\n     ) FIL\\n     on 1 = 1\\n     left join (\\n          Select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          From\\n               PGMPDM.SRC_SYS_DIM\\n          Where\\n               SRC_SYS_CD = \\'PGMP\\'\\n     ) SYS\\n     on 1 = 1',",
+						"     query: 'Select \\n     (Select coalesce(max(PRICE_TYPE_CD_DIM_UID), 0) from PGMPDM.PRICE_TYPE_CD_DIM) as MAX_ID,\\n     cast(ROW_NUMBER() over (order by S.INTERNAL_VAL) as Integer) as ROW_NUM,\\n     cast(S.INTERNAL_VAL as char(1)) as PRICE_TYPE_CD,\\n     cast(S.TEXT as varchar(100)) as PRICE_TYPE_DESC,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID,\\n     HashBytes(\\'SHA2_256\\',\\n          coalesce(cast(S.INTERNAL_VAL as char(1)), \\'\\') +\\n          coalesce(cast(S.TEXT as varchar(100)), \\'\\') +\\n          coalesce(cast(JOB.ETL_JOB_ID as varchar), \\'\\') +\\n          coalesce(cast(SYS.SRC_SYS_DIM_UID as varchar), \\'\\')\\n     ) as HASHED_VAL\\nFrom\\n     APPFUN.SEL_LIST_REF_V S\\n     left join (\\n          Select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          From\\n               PGMPDM.ZAUX_ETL_JOBS\\n          Where\\n               ETL_JOB_NM = \\'BALD0345_PRICE_TYPE_CD_DIM\\'\\n     ) JOB\\n     on 1 = 1\\n     left join (\\n          Select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          Where\\n               IS_CURR_IND = \\'Y\\'\\n     ) FIL\\n     on 1 = 1\\n     left join (\\n          Select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          From\\n               PGMPDM.SRC_SYS_DIM\\n          Where\\n               SRC_SYS_CD = \\'PGMP\\'\\n     ) SYS\\n     on 1 = 1\\nWhere\\n     S.UI_SEL_LIST_ID = 95566\\n     and S.LANG_ID = 1',",
 						"     isolationLevel: 'READ_UNCOMMITTED') ~> getSourceData",
 						"source(output(",
 						"          LKP_PRICE_TYPE_CD as string,",
@@ -35876,7 +35876,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "17c7fbb2-c6d5-4e54-8c9f-8c66d81c5d5b"
+						"spark.autotune.trackingId": "51754958-d7c3-4b57-a067-45a3212ebd3b"
 					}
 				},
 				"metadata": {
@@ -35901,8 +35901,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -36789,7 +36788,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "95263905-16ad-4983-b44e-2aba62355527"
+						"spark.autotune.trackingId": "505842c3-558a-4acb-b287-55b4f78203bc"
 					}
 				},
 				"metadata": {
@@ -36814,7 +36813,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -38712,7 +38712,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "ec7c7669-9669-400d-b0a8-ba2fb6e49041"
+						"spark.autotune.trackingId": "b9f9ad52-3563-4f5f-a4d2-a22310178d4b"
 					}
 				},
 				"metadata": {
@@ -39247,9 +39247,11 @@
 							"qry_4_upd_changes_rows=\"\"\"\n",
 							"\n",
 							"MERGE INTO {} A\n",
-							"USING DHTS_OPPORTUNITY_ROLE B\n",
-							"ON A.{} = B.{}\n",
-							"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
+							"USING DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA B\n",
+							"ON A.OPPORTUNITY_KEY=B.OPPORTUNITY_KEY AND A.OPPORTUNITY_ROLE_KEY = B.OPPORTUNITY_ROLE_KEY \n",
+							"AND A.CRM_ROLE_KEY = B.CRM_ROLE_KEY AND A.EMPLOYEE_KEY = B.EMPLOYEE_KEY\n",
+							"AND B.OPPORTUNITY_KEY=B.existing_OPPORTUNITY_KEY AND B.OPPORTUNITY_ROLE_KEY = B.existing_OPPORTUNITY_ROLE_KEY \n",
+							"AND B.CRM_ROLE_KEY = B.existing_CRM_ROLE_KEY AND B.EMPLOYEE_KEY = B.existing_EMPLOYEE_KEY\n",
 							"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
@@ -39257,7 +39259,7 @@
 							"    ,IMG_LST_UPD_DT=current_timestamp\n",
 							";\n",
 							"\"\"\"\n",
-							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
+							"f=spark.sql(qry_4_upd_changes_rows.format(tablename))\n",
 							""
 						],
 						"outputs": [],
@@ -39280,11 +39282,13 @@
 						"source": [
 							"#Insert for changed rows which are missing in target and present in source based on Natural Key.\n",
 							"qry_ins_changed_rows=\"\"\"\n",
-							"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
-							"select A.existing_OPPORTUNITY_ROLE_KEY\n",
-							",1 + existing_OPPORTUNITY_ROLE_VERSION as OPPORTUNITY_ROLE_VERSION\n",
-							",ROLE_CD\n",
-							",ROLE_DESC\n",
+							"INSERT INTO etlhubconfirmed.dht_opportunity_assignment_daily_ft\n",
+							"select A.existing_OPPORTUNITY_ASSIGNMENT_KEY\n",
+							",1 + existing_OPPORTUNITY_ASSIGNMENT_VERSION as OPPORTUNITY_ASSIGNMENT_VERSION\n",
+							",OPPORTUNITY_KEY\n",
+							",OPPORTUNITY_ROLE_KEY\n",
+							",CRM_ROLE_KEY\n",
+							",EMPLOYEE_KEY\n",
 							",'Y' AS CURRENT_IND\n",
 							",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 							",CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -39296,13 +39300,11 @@
 							",A.existing_IMG_CREATED_DT AS IMG_CREATED_DT\n",
 							",'LG' AS DATA_IND\n",
 							",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-							"from DHTS_OPPORTUNITY_ROLE A \n",
-							"WHERE TRIM(LOWER(ROLE_CD)) = TRIM(LOWER(existing_ROLE_CD)) \n",
-							"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
+							"from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA A \n",
+							"WHERE LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 							"AND NOT EXISTS\n",
 							"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
-							"WHERE TRIM(LOWER(A.ROLE_CD))=TRIM(LOWER(B.ROLE_CD))\n",
-							"and b.CURRENT_IND='Y'\n",
+							"WHERE b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM\n",
 							")\n",
 							";\n",
