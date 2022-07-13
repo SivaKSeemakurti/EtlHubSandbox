@@ -35876,7 +35876,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7a1d2403-e0b8-4f1b-95af-e4fa0f5cbedf"
+						"spark.autotune.trackingId": "17c7fbb2-c6d5-4e54-8c9f-8c66d81c5d5b"
 					}
 				},
 				"metadata": {
@@ -35923,7 +35923,7 @@
 							"\n",
 							"The Geography has been downloaded from ERDM in a CSV format and uploaded to adls for loading to Industry Dimension.\n",
 							"\n",
-							"ERDM Industry Sector Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmStandardDetails/102\n",
+							"ERDM GeographyLink: pokgsa.ibm.com/gsa/pokgsa/projects/t/tmtproj/output/Approved/ibmww/kyn/bds/kyn_gtm/REFT_CTRY_MKT_REL_KYNDRYL.html\n",
 							"\n",
 							"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
 							""
