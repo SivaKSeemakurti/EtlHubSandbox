@@ -1975,6 +1975,82 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "PRICE TYPE CD DIM",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_BALD0345_PRICE_TYPE_CD_DIM",
+								"type": "DataFlowReference",
+								"parameters": {
+									"current_user": {
+										"value": "'@{pipeline().parameters.current_user}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"getSourceData": {},
+									"getLookupData": {},
+									"updateTable": {},
+									"insertTable": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "PRFRMNC DIM",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_BALD0340_PRFRMNC_DIM",
+								"type": "DataFlowReference",
+								"parameters": {
+									"current_user": {
+										"value": "'@{pipeline().parameters.current_user}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"getSourceData": {},
+									"getLookupData": {},
+									"updateTable": {},
+									"insertTable": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -2020,7 +2096,10 @@
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0270_GOVRNNC_DIM')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0040_ADTNL_INFRMTN_DIM')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD1090_CNTRCT_DIM')]",
-				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0050_APPRVL_STATE_DIM')]"
+				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0050_APPRVL_STATE_DIM')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
+				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0345_PRICE_TYPE_CD_DIM')]",
+				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0340_PRFRMNC_DIM')]"
 			]
 		},
 		{
@@ -5370,6 +5449,49 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/pipelines/BALSEQ0000_MASTER_EN_SEQ')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Trigger_EtlHub_Dimension_Load')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "PL_ETLHUB_DIMENSION_LOAD",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2022-07-14T00:24:00",
+						"timeZone": "Central Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								3
+							],
+							"weekDays": [
+								"Monday",
+								"Wednesday",
+								"Friday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/PL_ETLHUB_DIMENSION_LOAD')]"
 			]
 		},
 		{
@@ -47061,49 +47183,6 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Trigger_EtlHub_Dimension_Load')]",
-			"type": "Microsoft.Synapse/workspaces/triggers",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "PL_ETLHUB_DIMENSION_LOAD",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Week",
-						"interval": 1,
-						"startTime": "2022-07-14T00:24:00",
-						"timeZone": "Central Standard Time",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								3
-							],
-							"weekDays": [
-								"Monday",
-								"Wednesday",
-								"Friday"
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/PL_ETLHUB_DIMENSION_LOAD')]"
-			]
 		}
 	]
 }
