@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6fb7d561-9c37-4ea4-90d3-6feea269c053"
+				"spark.autotune.trackingId": "7238b821-a70a-489d-9f12-9fd4e0a412e5"
 			}
 		},
 		"metadata": {
@@ -598,10 +598,10 @@
 					")\n",
 					";\n",
 					"\n",
-					"SELECT COUNT(*) FROM etlhubConfirmed.DHT_MARKET A\n",
-					"JOIN DHTS_MARKET B\n",
-					"ON A.MARKET_BUSINESS_CD = B.MARKET_BUSINESS_CD\n",
-					"AND LOWER(B.MARKET_BUSINESS_CD) = LOWER(B.existing_MARKET_BUSINESS_CD) \n",
+					"SELECT COUNT(*) FROM etlhubConfirmed.DHT_SALES_STAGE A\n",
+					"JOIN DHTS_SALES_STAGE B\n",
+					"ON A.SALES_STAGE_CD = B.SALES_STAGE_CD\n",
+					"AND LOWER(B.SALES_STAGE_CD) = LOWER(B.existing_SALES_STAGE_CD) \n",
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
