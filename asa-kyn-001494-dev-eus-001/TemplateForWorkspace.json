@@ -6354,6 +6354,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 10-06-2022\nJob Name: DF_BALD0006_CP_RISK_RPT\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/CP Summary & Custom Field audit"
 				},
@@ -6513,6 +6514,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 13-06-2022\nJob Name: DF_BALD0007_CSTM_DATA_PUBLIC_AUDIT_RPT\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/CP Summary & Custom Field audit"
 				},
@@ -6741,6 +6743,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 13-06-2022\nJob Name: DF_BALD0008_CSTM_DATA_KYNDRTL_ONLY_AUDIT_RPT\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/CP Summary & Custom Field audit"
 				},
@@ -6939,6 +6942,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 14-06-2022\nJob Name: DF_BALD0009_CNTRY_CSTM_DATA_PUBLIC_AUDIT_RPT\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/CP Summary & Custom Field audit"
 				},
@@ -7272,6 +7276,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 14-06-2022\nJob Name: DF_BALD0010_CNTRY_CSTM_DATA_KYNDRTL_ONLY_AUDIT_RPT\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/CP Summary & Custom Field audit"
 				},
@@ -8243,6 +8248,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 06-06-2022\nJob Name: DF_BALD0060_BASELN_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -8443,6 +8449,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 06-06-2022\nJob Name: DF_BALD0070_BOTE_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -10470,6 +10477,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 08-06-2022\nJob Name: DF_BALD0200_CUSTSTSFCN_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -10675,6 +10683,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 08-06-2022\nJob Name: DF_BALD0205_DATE_CHG_RSN_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -10942,6 +10951,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 09-06-2022\nJob Name: DF_BALD0210_DELD_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -14932,6 +14942,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 07-06-2022\nJob Name: DF_BALD0600_BIZDEVMT_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
