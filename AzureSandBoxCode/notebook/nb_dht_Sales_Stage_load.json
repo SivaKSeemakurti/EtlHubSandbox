@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "49933f15-69c4-4cbf-b8af-b61a401e7b09"
+				"spark.autotune.trackingId": "e86de31d-4a4f-4a88-b682-37fd9775a8ff"
 			}
 		},
 		"metadata": {
@@ -99,7 +99,7 @@
 					"from azure.storage.blob import BlobClient\n",
 					"import pandas as pd\n",
 					"from io import StringIO\n",
-					"from pyspark.sql.functions import md5, concat_ws\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
 					"from sqlite3 import connect\n",
 					"from pyspark.sql import functions as F\n",
 					"from pyspark.sql.functions import col\n",
@@ -472,7 +472,7 @@
 					"\n",
 					"INSERT INTO {}\n",
 					"\tselect \n",
-					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as VERSION \n",
+					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as SALES_STAGE_VERSION \n",
 					",\tCUSTOMER_NO\n",
 					",\tCUSTOMER_NM\n",
 					",\tINAC_CD\n",
