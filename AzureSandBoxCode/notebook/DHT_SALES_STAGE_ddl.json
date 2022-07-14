@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b0999f6d-989e-44a0-b443-69667d8e8fa3"
+				"spark.autotune.trackingId": "5c72f45e-a72c-4a03-a9a3-54d9ccaf7df6"
 			}
 		},
 		"metadata": {
@@ -88,7 +88,7 @@
 					"-- specify data lake folder location\n",
 					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_SALES_STAGE'   "
 				],
-				"execution_count": 1
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -109,7 +109,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"DROP TABLE etlhubconfirmed.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT"
+					"DROP TABLE etlhubconfirmed.DHT_SALES_STAGE"
 				],
 				"execution_count": 45
 			},
@@ -132,9 +132,9 @@
 				},
 				"source": [
 					"%%sql\n",
-					"DELETE FROM etlhubconfirmed.DHT_OPPORTUNITY_ASSIGNMENT_DAILY_FT"
+					"select * FROM etlhubconfirmed.DHT_SALES_STAGE"
 				],
-				"execution_count": 9
+				"execution_count": 3
 			}
 		]
 	}
