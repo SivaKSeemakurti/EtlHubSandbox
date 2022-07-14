@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "fc2b3ce2-e977-4782-8262-9718b1e3412e"
+				"spark.autotune.trackingId": "49933f15-69c4-4cbf-b8af-b61a401e7b09"
 			}
 		},
 		"metadata": {
@@ -144,11 +144,11 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='DS_MARKET_DATA.csv' \n",
-					"natural_key=\"MARKET_BUSINESS_CD\"\n",
-					"tablename=\"etlhubConfirmed.dht_market\"\n",
-					"stagingtable=\"DHTS_MARKET\"\n",
-					"keycolumn=\"MARKET_KEY\"\n",
+					"file_name='DS_SALES_STAGE_DATA.csv' \n",
+					"natural_key=\"SALES_STAGE_CD\"\n",
+					"tablename=\"etlhubConfirmed.dht_sales_stage\"\n",
+					"stagingtable=\"DHTS_SALES_STAGE\"\n",
+					"keycolumn=\"SALES_STAGE_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
@@ -250,11 +250,8 @@
 					"#Create a dataframe with target deltalake table data with necessary columns\n",
 					"\n",
 					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
-					"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
 					"\n",
 					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
-					"\n",
-					"#existingMaxKeyDF=spark.sql(\"SELECT MAX(EMPLOYEE_KEY) existing_MAX_KEY from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
 					"\n",
 					"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
 					"\n",
@@ -436,7 +433,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
+					"SELECT count(*) FROM etlhubconfirmed.dht_sales_stage where current_ind='Y'"
 				],
 				"execution_count": null
 			},
