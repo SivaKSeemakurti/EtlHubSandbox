@@ -1,0 +1,9 @@
+{
+	"name": "PL_ETLHUB_DIMENSION_LOAD",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"annotations": []
+	}
+}
