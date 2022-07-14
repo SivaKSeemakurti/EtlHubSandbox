@@ -7836,6 +7836,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 15-06-2022\nJob Name: DF_BALD0040_ADTNL_INFRMTN_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -8053,6 +8054,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 15-06-2022\nJob Name: DF_BALD0050_APPRVL_STATE_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -8650,6 +8652,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 27-06-2022\nJob Name: DF_BALD0080_CATLG_BRAND_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -9105,6 +9108,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 28-06-2022\nJob Name: DF_BALD0150_CNTRCT_CHG_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -9357,6 +9361,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 29-06-2022\nJob Name: DF_BALD0160_CNTRCT_DLVRBL_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -9594,6 +9599,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 30-06-2022\nJob Name: DF_BALD0170_CNTRCT_TYPE_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -9785,6 +9791,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 30-06-2022\nJob Name: DF_BALD0180_CRNCY_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -10018,6 +10025,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 01-07-2022\nJob Name: DF_BALD0190_CSTM_FIELDS_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -11147,6 +11155,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 16-06-2022\nJob Name: DF_BALD0220_DELIVOPS_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -11350,6 +11359,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 16-06-2022\nJob Name: DF_BALD0230_DOCMTCTL_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -11553,6 +11563,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 17-06-2022\nJob Name: DF_BALD0240_FINNC_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -11756,6 +11767,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 20-06-2022\nJob Name: DF_BALD0250_FMLCRSPN_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -12249,6 +12261,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 20-06-2022\nJob Name: DF_BALD0270_GOVRNNC_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
@@ -15140,6 +15153,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 22-06-2022\nJob Name: DF_BALD1090_CNTRCT_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
