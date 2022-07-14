@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0009_CNTRY_CSTM_DATA_PUBLIC_AUDIT_RPT",
 	"properties": {
+		"description": "Job Creation: 14-06-2022\nJob Name: DF_BALD0009_CNTRY_CSTM_DATA_PUBLIC_AUDIT_RPT\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/CP Summary & Custom Field audit"
 		},

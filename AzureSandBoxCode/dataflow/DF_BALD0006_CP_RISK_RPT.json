@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0006_CP_RISK_RPT",
 	"properties": {
+		"description": "Job Creation: 10-06-2022\nJob Name: DF_BALD0006_CP_RISK_RPT\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/CP Summary & Custom Field audit"
 		},
