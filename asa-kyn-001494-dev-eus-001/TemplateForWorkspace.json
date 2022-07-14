@@ -8864,6 +8864,7 @@
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"description": "Job Creation: 06-07-2022\nJob Name: DF_BALD0130_CLNT_DIM\nCreated By: Subramanian R",
 				"folder": {
 					"name": "PGMP/Dimension"
 				},
