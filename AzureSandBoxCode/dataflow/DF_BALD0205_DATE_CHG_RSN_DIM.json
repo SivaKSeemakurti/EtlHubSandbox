@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0205_DATE_CHG_RSN_DIM",
 	"properties": {
+		"description": "Job Creation: 08-06-2022\nJob Name: DF_BALD0205_DATE_CHG_RSN_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},
