@@ -2051,6 +2051,82 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "CATLG BRAND DIM",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_BALD0080_CATLG_BRAND_DIM",
+								"type": "DataFlowReference",
+								"parameters": {
+									"current_user": {
+										"value": "'@{pipeline().parameters.current_user}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"getSourceData": {},
+									"getLookupData": {},
+									"updateTable": {},
+									"insertTable": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "CSTM FIELDS DIM",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_BALD0190_CSTM_FIELDS_DIM",
+								"type": "DataFlowReference",
+								"parameters": {
+									"current_user": {
+										"value": "'@{pipeline().parameters.current_user}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"getSourceData": {},
+									"getLookupData": {},
+									"updateTable": {},
+									"insertTable": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -2099,7 +2175,9 @@
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0050_APPRVL_STATE_DIM')]",
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0345_PRICE_TYPE_CD_DIM')]",
-				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0340_PRFRMNC_DIM')]"
+				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0340_PRFRMNC_DIM')]",
+				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0080_CATLG_BRAND_DIM')]",
+				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0190_CSTM_FIELDS_DIM')]"
 			]
 		},
 		{
