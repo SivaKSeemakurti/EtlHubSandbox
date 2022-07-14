@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0190_CSTM_FIELDS_DIM",
 	"properties": {
+		"description": "Job Creation: 01-07-2022\nJob Name: DF_BALD0190_CSTM_FIELDS_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},

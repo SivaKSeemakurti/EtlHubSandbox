@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0040_ADTNL_INFRMTN_DIM",
 	"properties": {
+		"description": "Job Creation: 15-06-2022\nJob Name: DF_BALD0040_ADTNL_INFRMTN_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},

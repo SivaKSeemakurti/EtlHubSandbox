@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0250_FMLCRSPN_DIM",
 	"properties": {
+		"description": "Job Creation: 20-06-2022\nJob Name: DF_BALD0250_FMLCRSPN_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},

@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0080_CATLG_BRAND_DIM",
 	"properties": {
+		"description": "Job Creation: 27-06-2022\nJob Name: DF_BALD0080_CATLG_BRAND_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},

@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0230_DOCMTCTL_DIM",
 	"properties": {
+		"description": "Job Creation: 16-06-2022\nJob Name: DF_BALD0230_DOCMTCTL_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},

@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0180_CRNCY_DIM",
 	"properties": {
+		"description": "Job Creation: 30-06-2022\nJob Name: DF_BALD0180_CRNCY_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},

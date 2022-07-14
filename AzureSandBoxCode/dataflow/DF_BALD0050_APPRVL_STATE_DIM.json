@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0050_APPRVL_STATE_DIM",
 	"properties": {
+		"description": "Job Creation: 15-06-2022\nJob Name: DF_BALD0050_APPRVL_STATE_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},
