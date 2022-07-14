@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0345_PRICE_TYPE_CD_DIM",
 	"properties": {
+		"description": "Job Creation: 12-07-2022\nJob Name: DF_BALD0345_PRICE_TYPE_CD_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},

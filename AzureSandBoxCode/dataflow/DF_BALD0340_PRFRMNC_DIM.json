@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0340_PRFRMNC_DIM",
 	"properties": {
+		"description": "Job Creation: 14-07-2022\nJob Name: DF_BALD0340_PRFRMNC_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},
