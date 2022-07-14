@@ -142,7 +142,7 @@
 						"Content-Type": "Application/Json"
 					},
 					"body": {
-						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_Employee_Load').output},\n        \"JobStatus\" : \"Success\"\n}",
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_Market_Load').output},\n        \"JobStatus\" : \"Success\"\n}",
 						"type": "Expression"
 					}
 				}
@@ -177,7 +177,7 @@
 						"Content-Type": "Application/Json"
 					},
 					"body": {
-						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_Employee_Load').output}\n}",
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_Market_Load').output}\n}",
 						"type": "Expression"
 					}
 				}
