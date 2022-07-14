@@ -823,6 +823,66 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "CATLG BRAND DIM",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0080_CATLG_BRAND_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CSTM FIELDS DIM",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0190_CSTM_FIELDS_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"parameters": {
