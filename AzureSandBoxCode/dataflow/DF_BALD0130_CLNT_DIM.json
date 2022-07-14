@@ -1,6 +1,7 @@
 {
 	"name": "DF_BALD0130_CLNT_DIM",
 	"properties": {
+		"description": "Job Creation: 06-07-2022\nJob Name: DF_BALD0130_CLNT_DIM\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Dimension"
 		},
