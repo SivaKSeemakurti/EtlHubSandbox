@@ -1,6 +1,7 @@
 {
 	"name": "BALSEQ0120_MASTER_SET_LIMITS",
 	"properties": {
+		"description": "Job Creation: 29-06-2022\nJob Name: BALSEQ0120_MASTER_SET_LIMITS\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Sequence"
 		},

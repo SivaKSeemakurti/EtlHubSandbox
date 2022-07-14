@@ -1,6 +1,7 @@
 {
 	"name": "BALSEQ0130_MASTER_SEQ_END",
 	"properties": {
+		"description": "Job Creation: 30-06-2022\nJob Name: BALSEQ0130_MASTER_SEQ_END\nCreated By: Subramanian R",
 		"folder": {
 			"name": "PGMP/Sequence"
 		},
