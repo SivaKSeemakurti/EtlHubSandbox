@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e05d3012-484b-41ff-a4b8-48c92136811a"
+				"spark.autotune.trackingId": "3eb921c0-7d5a-445e-bcac-874f7d55d758"
 			}
 		},
 		"metadata": {
@@ -854,11 +854,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT * FROM etlhubconfirmed.dht_market WHERE --CURRENT_IND='N' \n",
-					"MARKET_BUSINESS_CD ='008887~613'\n",
-					"    --'008915~613'\n",
-					"        --71588\n",
-					"        --71590\n",
+					"SELECT * FROM etlhubconfirmed.dht_sales_stage\n",
 					""
 				],
 				"execution_count": 8
