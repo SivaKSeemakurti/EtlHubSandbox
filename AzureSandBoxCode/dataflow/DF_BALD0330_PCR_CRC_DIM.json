@@ -63,6 +63,13 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "implementationReadyForCADate"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getLookupData"
 				}
 			],
 			"sinks": [
@@ -117,6 +124,24 @@
 				},
 				{
 					"name": "joinPSTCD"
+				},
+				{
+					"name": "joinIRFCAD"
+				},
+				{
+					"name": "joinCRRICD"
+				},
+				{
+					"name": "joinCRICD"
+				},
+				{
+					"name": "renamedColumns"
+				},
+				{
+					"name": "sortedLookupData"
+				},
+				{
+					"name": "mergedData"
 				}
 			],
 			"scriptLines": [
@@ -367,6 +392,12 @@
 				"     store: 'sqlserver',",
 				"     query: 'Select\\n     S.PCR_CRC_DIM_UID,\\n     S.IMPLMNT_RDY_CUST_ACCEPT_DT as IMPLMTN_READY_FOR_CUST_ACCPTNC_FIRST_TM_DT\\nFrom\\n     (\\n          Select\\n               H.PROC_ID as PCR_CRC_DIM_UID,\\n               cast(null as Date) as IMPLMNT_RDY_CUST_ACCEPT_DT,\\n               ROW_NUMBER() over (partition by H.PROC_ID order by H.UPDATED_TS asc) as POS\\n          From\\n               APPFUN.PCR_H as H\\n               inner join\\n               PGMPDM.ZAUX_DATE_TRIGGERS as TGR\\n               on H.PROC_ID = TGR.PROC_ID\\n     ) as S\\nWhere\\n     S.POS = 1',",
 				"     isolationLevel: 'READ_UNCOMMITTED') ~> implementationReadyForCADate",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\r\\n     S.PCR_CRC_DIM_UID,\r\\n     S.PRPSL_PRICE_TERM_DIM_UID,\r\\n     S.CMPLXTY_DIM_UID,\r\\n     S.RQST_STAT_DIM_UID,\r\\n     S.RQST_TYPE_DIM_UID,\r\\n     S.RQST_RCVD_DT,\r\\n     S.PRPSL_RQST_DT,\r\\n     S.CLNT_RVSD_PRPSL_RQSTD_DT,\r\\n     S.PRPSL_SENT_TO_CLNT_DT,\r\\n     S.PRPSL_SENT_TO_CLNT_DT_WD,\r\\n     S.PRPSL_ACCPTD_DT,\r\\n     S.PRPSL_ACCPTD_DT_WD,\r\\n     S.PRPSL_REJCT_DT,\r\\n     S.RQST_IMPLMNT_CMPLTD_DT,\r\\n     S.CLNT_RVSD_RQST_IMPL_CMPL_DT,\r\\n     S.IMPLMNT_READY_CUST_ACCEPT_DT,\r\\n     S.IMPLMNT_READY_CUST_ACCEPT_DT_WD,\r\\n     S.PRPSL_EXP_DT, PRPSL_DSPSN_DT_WD,\r\\n     S.ON_HOLD_DT,\r\\n     S.WITHDRWN_DT,\r\\n     S.DELD_DT,\r\\n     S.LATEST_PRPSL_RQSTD_DT,\r\\n     S.LATEST_IMPLMNT_RQSTD_DT,\r\\n     S.PRPSL_OR_REJCT_DT,\r\\n     S.MERGED_DT,\r\\n     S.CLNT_ACCNTG_CD,\r\\n     S.CLNT_CNTCT_NM,\r\\n     S.CLNT_AFFCT_AREA_TXT,\r\\n     S.AGRMT_REF_DTL_TXT,\r\\n     S.SRVC_TYPE_TXT,\r\\n     S.CLNT_APPRVL_NUM,\r\\n     S.RFS_GROUP_NM,\r\\n     S.SRVC_PRVDR_ORGNZN_TXT,\r\\n     S.PREDEFND_SRVCS_DESC,\r\\n     S.SIEBEL_OPPRTNTY_NUM,\r\\n     S.BTT_NUM,\r\\n     S.SLTN_OWNR_TXT,\r\\n     S.DLVR_CRDNTR_TXT,\r\\n     S.SLTN_DSGNR_TXT,\r\\n     S.CLAIM_ACCNT_CD,\r\\n     S.CLAIM_WORK_ITEM_CD,\r\\n     S.RSRC_SUMRY_PRSNL_INVOLV_IND,\r\\n     S.RSRC_SUMRY_SERVER_COM_IND,\r\\n     S.RSRC_SUMRY_STRG_COM_IND,\r\\n     S.RSRC_SUMRY_HW_COM_IND,\r\\n     S.RSRC_SUMRY_SOFTWR_COM_IND,\r\\n     S.RJCT_RSN_CD,\r\\n     S.RJCT_SRC_CD,\r\\n     S.RJCT_EXPLNN_TXT,\r\\n     S.PRICE_TYPE_CD,\r\\n     S.RSN_CD,\r\\n     S.PURCHS_ORDR_NM,\r\\n     S.UNSLCTD_RQST_IND,\r\\n     S.CNTRCT_CHNG_RQRD_IND,\r\\n     S.OATS_RCD_RRQRD_IND,\r\\n     S.NON_STD_T_AND_C_IND,\r\\n     S.TRVL_INVC_IND,\r\\n     S.TERMNTN_CHRGS_IND,\r\\n     S.RNWL_MNTH_CD,\r\\n     S.BYPSS_SLTN_DSGN_IND,\r\\n     S.PRPSL_OWNR_TXT,\r\\n     S.ETL_JOB_ID,\r\\n     S.SRC_SYS_DIM_UID,\r\\n     S.HAS_PRNT_RFS_IND,\r\\n     S.PRNT_PROC_DIM_UID,\r\\n     S.PRJCT_DIM_UID,\r\\n     S.L30_OFFRNG_ID_1, \r\\n     S.L30_OFFRNG_ID_2, \r\\n     S.L30_OFFRNG_ID_3,\r\\n     S.CLNT_PRPSL_RQSTD_FIRST_TM_DT, \r\\n     S.CLNT_RVSD_PRPSL_RQSTD_FIRST_TM_DT, \r\\n     S.PRPSL_SENT_TO_CLNT_FIRST_TM_DT, \r\\n     S.CLNT_RQSTD_IMPLMTN_CMPLT_FIRST_TM_DT, \r\\n     S.CLNT_RVSD_RQSTD_IMPLMTN_CMPLT_FIRST_TM_DT, \r\\n     S.IMPLMTN_READY_FOR_CUST_ACCPTNC_FIRST_TM_DT,\r\\n    S.GEO_DIM_UID,\r\\n    S.ORGNTG_ORG,\r\\n    S.PRICER_NM,\r\\n    S.SOLTN_TEAM,\r\\n    S.ERO_CHCKD_DT, \r\\n    S.EA_CHCKD_DT,\r\\n    S.CE_CHCKD_DT,\r\\n    S.EXPORT_REG,\r\\n    S.ENVMNTL_AFF,\r\\n    S.CMPLNCE_ENGG,\r\\n    S.GROSS_TCP_CTRY_CD,\r\\n    S.GROSS_TCP_GEO_DIM_UID     \r\\nFrom\r\\n     PGMPDM.PCR_CRC_DIM as S\r\\n     inner join\r\\n     PGMPDM.ZAUX_DATE_TRIGGERS as ZDT\r\\n     on S.PCR_CRC_DIM_UID = ZDT.PROC_ID',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getLookupData",
 				"selectUpdateData alterRow(updateIf(true())) ~> updateRows",
 				"dropUnchangedRows split(ROW_STATUS!='I',",
 				"     disjoint: false) ~> CDC@(dataToBeUpdated, dataToBeInserted)",
@@ -411,7 +442,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectUpdateData",
-				"joinPSTCD derive(ROW_STATUS = case(sourcePCRCRCData@PRICE_TYPE_CD == toString(null()) && getSourceCRCData@LKP_PRICE_TYPE_CD != toString(null()), 'D', case(sourcePCRCRCData@PRICE_TYPE_CD != toString(null()) && getSourceCRCData@LKP_PRICE_TYPE_CD == toString(null()), 'I', case(HASHED_VAL == getSourceCRCData@LKP_HASHED_VAL, 'L', 'U')))) ~> CDCval",
+				"mergedData derive(ROW_STATUS = case(sourcePCRCRCData@PRICE_TYPE_CD == toString(null()) && getSourceCRCData@LKP_PRICE_TYPE_CD != toString(null()), 'D', case(sourcePCRCRCData@PRICE_TYPE_CD != toString(null()) && getSourceCRCData@LKP_PRICE_TYPE_CD == toString(null()), 'I', case(HASHED_VAL == getSourceCRCData@LKP_HASHED_VAL, 'L', 'U')))) ~> CDCval",
 				"CDCval filter(ROW_STATUS != 'L') ~> dropUnchangedRows",
 				"getSourcePCRData, getSourceCRCData union(byName: true)~> sourcePCRCRCData",
 				"joinCPRD, clientRevisedProposalRqstDate join(sourcePCRCRCData@PCR_CRC_DIM_UID == clientRevisedProposalRqstDate@PCR_CRC_DIM_UID,",
@@ -424,6 +455,33 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinPSTCD",
+				"joinCRRICD, implementationReadyForCADate join(sourcePCRCRCData@PCR_CRC_DIM_UID == implementationReadyForCADate@PCR_CRC_DIM_UID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinIRFCAD",
+				"joinCRICD, clientRevisedRqstImplementCompletionDate join(sourcePCRCRCData@PCR_CRC_DIM_UID == clientRevisedRqstImplementCompletionDate@PCR_CRC_DIM_UID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinCRRICD",
+				"joinPSTCD, clientRqstImplementCompletionDate join(sourcePCRCRCData@PCR_CRC_DIM_UID == clientRqstImplementCompletionDate@PCR_CRC_DIM_UID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinCRICD",
+				"getLookupData select(mapColumn(",
+				"          each(match(true()),",
+				"               'LKP_' + $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> renamedColumns",
+				"renamedColumns sort(asc(ERROR_FUNCTION(''), true)) ~> sortedLookupData",
+				"joinIRFCAD, sortedLookupData join(sourcePCRCRCData@PCR_CRC_DIM_UID == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> mergedData",
 				"updateRows sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'table',",
