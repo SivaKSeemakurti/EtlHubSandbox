@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3eb921c0-7d5a-445e-bcac-874f7d55d758"
+				"spark.autotune.trackingId": "e745242c-12ba-4cca-bbc5-d1495e5ee6df"
 			}
 		},
 		"metadata": {
@@ -152,7 +152,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 17
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -177,9 +177,8 @@
 					}
 				},
 				"source": [
-					"\n",
 					"#Read data from adls csv file extracted from source at \n",
-					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_MARKET_DATA.csv"
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_SALES_STAGE_DATA.csv"
 				]
 			},
 			{
@@ -230,7 +229,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 18
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
