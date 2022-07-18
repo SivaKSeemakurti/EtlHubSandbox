@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e5480a06-f3d4-4a3f-a89c-b6347db29aee"
+				"spark.autotune.trackingId": "6fa19611-bb2b-4f3a-84c3-6a75865f2eb4"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 46
+				"execution_count": 49
 			},
 			{
 				"cell_type": "markdown",
@@ -152,7 +152,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 47
+				"execution_count": 50
 			},
 			{
 				"cell_type": "markdown",
@@ -226,7 +226,7 @@
 					"\n",
 					"#incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 48
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
