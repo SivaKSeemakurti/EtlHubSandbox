@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6fa19611-bb2b-4f3a-84c3-6a75865f2eb4"
+				"spark.autotune.trackingId": "c29fffe6-92c4-4a9a-9b45-faf5a279ec8d"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 49
+				"execution_count": 55
 			},
 			{
 				"cell_type": "markdown",
