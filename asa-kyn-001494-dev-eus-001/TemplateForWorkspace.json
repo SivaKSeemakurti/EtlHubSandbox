@@ -2003,8 +2003,7 @@
 									"getLookupData": {},
 									"updateTable": {},
 									"insertTable": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -2041,8 +2040,7 @@
 									"getLookupData": {},
 									"updateTable": {},
 									"insertTable": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -2079,8 +2077,7 @@
 									"getLookupData": {},
 									"updateTable": {},
 									"insertTable": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -2117,8 +2114,7 @@
 									"getLookupData": {},
 									"updateTable": {},
 									"insertTable": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -2173,7 +2169,6 @@
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0040_ADTNL_INFRMTN_DIM')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD1090_CNTRCT_DIM')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0050_APPRVL_STATE_DIM')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0345_PRICE_TYPE_CD_DIM')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0340_PRFRMNC_DIM')]",
 				"[concat(variables('workspaceId'), '/dataflows/DF_BALD0080_CATLG_BRAND_DIM')]",
@@ -20153,6 +20148,278 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/DHT_CAMPUS')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "ETLHub/CreateTableScripts"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sPoolKyn001494",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "5ac31909-7f5f-43cc-8f23-291e9010be2d"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+						"name": "sPoolKyn001494",
+						"type": "Spark",
+						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 8,
+						"memory": 56,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"-- DBXDH.DHT_INDUSTRY_SECTOR definition\n",
+							"\n",
+							"\n",
+							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_INDUSTRY_SECTOR  (\t\n",
+							"\n",
+							"\tINDUSTRY_SECTOR_KEY\tINT NOT NULL\n",
+							",\tINDUSTRY_SECTOR_VERSION\tINT NOT NULL\n",
+							",\tlevelNum\tSTRING\n",
+							",\tparentCode\tSTRING\n",
+							",\tcode\tSTRING\n",
+							",\tlongDescription\tSTRING\n",
+							",\tmediumDescription\tSTRING\n",
+							",\tshortDescription\tSTRING\n",
+							",\tcomments\tSTRING\n",
+							",\trecordStatus\tSTRING\n",
+							",\trowCreateTs\tSTRING\n",
+							",\trowUpdateTs\tSTRING\n",
+							",\tUSAGE_RULE\tSTRING\n",
+							",\tALT_DESC_FULL_1\tSTRING\n",
+							",\tALT_DESC_FULL_2\tSTRING\n",
+							",\tCURRENT_IND\tSTRING\n",
+							",\tEXTRACT_DT TIMESTAMP\n",
+							",\tREC_START_DT TIMESTAMP\n",
+							",\tREC_END_DT TIMESTAMP\n",
+							",\tSOURCE_SYSTEM STRING\n",
+							",\tREC_CHECKSUM STRING\n",
+							",\tREC_STATUS STRING\t\n",
+							",\tIMG_LST_UPD_DT TIMESTAMP\n",
+							",\tIMG_CREATED_DT TIMESTAMP\n",
+							",   ACTIVE_IN_SOURCE_IND STRING\t\n",
+							") \n",
+							"USING DELTA\n",
+							"PARTITIONED BY (CURRENT_IND)\n",
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_INDUSTRY_SECTOR'"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"DROP TABLE etlhubConfirmed.DHT_INDUSTRY_SECTOR"
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"DELETE FROM etlhubConfirmed.DHT_INDUSTRY_SECTOR"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#sample table\n",
+							"# Create table in the metastore\n",
+							"from delta.tables import *\n",
+							"\n",
+							"DeltaTable.createIfNotExists(spark) \\\n",
+							"  .tableName(\"etlhubConfirmed.test\") \\\n",
+							"  .addColumn(\"id\", \"INT\") \\\n",
+							"  .addColumn(\"firstName\", \"STRING\") \\\n",
+							"  .addColumn(\"middleName\", \"STRING\") \\\n",
+							"  .addColumn(\"lastName\", \"STRING\", comment = \"surname\") \\\n",
+							"  .addColumn(\"gender\", \"STRING\") \\\n",
+							"  .addColumn(\"birthDate\", \"TIMESTAMP\") \\\n",
+							"  .addColumn(\"ssn\", \"STRING\") \\\n",
+							"  .addColumn(\"salary\", \"INT\") \\\n",
+							"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST') \\\n",
+							"  .property(\"mergeSchema\", \"true\") \\\n",
+							"  .partitionedBy(\"gender\") \\\n",
+							"  .execute()"
+						],
+						"outputs": [],
+						"execution_count": 37
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#sample table\n",
+							"# Create table in the metastore\n",
+							"from delta.tables import *\n",
+							"\n",
+							"DeltaTable.createIfNotExists(spark) \\\n",
+							"  .tableName(\"etlhubConfirmed.test_timestamp\") \\\n",
+							"  .addColumn(\"EMPLOYEE_DISCON_DT\", \"TIMESTAMP\") \\\n",
+							"  .addColumn(\"EMPLOYEE_EFF_DT\", \"TIMESTAMP\") \\\n",
+							"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST_timestamp') \\\n",
+							"  .property(\"mergeSchema\", \"true\") \\\n",
+							"  .partitionedBy(\"EMPLOYEE_DISCON_DT\") \\\n",
+							"  .execute()"
+						],
+						"outputs": [],
+						"execution_count": 42
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							}
+						},
+						"source": [
+							"%%sql\n",
+							"SELECT DISTINCT EMPLOYEE_DISCON_DT\n",
+							",EMPLOYEE_EFF_DT from fullJoin A \n",
+							"--\n",
+							"limit 20"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"select * from etlhubConfirmed.test"
+						],
+						"outputs": [],
+						"execution_count": 40
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DHT_Create_table_scripts')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -35208,7 +35475,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3eb921c0-7d5a-445e-bcac-874f7d55d758"
+						"spark.autotune.trackingId": "e745242c-12ba-4cca-bbc5-d1495e5ee6df"
 					}
 				},
 				"metadata": {
@@ -35340,7 +35607,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 17
+						"execution_count": 2
 					},
 					{
 						"cell_type": "markdown",
@@ -35365,9 +35632,8 @@
 							}
 						},
 						"source": [
-							"\n",
 							"#Read data from adls csv file extracted from source at \n",
-							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_MARKET_DATA.csv"
+							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_SALES_STAGE_DATA.csv"
 						]
 					},
 					{
@@ -35419,7 +35685,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 18
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
