@@ -1,0 +1,248 @@
+{
+	"name": "DF_BALD0150_CNTRCT_CHG_DIM",
+	"properties": {
+		"description": "Job Creation: 28-06-2022\nJob Name: DF_BALD0150_CNTRCT_CHG_DIM\nCreated By: Subramanian R",
+		"folder": {
+			"name": "PGMP/Dimension"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getSourceData"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getLookupData"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "updateTable"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "insertTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "sortedLookupData"
+				},
+				{
+					"name": "updateRows"
+				},
+				{
+					"name": "CDC"
+				},
+				{
+					"name": "mergedData"
+				},
+				{
+					"name": "selectInsertData"
+				},
+				{
+					"name": "addColumns1"
+				},
+				{
+					"name": "addColumns2"
+				},
+				{
+					"name": "selectUpdateData"
+				},
+				{
+					"name": "renameColumns"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     current_user as string",
+				"}",
+				"source(output(",
+				"          CNTRCT_CHG_DIM_UID as integer,",
+				"          CNTRCT_REF_TXT as string,",
+				"          IBM_APPRVR_TXT as string,",
+				"          CLNT_APPRVR_TXT as string,",
+				"          FRML_AMNDMNT_NBR_TXT as string,",
+				"          CNTRCT_DELVRBL_CNFRMN_IND as string,",
+				"          CNTRCT_BSLN_CNFRMN_IND as string,",
+				"          STAFFG_SKILL_CNFRMN_IND as string,",
+				"          FIN_CNFRMN_IND as string,",
+				"          RJCT_RSN_ID as integer,",
+				"          RJCT_EXPLNN_TXT as string,",
+				"          CNTRCT_REM_TXT as string,",
+				"          SRC_CRETD_TMS as timestamp,",
+				"          SRC_CRETD_USER_ID as string,",
+				"          SRC_UPDTD_TMS as timestamp,",
+				"          SRC_UPDTD_USER_ID as string,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          IS_DELETED as integer,",
+				"          ORIG_ORG as string,",
+				"          RJCT_RSN_TXT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\\n     C.PROC_ID as CNTRCT_CHG_DIM_UID,\\n     C.CNTRCT_REF as CNTRCT_REF_TXT,\\n     C.IBM_APPROVER as IBM_APPRVR_TXT, -- SYSIBM.ENCRYPT(#$RFSSCHM#.DECRYPTDATA(C.IBM_APPROVER, PWD.MIS_REP_REF_CD), PWD.MIS_REP_REF_CD) as IBM_APPRVR_TXT,\\n     C.CLIENT_APPROVER as CLNT_APPRVR_TXT, -- SYSIBM.ENCRYPT(#$RFSSCHM#.DECRYPTDATA(C.CLIENT_APPROVER, PWD.MIS_REP_REF_CD), PWD.MIS_REP_REF_CD) as CLNT_APPRVR_TXT,\\n     C.FRML_AMNDMNT_NBR as FRML_AMNDMNT_NBR_TXT,\\n     C.CNTRCT_DELVRBL_CONF as CNTRCT_DELVRBL_CNFRMN_IND,\\n     C.CNTRCT_BSLN_CONF as CNTRCT_BSLN_CNFRMN_IND,\\n     C.STAFFING_SKILL_CONF as STAFFG_SKILL_CNFRMN_IND,\\n     C.FIN_CONF as FIN_CNFRMN_IND,\\n     case \\n          when (C.REJECT_REASON is null or ltrim(C.REJECT_REASON) = \\'\\') then -1 \\n          else cast(C.REJECT_REASON as Integer) \\n     end as RJCT_RSN_ID,\\n     C.REJECT_EXPLNTN as RJCT_EXPLNN_TXT,\\n     cast(C.REMARKS as varchar(2048)) as CNTRCT_REM_TXT,\\n     C.CREATED_TS as SRC_CRETD_TMS,\\n     C.CREATED_USERID as SRC_CRETD_USER_ID,\\n     C.UPDATED_TS as SRC_UPDTD_TMS,\\n     C.UPDATED_USERID as SRC_UPDTD_USER_ID,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID,\\n     case when PDEL.PROC_ID is null then 0 else 1 end as IS_DELETED,\\n     C.ORIG_ORG,\\n     R.REJECT_RSN_TXT as RJCT_RSN_TXT\\nFrom\\n     APPFUN.CNTRCTCHNG C\\n     inner join\\n     PGMPDM.ZAUX_DATE_TRIGGERS ZDT\\n     on C.PROC_ID = ZDT.PROC_ID\\n     left join\\n     PGMPDM.ZAUX_DELD_PROC_ID PDEL\\n     on C.PROC_ID = PDEL.PROC_ID\\n     left join  (\\n          Select\\n               SELLIST.INTERNAL_VAL AS REJECT_RSN_CD, T.TEXT AS REJECT_RSN_TXT\\n          From \\n               APPFUN.UI_SEL_LIST_DEF SELLIST, APPFUN.MULTILANG_TEXT_DEF T\\n          Where\\n               UI_SEL_LIST_ID = 95518\\n               AND SELLIST.ACTIVE_IND = \\'Y\\'\\n               AND T.MULTILANG_TEXT_ID = SELLIST.MULTILANG_SEL_TEXT_ID\\n               AND T.LANG_ID = 1 \\n     ) R\\n     on C.REJECT_REASON = R.REJECT_RSN_CD\\n     left join (\\n          Select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          From\\n               PGMPDM.ZAUX_ETL_JOBS\\n          Where\\n               ETL_JOB_NM = \\'BALD0150_CNTRCT_CHG_DIM\\'\\n     ) JOB\\n     on 1 = 1\\n     left join (\\n          Select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          From\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          Where\\n               IS_CURR_IND = \\'Y\\'\\n     ) FIL\\n     on 1 = 1\\n     left join (\\n          Select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          From\\n               PGMPDM.SRC_SYS_DIM\\n          Where\\n               SRC_SYS_CD = \\'PGMP\\'\\n     ) SYS\\n     on 1 = 1\\n     left join (\\n          Select\\n               MIS_REP_REF_UID,\\n               MIS_REP_REF_CD\\n          From\\n               PGMPDM.MISC_REP_REF               \\n     ) PWD\\n     on PWD.MIS_REP_REF_UID = 3',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getSourceData",
+				"source(output(",
+				"          CNTRCT_CHG_DIM_UID as integer,",
+				"          CNTRCT_REF_TXT as string,",
+				"          IBM_APPRVR_TXT as binary,",
+				"          CLNT_APPRVR_TXT as binary,",
+				"          FRML_AMNDMNT_NBR_TXT as string,",
+				"          CNTRCT_DELVRBL_CNFRMN_IND as string,",
+				"          CNTRCT_BSLN_CNFRMN_IND as string,",
+				"          STAFFG_SKILL_CNFRMN_IND as string,",
+				"          FIN_CNFRMN_IND as string,",
+				"          RJCT_RSN_ID as integer,",
+				"          RJCT_EXPLNN_TXT as string,",
+				"          CNTRCT_REM_TXT as string,",
+				"          SRC_UPDTD_TMS as timestamp,",
+				"          SRC_UPDTD_USER_ID as string,",
+				"          ETL_JOB_ID as integer,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          ORIG_ORG as string,",
+				"          RJCT_RSN_TXT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\\n     S.CNTRCT_CHG_DIM_UID,\\n     S.CNTRCT_REF_TXT,\\n     S.IBM_APPRVR_TXT,\\n     S.CLNT_APPRVR_TXT,\\n     S.FRML_AMNDMNT_NBR_TXT,\\n     S.CNTRCT_DELVRBL_CNFRMN_IND,\\n     S.CNTRCT_BSLN_CNFRMN_IND,\\n     S.STAFFG_SKILL_CNFRMN_IND,\\n     S.FIN_CNFRMN_IND,\\n     S.RJCT_RSN_ID,\\n     S.RJCT_EXPLNN_TXT,\\n     S.CNTRCT_REM_TXT,\\n     S.SRC_UPDTD_TMS,\\n     S.SRC_UPDTD_USER_ID,\\n     S.ETL_JOB_ID,\\n     S.SRC_SYS_DIM_UID,\\n     S.ORIG_ORG,\\n     S.RJCT_RSN_TXT\\nFrom\\n     PGMPDM.CNTRCT_CHG_DIM S\\n     inner join\\n     PGMPDM.ZAUX_DATE_TRIGGERS ZDT\\n     on S.CNTRCT_CHG_DIM_UID = ZDT.PROC_ID',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getLookupData",
+				"renameColumns sort(asc(LKP_CNTRCT_CHG_DIM_UID, false)) ~> sortedLookupData",
+				"selectUpdateData alterRow(updateIf(true())) ~> updateRows",
+				"mergedData split(CNTRCT_CHG_DIM_UID==LKP_CNTRCT_CHG_DIM_UID,",
+				"     disjoint: false) ~> CDC@(dataToBeUpdated, dataToBeInserted)",
+				"getSourceData, sortedLookupData join(CNTRCT_CHG_DIM_UID == LKP_CNTRCT_CHG_DIM_UID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> mergedData",
+				"addColumns2 select(mapColumn(",
+				"          CNTRCT_CHG_DIM_UID,",
+				"          CNTRCT_REF_TXT,",
+				"          IBM_APPRVR_TXT,",
+				"          CLNT_APPRVR_TXT,",
+				"          FRML_AMNDMNT_NBR_TXT,",
+				"          CNTRCT_DELVRBL_CNFRMN_IND,",
+				"          CNTRCT_BSLN_CNFRMN_IND,",
+				"          STAFFG_SKILL_CNFRMN_IND,",
+				"          FIN_CNFRMN_IND,",
+				"          RJCT_RSN_ID,",
+				"          RJCT_EXPLNN_TXT,",
+				"          CNTRCT_REM_TXT,",
+				"          SRC_CRETD_TMS,",
+				"          SRC_CRETD_USER_ID,",
+				"          SRC_UPDTD_TMS,",
+				"          SRC_UPDTD_USER_ID,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          ORIG_ORG,",
+				"          RJCT_RSN_TXT,",
+				"          ROW_STAT_CD,",
+				"          DM_CRETD_USER_ID,",
+				"          DM_CRETD_TMS,",
+				"          DM_UPDTD_USER_ID,",
+				"          DM_UPDTD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectInsertData",
+				"CDC@dataToBeUpdated derive(ROW_STAT_CD = iif(IS_DELETED == 1, 'D', 'U'),",
+				"          DM_CRETD_USER_ID = $current_user,",
+				"          DM_UPDTD_USER_ID = $current_user,",
+				"          DM_UPDTD_TMS = currentTimestamp()) ~> addColumns1",
+				"CDC@dataToBeInserted derive(ROW_STAT_CD = iif(IS_DELETED == 1, 'D', 'I'),",
+				"          DM_CRETD_USER_ID = $current_user,",
+				"          DM_CRETD_TMS = currentTimestamp(),",
+				"          DM_UPDTD_USER_ID = $current_user,",
+				"          DM_UPDTD_TMS = currentTimestamp()) ~> addColumns2",
+				"addColumns1 select(mapColumn(",
+				"          CNTRCT_CHG_DIM_UID,",
+				"          CNTRCT_REF_TXT,",
+				"          IBM_APPRVR_TXT,",
+				"          CLNT_APPRVR_TXT,",
+				"          FRML_AMNDMNT_NBR_TXT,",
+				"          CNTRCT_DELVRBL_CNFRMN_IND,",
+				"          CNTRCT_BSLN_CNFRMN_IND,",
+				"          STAFFG_SKILL_CNFRMN_IND,",
+				"          FIN_CNFRMN_IND,",
+				"          RJCT_RSN_ID,",
+				"          RJCT_EXPLNN_TXT,",
+				"          CNTRCT_REM_TXT,",
+				"          SRC_CRETD_TMS,",
+				"          SRC_CRETD_USER_ID,",
+				"          SRC_UPDTD_TMS,",
+				"          SRC_UPDTD_USER_ID,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          ORIG_ORG,",
+				"          RJCT_RSN_TXT,",
+				"          ROW_STAT_CD,",
+				"          DM_CRETD_USER_ID,",
+				"          DM_UPDTD_USER_ID,",
+				"          DM_UPDTD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectUpdateData",
+				"getLookupData select(mapColumn(",
+				"          each(match(true()),",
+				"               'LKP_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> renameColumns",
+				"updateRows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'CNTRCT_CHG_DIM',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['CNTRCT_CHG_DIM_UID'],",
+				"     skipKeyWrites:true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 0,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     preCommands: [],",
+				"     postCommands: []) ~> updateTable",
+				"selectInsertData sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'CNTRCT_CHG_DIM',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> insertTable"
+			]
+		}
+	}
+}

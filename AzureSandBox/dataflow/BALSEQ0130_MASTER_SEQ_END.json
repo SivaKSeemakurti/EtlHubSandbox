@@ -1,0 +1,67 @@
+{
+	"name": "BALSEQ0130_MASTER_SEQ_END",
+	"properties": {
+		"description": "Job Creation: 30-06-2022\nJob Name: BALSEQ0130_MASTER_SEQ_END\nCreated By: Subramanian R",
+		"folder": {
+			"name": "PGMP/Sequence"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getExecutionSignatureData"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "updateExecution"
+				}
+			],
+			"transformations": [
+				{
+					"name": "updateRow"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ETL_EXCTN_ID as integer,",
+				"          ETL_EXCTN_END_TMS as timestamp,",
+				"          IS_CURR_IND as string,",
+				"          WAS_SUCCESS_IND as string,",
+				"          PROC_ID_QTY as integer,",
+				"          UPDTD_TMS as timestamp,",
+				"          UPDTD_USER_ID as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\\n     E.ETL_EXCTN_ID,\\n     CURRENT_TIMESTAMP as ETL_EXCTN_END_TMS,\\n     cast(\\'N\\' as char(1)) as IS_CURR_IND,\\n     cast(\\'Y\\' as char(1)) as WAS_SUCCESS_IND,\\n     PID.QTY as PROC_ID_QTY,\\n     CURRENT_TIMESTAMP as UPDTD_TMS,\\n     CURRENT_TIMESTAMP as UPDTD_USER_ID\\nFrom\\n     PGMPDM.ZAUX_ETL_EXCTN E\\n     cross join\\n     (\\n          Select\\n               count(*) as QTY\\n          From\\n               PGMPDM.ZAUX_DATE_TRIGGERS\\n     ) PID\\nWhere\\n     E.IS_CURR_IND = \\'Y\\'',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getExecutionSignatureData",
+				"getExecutionSignatureData alterRow(updateIf(true())) ~> updateRow",
+				"updateRow sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'ZAUX_ETL_EXCTN',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['ETL_EXCTN_ID'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> updateExecution"
+			]
+		}
+	}
+}

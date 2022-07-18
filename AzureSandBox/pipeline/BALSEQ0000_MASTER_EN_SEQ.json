@@ -1,0 +1,161 @@
+{
+	"name": "BALSEQ0000_MASTER_EN_SEQ",
+	"properties": {
+		"description": "Job creation:28-06-2022\nJob name: BALSEQ0000_MASTER_EN_SEQ\nCreatedBy: Varaprasad",
+		"activities": [
+			{
+				"name": "MASTER_SEQ_CLEAN_UP",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "BALSEQ0100_MASTER_SEQ_CLEAN_UP",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "MASTER_SEQ_START",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "MASTER_SEQ_CLEAN_UP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "BALSEQ0110_MASTER_SEQ_START",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "MASTER_SET_LIMITS",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "MASTER_SEQ_START",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "BALSEQ0120_MASTER_SET_LIMITS",
+						"type": "DataFlowReference",
+						"parameters": {
+							"BLOCK_SIZE": {
+								"value": "@pipeline().parameters.BLOCK_SIZE",
+								"type": "Expression"
+							},
+							"PROCESS_CTR_IND": {
+								"value": "'@{pipeline().parameters.PROCESS_CTR_IND}'",
+								"type": "Expression"
+							},
+							"PARAM_START_TS": {
+								"value": "'@{pipeline().parameters.PARAM_START_TS}'",
+								"type": "Expression"
+							},
+							"PARAM_END_TS": {
+								"value": "'@{pipeline().parameters.PARAM_END_TS}'",
+								"type": "Expression"
+							},
+							"REPLICATION_OFFSET": {
+								"value": "@pipeline().parameters.REPLICATION_OFFSET",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "PgMP_Dimension_Pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "MASTER_SET_LIMITS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PgMP_Dimension_Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"parameters": {
+			"BLOCK_SIZE": {
+				"type": "int",
+				"defaultValue": 1000
+			},
+			"PROCESS_CTR_IND": {
+				"type": "string"
+			},
+			"PARAM_START_TS": {
+				"type": "string"
+			},
+			"PARAM_END_TS": {
+				"type": "string"
+			},
+			"REPLICATION_OFFSET": {
+				"type": "int",
+				"defaultValue": 15
+			}
+		},
+		"folder": {
+			"name": "PGMP/Sequence"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-07-18T10:50:52Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

@@ -1,0 +1,125 @@
+{
+	"name": "PipelineTest",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select * from DBXDH.DHT_CUSTOMER\nwhere CUSTOMER_NO='9549530'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlPoolSink",
+						"preCopyScript": "DELETE FROM DBXDH.DHT_CUSTOMER WHERE CUSTOMER_NO='9549530'",
+						"allowCopyCommand": true
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "linkedService1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlPoolTable1",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "Application/Json"
+					},
+					"body": {
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('Copy data1').output}\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Web1_copy1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "Application/Json"
+					},
+					"body": {
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"siva.seemakurti@kyndryl.com\",\n        \"ErrorMessage\":@{activity('Copy data1').output},\n        \"JobStatus\" : \"Success\"\n}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-07-18T10:49:14Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

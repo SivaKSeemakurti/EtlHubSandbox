@@ -1,0 +1,39 @@
+{
+	"name": "Trigger_BALIN_MAster_Seq",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "BALSEQ0000_MASTER_EN_SEQ",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"BLOCK_SIZE": 2500,
+					"PROCESS_CTR_IND": "'Y'",
+					"PARAM_START_TS": "''",
+					"PARAM_END_TS": "''",
+					"REPLICATION_OFFSET": 50
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-07-02T13:54:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						58
+					],
+					"hours": [
+						13
+					]
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,544 @@
+{
+	"name": "nb_dht_opportunity_load",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/Dimensions&Facts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "25eb72e4-ec41-4ab6-b6f8-3ac4365facf5"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"**DEAL Dimension load**\n",
+					"\n",
+					"This notebook loads data to deltalake table etlhubconfirme.dht_deal_dim by sourceing data from DCA deal data.\n",
+					"Since DCA is not accessible from Azure, a datastage job src_DCA_DEAL_Azure is executed on datastage to push the DCA extract to adls.\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Import all the necessary libraries"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from azure.storage.blob import BlobClient\n",
+					"import pandas as pd\n",
+					"from io import StringIO\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
+					"from sqlite3 import connect\n",
+					"from pyspark.sql import functions as F\n",
+					"#conn = connect(':memory:')\n",
+					"\n",
+					"from pyspark.sql import SparkSession \n",
+					"from pyspark.sql.types import * \n",
+					"from delta.tables import *\n",
+					"from pyspark.sql.types import *\n",
+					"#import os\n",
+					"import sys"
+				],
+				"attachments": null,
+				"execution_count": 128
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Define Parameters"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"tags": []
+				},
+				"source": [
+					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
+					"container_name = 'etlhubfilestorage' # fill in your container name \n",
+					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
+					"file_name='DS_OPPORTUNITY_DATA_UPD.csv' \n",
+					"natural_key=\"OPPORTUNITY_NUM\"\n",
+					"#tgt_natural_key=\"DEAL_IDENTIFIER\"\n",
+					"tablename=\"etlhubConfirmed.dht_opportunity\"\n",
+					"keycolumn=\"OPPORTUNITY_KEY\""
+				],
+				"attachments": null,
+				"execution_count": 129
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\n",
+					"#Read data from adls csv file extracted from source at \n",
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/DCA/DS_DEALS_DATA.csv"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
+					"print('Primary storage account path: ' + adls_path) \n",
+					"\n",
+					"# Read a csv file \n",
+					"csv_path = adls_path + file_name\n",
+					"incrementalData_DF=spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
+					"#incrementalData_DF.printSchema()\n",
+					"incrementalData_DF.createOrReplaceTempView(\"incrementalSrcData_DF\")\n",
+					"\n",
+					"# Get column list for creating Rec_Checksum\n",
+					"col_list=[]\n",
+					"for i in incrementalData_DF.columns:\n",
+					"    col_list.append(i)\n",
+					"    #print (col_list)\n",
+					"\n",
+					"# Add a checsum column to help identify the changed rows\n",
+					"incrementalData_DF1=incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
+					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+					"#incrementalData_DF2.printSchema()\n",
+					"incrementalData_DF2.createOrReplaceTempView('incrementalData_SrcDF')\n",
+					"\n",
+					"#Create a deltalake table with necessary columns\n",
+					"\n",
+					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
+					"existingDataDF.createOrReplaceTempView('existingDF')\n",
+					"\n",
+					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
+					"\n",
+					"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
+					"\n",
+					"existingDataDF1 = existingDataDF.select([F.col(c).alias('existing_'+c) for c in existingDataDF.columns])\n",
+					"\n",
+					"#existingDataDF1.printSchema()\n",
+					"#incrementalData_DF2.printSchema()\n",
+					"\n",
+					"existingDataDF1.createOrReplaceTempView('existingDataTgtDF')\n",
+					"\n",
+					"fullJoin1=incrementalData_DF2.join(existingDataDF1,trim(incrementalData_DF2.OPPORTUNITY_NUM) == trim(existingDataDF1.existing_OPPORTUNITY_NUM), \"fullouter\") \n",
+					"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
+					"\n",
+					"fullJoin2.createOrReplaceTempView('fullJoin')\n",
+					"\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 130
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from incrementalData_SrcDF where opportunity_num in ('SOC-0XKCQTT','SOC-0TYPD7Z')"
+				],
+				"attachments": null,
+				"execution_count": 131
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Data Validation Checks :\n",
+					"\n",
+					"- Check for duplicates in Source data based on natural key\n",
+					"- Check for duplicates in target delta lake table based on natural key\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry3=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT, {} FROM incrementalSrcData_DF GROUP BY {} HAVING COUNT(*)>1\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"df3=spark.sql(qry3.format(natural_key,natural_key))\r\n",
+					"cnt1=df3.count()\r\n",
+					"\r\n",
+					"print (cnt1)\r\n",
+					"if cnt1 == 0:\r\n",
+					"    print(\"No Duplicates in source data\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"    print(\"Below are the duplicates in source:\")\r\n",
+					"    df3.show()\r\n",
+					"    status = 'fail'\r\n",
+					"    #os.abort() this will take the spark cluster also down\r\n",
+					"    sys.exit(1)\r\n",
+					"    print(\"This will not be printed\")\r\n",
+					"\r\n",
+					"qry4=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT, {} FROM {} where CURRENT_IND= \"Y\" GROUP BY {} HAVING COUNT(*)>1;\r\n",
+					"\"\"\"\r\n",
+					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\r\n",
+					"cnt2=df4.count()\r\n",
+					"print (cnt2)\r\n",
+					"if cnt2 == 0:\r\n",
+					"    print(\"no duplicates in target delta lake table\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"    print(\"Below are the duplicates in target delta lake table:\")\r\n",
+					"    df4.show()\r\n",
+					"    status = 'fail'\r\n",
+					"    #os.abort() this will take the spark cluster also down\r\n",
+					"    sys.exit(2)\r\n",
+					"    print(\"This will not be printed\")"
+				],
+				"attachments": null,
+				"execution_count": 132
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Insert for New rows which are missing in target and present in source based on Natural Key.\r\n",
+					"qry_insert=\"\"\"\r\n",
+					"INSERT INTO etlhubConfirmed.dht_opportunity\r\n",
+					"select COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION , \r\n",
+					"A.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
+					"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, A.column_hash as REC_CHECKSUM, \r\n",
+					"'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
+					"A.ISA_CODE,A.ARCHIVE_REASON_CODE,A.BUSINESS_TRANSACTION_TYPE,A.CLIENT_REPRESENTATIVE_NAME,A.COMPETITOR_LIST, \r\n",
+					"A.IDENTIFIER_NAME,A.OPPORTUNITY_NAME,A.OPPORTUNITY_SOURCE_CODE,A.SBS_SOL_VALID_IND, \r\n",
+					"A.OPPORTUNITY_IDENTIFIER,A.ROGUE_IND,A.REASON_TO_ACT,A.SOLUTION_CATG,A.BRAND_SPONSOR_LIST,A.GBS_GEOGRAPHY_NAME, \r\n",
+					"A.GBS_BUSINESS_UNIT_GROUP_NAME,A.GBS_BUSINESS_UNIT_NAME,A.TAG_LIST,A.OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
+					"'Y' AS ACTIVE_IN_SOURCE_IND  \r\n",
+					"from fullJoin A \r\n",
+					"LEFT JOIN etlhubConfirmed.dht_opportunity B\r\n",
+					"ON TRIM(A.OPPORTUNITY_NUM)=TRIM(B.OPPORTUNITY_NUM)\r\n",
+					"AND CURRENT_IND='Y' \r\n",
+					"WHERE existing_REC_CHECKSUM is null\r\n",
+					"AND COALESCE(B.REC_CHECKSUM,'') <> COALESCE(A.column_hash,'');\r\n",
+					"\"\"\"\r\n",
+					"#d=spark.sql(qry_insert)\r\n",
+					"#d.show(10)"
+				],
+				"attachments": null,
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select count(*) from etlhubConfirmed.dht_opportunity "
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#update the existing rows in target table with new values and record status as U and expiry the existing records with current indicator as N.\r\n",
+					"#delete FROM etlhubconfirmed.dht_employee;\r\n",
+					"\r\n",
+					"updins=\"\"\"\r\n",
+					"INSERT INTO etlhubConfirmed.dht_opportunity\r\n",
+					"select COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION , \r\n",
+					"A.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
+					"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, A.column_hash as REC_CHECKSUM, \r\n",
+					"'U' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
+					"A.ISA_CODE,A.ARCHIVE_REASON_CODE,A.BUSINESS_TRANSACTION_TYPE,A.CLIENT_REPRESENTATIVE_NAME,A.COMPETITOR_LIST, \r\n",
+					"A.IDENTIFIER_NAME,A.OPPORTUNITY_NAME,A.OPPORTUNITY_SOURCE_CODE,A.SBS_SOL_VALID_IND, \r\n",
+					"A.OPPORTUNITY_IDENTIFIER,A.ROGUE_IND,A.REASON_TO_ACT,A.SOLUTION_CATG,A.BRAND_SPONSOR_LIST,A.GBS_GEOGRAPHY_NAME, \r\n",
+					"A.GBS_BUSINESS_UNIT_GROUP_NAME,A.GBS_BUSINESS_UNIT_NAME,A.TAG_LIST,A.OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
+					"'Y' AS ACTIVE_IN_SOURCE_IND  \r\n",
+					"from fullJoin A \r\n",
+					"WHERE TRIM(OPPORTUNITY_NUM) = TRIM(existing_OPPORTUNITY_NUM) and LOWER(column_hash) <> LOWER(existing_REC_CHECKSUM)\r\n",
+					"AND NOT EXISTS\r\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity B\r\n",
+					"WHERE TRIM(A.OPPORTUNITY_NUM)=TRIM(B.OPPORTUNITY_NUM)\r\n",
+					"and b.CURRENT_IND='Y'\r\n",
+					"AND coalesce(A.column_hash,'')=coalesce(B.REC_CHECKSUM,'')) ;\r\n",
+					"\"\"\"\r\n",
+					"d1=spark.sql(updins)\r\n",
+					"#d1.show()\r\n",
+					"\r\n",
+					"expqry=\"\"\"\r\n",
+					"MERGE INTO etlhubConfirmed.dht_opportunity A\r\n",
+					"USING fullJoin B\r\n",
+					"ON B.OPPORTUNITY_NUM = A.OPPORTUNITY_NUM\r\n",
+					"AND TRIM(A.OPPORTUNITY_NUM) = TRIM(B.existing_OPPORTUNITY_NUM) and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\r\n",
+					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\r\n",
+					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\r\n",
+					",REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds\r\n",
+					",IMG_LST_UPD_DT=current_timestamp;\r\n",
+					"\"\"\"\r\n",
+					"d2=spark.sql(expqry)\r\n",
+					"#d2.show()\r\n",
+					"\r\n",
+					"#Soft deletes or no longer active in source\r\n",
+					"softdelqry=\"\"\"\r\n",
+					"MERGE INTO etlhubConfirmed.dht_opportunity  A\r\n",
+					"USING fullJoin B\r\n",
+					"ON A.OPPORTUNITY_NUM = B.existing_OPPORTUNITY_NUM\r\n",
+					"AND B.OPPORTUNITY_NUM is NULL\r\n",
+					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\r\n",
+					"WHEN MATCHED THEN UPDATE SET ACTIVE_IN_SOURCE_IND='N' ,IMG_LST_UPD_DT=current_timestamp;\r\n",
+					"\"\"\"\r\n",
+					"df3=spark.sql(softdelqry)"
+				],
+				"attachments": null,
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\r\n",
+					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_deal_dim where CURRENT_IND='Y'\r\n",
+					";\r\n",
+					"\r\n",
+					"\r\n",
+					"select 'Duplicate Rows based on surrogate key' as Title,DEAL_KEY,count(*) from etlhubconfirmed.dht_deal_dim where CURRENT_IND='Y'\r\n",
+					"    group by DEAL_KEY\r\n",
+					"    having count(*)>1\r\n",
+					";\r\n",
+					"\r\n",
+					"select 'Duplicate Rows based on natural key' as Title,DEAL_ID,count(*) from etlhubconfirmed.dht_deal_dim where CURRENT_IND='Y'\r\n",
+					"    group by DEAL_ID\r\n",
+					"    having count(*)>1\r\n",
+					";\r\n",
+					"\r\n",
+					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_deal_dim where CURRENT_IND='Y'\r\n",
+					"    and date(extract_dt)='2022-06-28' and rec_status='I'\r\n",
+					";\r\n",
+					"\r\n",
+					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_deal_dim where CURRENT_IND='Y'\r\n",
+					"    and date(extract_dt)='2022-06-28' and rec_status='U'\r\n",
+					";\r\n",
+					"\r\n",
+					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_deal_dim where CURRENT_IND='N'\r\n",
+					"    and date(REC_END_DT)='2022-06-28' --and rec_status='I'\r\n",
+					";\r\n",
+					"\r\n",
+					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_deal_dim where CURRENT_IND='Y'\r\n",
+					"    AND date(REC_END_DT)='2022-06-28' --and rec_status='I'\r\n",
+					";\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					" from etlhubConfirmed.dht_deal_dim1 where ACTIVE_IN_SOURCE_IND='N' \r\n",
+					"    --where DEAL_IDENTIFIER in (7840900,7840899)"
+				],
+				"attachments": null,
+				"execution_count": 18
+			}
+		]
+	}
+}

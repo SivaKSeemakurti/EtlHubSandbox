@@ -1,0 +1,181 @@
+{
+	"name": "DF_BALD0295_L30_OFFRNG_DIM",
+	"properties": {
+		"description": "Job creation:29-06-2022\nJob name: DF_BALD0295_L30_OFFRNG_DIM\nCreatedBy: Varaprasad\n\n",
+		"folder": {
+			"name": "PGMP/Dimension"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "srcl30offeringdata"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "tgtl30offeringlkp"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "Tgtupdibmcommdimtable"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InsTgtibmcommsDim"
+				}
+			],
+			"transformations": [
+				{
+					"name": "mergeddata"
+				},
+				{
+					"name": "srtdtgtIbmcomm"
+				},
+				{
+					"name": "split"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          MAX_ID as integer,",
+				"          ROW_NUM as long,",
+				"          OFFRNG_ID as string,",
+				"          OFFRNG_DESC as string,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          SRC_SYS_DIM_UID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'select\\n     O.MAX_ID as MAX_ID,\\n     O.ROW_NUM as ROW_NUM,\\n     O.OFFRNG_ID,\\n     O.OFFRNG_DESC,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID\\nfrom\\n     (select\\n               (select coalesce(max(L30_OFFRNG_UID), 0) from PGMPDM.L30_OFFRNG_DIM) as MAX_ID,\\n               ROW_NUMBER() over (order by SELLIST.UI_SEL_LIST_ID,SELLIST.MULTILANG_SEL_TEXT_ID  ) as ROW_NUM,\\n               SELLIST.INTERNAL_VAL AS OFFRNG_ID,\\n            T.TEXT AS OFFRNG_DESC\\n        FROM \\n            APPFUN.UI_SEL_LIST_DEF SELLIST, APPFUN.MULTILANG_TEXT_DEF T\\n        WHERE \\n            UI_SEL_LIST_ID = 105000\\n/*Commented for filter the both active and Inactive */\\n       --AND SELLIST.ACTIVE_IND = \\'Y\\'\\n        AND T.MULTILANG_TEXT_ID = SELLIST.MULTILANG_SEL_TEXT_ID\\n        AND T.LANG_ID = 1) O\\n     left join\\n     (     select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          from\\n               PGMPDM.ZAUX_ETL_JOBS\\n          where\\n               ETL_JOB_NM = \\'#DSJobName#\\')JOB\\n     on 1 = 1\\n     left join\\n     (select\\n               ETL_EXCTN_ID\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          where\\n               IS_CURR_IND = \\'Y\\')FIL\\n     on 1 = 1\\n     left join\\n     (select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          from\\n               PGMPDM.SRC_SYS_DIM\\n          where\\n               SRC_SYS_CD = \\'PGMP\\')SYS\\n     on 1 = 1',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> srcl30offeringdata",
+				"source(output(",
+				"          LKP_OFFRNG_ID as string,",
+				"          LKP_OFFRNG_DESC as string,",
+				"          LKP_ETL_JOB_ID as integer,",
+				"          LKP_SRC_SYS_DIM_UID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'select\\n     OFFRNG_ID  AS LKP_OFFRNG_ID,\\n     OFFRNG_DESC  AS LKP_OFFRNG_DESC,\\n     ETL_JOB_ID  AS LKP_ETL_JOB_ID,\\n     SRC_SYS_DIM_UID  AS LKP_SRC_SYS_DIM_UID\\nfrom\\n     PGMPDM.L30_OFFRNG_DIM',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> tgtl30offeringlkp",
+				"srcl30offeringdata, srtdtgtIbmcomm join(OFFRNG_ID == LKP_OFFRNG_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> mergeddata",
+				"tgtl30offeringlkp sort(asc(LKP_OFFRNG_ID, true)) ~> srtdtgtIbmcomm",
+				"mergeddata split(OFFRNG_ID==LKP_OFFRNG_ID,",
+				"     disjoint: false) ~> split@(datatobeupdted, datatobeinserted)",
+				"split@datatobeupdted select(mapColumn(",
+				"          MAX_ID,",
+				"          ROW_NUM,",
+				"          OFFRNG_ID,",
+				"          OFFRNG_DESC,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 alterRow(updateIf(true())) ~> alterRow1",
+				"split@datatobeinserted select(mapColumn(",
+				"          MAX_ID,",
+				"          ROW_NUM,",
+				"          OFFRNG_ID,",
+				"          OFFRNG_DESC,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          GEO_DIM_UID as integer,",
+				"          IOT_RGN_CD as string,",
+				"          IOT_RGN_NM as string,",
+				"          IMT_RGN_CD as string,",
+				"          IMT_SRGN_NM as string,",
+				"          SRGN_CD as string,",
+				"          SRGNCTRY_CD as string,",
+				"          SRGNCTRY_NM as string,",
+				"          IOTSORT_NUM as integer,",
+				"          GEO_CD as string,",
+				"          GEO_TYP_CD as string,",
+				"          GMR_RGN_CD as string,",
+				"          GMR_RGN_NM as string,",
+				"          IOT_SHORT_NM as string,",
+				"          IMT_SHORT_NM as string,",
+				"          ROW_STAT_CD as string,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          DM_CRETD_TMS as timestamp,",
+				"          DM_CRETD_USER_ID as string,",
+				"          DM_UPDTD_TMS as timestamp,",
+				"          DM_UPDTD_USER_ID as string,",
+				"          KYNDRYL_GLBL_ORG as string,",
+				"          KYNDRYL_ORG_CD as string,",
+				"          KYNDRYL_RGN as string,",
+				"          KYNDRYL_RGN_CD as string",
+				"     ),",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'L30_OFFRNG_DIM',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['OFFRNG_ID'],",
+				"     skipKeyWrites:true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> Tgtupdibmcommdimtable",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'L30_OFFRNG_DIM',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> InsTgtibmcommsDim"
+			]
+		}
+	}
+}

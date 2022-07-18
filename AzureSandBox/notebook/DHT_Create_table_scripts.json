@@ -1,0 +1,179 @@
+{
+	"name": "DHT_Create_table_scripts",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "cee968a8-fac4-4e13-8a53-4956edf7f8f6"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"-- DBXDH.DHT_DEAL_DIM definition\r\n",
+					"\r\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_DEAL_DIM1  (\r\n",
+					"\t\t  DEAL_KEY INTEGER NOT NULL , \r\n",
+					"\t\t  DEAL_VERSION_NUMBER INTEGER NOT NULL , \r\n",
+					"\t\t  DEAL_IDENTIFIER VARCHAR(50) , \r\n",
+					"\t\t  BID_SUPPORT_INTERNET_ID VARCHAR(100) , \r\n",
+					"\t\t  BID_SUPPORT_NOTES_ID VARCHAR(100) , \r\n",
+					"\t\t  BUSINESS_UNIT_ID VARCHAR(50) , \r\n",
+					"\t\t  CLIENT_NAME VARCHAR(50) , \r\n",
+					"\t\t  CLIENT_NUMBER VARCHAR(50) , \r\n",
+					"\t\t  COMLEXITY_CODE VARCHAR(50) , \r\n",
+					"\t\t  COMMENT_TEXT VARCHAR(2500) , \r\n",
+					"\t\t  COMPLEXITY_COMMENT_TEXT VARCHAR(1000) , \r\n",
+					"\t\t  COMPLEXITY_OVERRIDE_CODE VARCHAR(50) , \r\n",
+					"\t\t  CONTRACT_TYPE_DESCRIPTION VARCHAR(300) , \r\n",
+					"\t\t  ENGAGEMENT_SUPPORT_TRANSACTION_LINK_TEXT VARCHAR(100) , \r\n",
+					"\t\t  ENGAGEMENT_SUPPORT_TRANSACTION_NUMBER VARCHAR(50) , \r\n",
+					"\t\t  INDUSTRY_NAME VARCHAR(254) , \r\n",
+					"\t\t  INITIAL_SIEBEL_INDICATOR VARCHAR(50) , \r\n",
+					"\t\t  ISO_COUNTRY_ID VARCHAR(50) , \r\n",
+					"\t\t  LEAD_ACCOUNT_PARTNER_BTT_CODE VARCHAR(50) , \r\n",
+					"\t\t  LEAD_PARTNER_BTT_CODE VARCHAR(50) , \r\n",
+					"\t\t  LEAD_PARTNER_NOTES_ID VARCHAR(100) , \r\n",
+					"\t\t  OLD_OWNER_INTERNET_ID VARCHAR(100) , \r\n",
+					"\t\t  OPPORTUNITY_INTERNET_ID VARCHAR(100) , \r\n",
+					"\t\t  OPPORTUNITY_NAME VARCHAR(100) , \r\n",
+					"\t\t  OPPORTUNITY_NUMBER VARCHAR(50) , \r\n",
+					"\t\t  OPPORTUNITY_OWNER_NOTES_ID VARCHAR(100) , \r\n",
+					"\t\t  PARENT_DEAL_ID VARCHAR(50) , \r\n",
+					"\t\t  PROPOSAL_MANAGER_NOTES_ID VARCHAR(100) , \r\n",
+					"\t\t  REASON_FOR_PRIOR_DEALS_BEING_MODIFIED_TEXT VARCHAR(255) , \r\n",
+					"\t\t  REMOVED_INDICATOR VARCHAR(50) , \r\n",
+					"\t\t  RISK_RATING_NAME VARCHAR(50) , \r\n",
+					"\t\t  RISK_RATING_COMMENT_TEXT VARCHAR(1000) , \r\n",
+					"\t\t  RISK_RATING_OVERRIDE_CODE VARCHAR(50) , \r\n",
+					"\t\t  SALES_STAGE_CODE VARCHAR(50) , \r\n",
+					"\t\t  SECONDARY_SERVICE_NAME VARCHAR(50) , \r\n",
+					"\t\t  SECTOR_NAME VARCHAR(254) , \r\n",
+					"\t\t  SERVICE_NAME VARCHAR(50) , \r\n",
+					"\t\t  SIEBEL_INDICATOR VARCHAR(50) , \r\n",
+					"\t\t  SOURCE_CODE VARCHAR(50) , \r\n",
+					"\t\t  STATUS_CODE VARCHAR(50) , \r\n",
+					"\t\t  CURRENT_IND VARCHAR(1) NOT NULL , \r\n",
+					"\t\t  EXTRACT_DT TIMESTAMP , \r\n",
+					"\t\t  IMG_CREATED_DT TIMESTAMP , \r\n",
+					"\t\t  IMG_LST_UPD_DT TIMESTAMP , \r\n",
+					"\t\t  REC_END_DT TIMESTAMP , \r\n",
+					"\t\t  REC_START_DT TIMESTAMP , \r\n",
+					"\t\t  REC_CHECKSUM VARCHAR(32) , \r\n",
+					"\t\t  REC_STATUS VARCHAR(1) , \r\n",
+					"\t\t  SOURCE_SYSTEM VARCHAR(50) , \r\n",
+					"\t\t  RCA1_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA1_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  RCA2_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA2_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  RCA3_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA3_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  RCA4_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA4_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  RCA5_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA5_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  RCA6_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA6_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  RCA7_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA7_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  RCA8_ANSWER VARCHAR(10) , \r\n",
+					"\t\t  RCA8_COMMENT VARCHAR(1000) , \r\n",
+					"\t\t  APPROVER_COUNT VARCHAR(5) , \r\n",
+					"\t\t  REVIEWER_COUNT VARCHAR(5) , \r\n",
+					"\t\t  DEAL_TYPE VARCHAR(15) , \r\n",
+					"\t\t  GEOGRAPHY_CODE VARCHAR(10) , \r\n",
+					"\t\t  HYBRD_TYPE_A VARCHAR(9) , \r\n",
+					"\t\t  HYBRD_TYPE_B VARCHAR(9) , \r\n",
+					"\t\t  LEAD_LINE_OF_BUSINESS VARCHAR(3) , \r\n",
+					"\t\t  CREDIT_RATING VARCHAR(5) , \r\n",
+					"\t\t  DISCOUNT_DELEGATION_OFFERG_CLOUD_SERVICES_USD_AMOUNT VARCHAR(20) , \r\n",
+					"\t\t  DISCOUNT_DELEGATION_OFFERG_INFRASTRUCTURE_SERVICES_USD_AMOUNT VARCHAR(20) , \r\n",
+					"\t\t  DISCOUNT_DELEGATION_OFFERG_SECURITY_SERVICES_USD_AMOUNT VARCHAR(20) , \r\n",
+					"\t\t  DISCOUNT_DELEGATION_OFFERG_WATSON_CLOUD_PLATFORM_SERVICES_USD_AMOUNT VARCHAR(20) , \r\n",
+					"\t\t  RISK_CONSULTANT_NOTES_ID VARCHAR(60) , \r\n",
+					"\t\t  SENIOR_SOLUTION_MANAGER_NOTES_ID VARCHAR(4000) , \r\n",
+					"\t\t  SIH_GM_NOTES_ID VARCHAR(60) , \r\n",
+					"\t\t  RULES_EFFECTIVE_DATE DATE , \r\n",
+					"\t\t  DEAL_LEAD_NOTES_ID VARCHAR(60) , \r\n",
+					"\t\t  CONTRACT_SIGNOFF_APPROVAL_STATUS_CODE VARCHAR(50) , \r\n",
+					"\t\t  PAYBACK_TXT VARCHAR(20),\r\n",
+					"          DATA_IND varchar(10)  ,\r\n",
+					"\t      ACTIVE_IN_SOURCE_IND char(1) )   \r\n",
+					"USING DELTA\r\n",
+					"PARTITIONED BY (CURRENT_IND)\r\n",
+					"\r\n",
+					"-- specify data lake folder location\r\n",
+					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_DEAL_DIM1'\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 1
+			}
+		]
+	}
+}
