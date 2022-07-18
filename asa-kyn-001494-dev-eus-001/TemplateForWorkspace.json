@@ -20148,7 +20148,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/DHT_CAMPUS')]",
+			"name": "[concat(parameters('workspaceName'), '/DHT_BUILDING')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -20172,7 +20172,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "878e398e-9f38-45e5-8feb-b50afe166838"
+						"spark.autotune.trackingId": "f23dd361-298e-4336-99a1-94ed417bc022"
 					}
 				},
 				"metadata": {
@@ -20199,6 +20199,184 @@
 						"cores": 8,
 						"memory": 56,
 						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"-- DBXDH.DHT_BUILDING definition\n",
+							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_BUILDING  (\t\n",
+							"\tBUILDING_KEY INTEGER NOT NULL,\n",
+							"\tBUILDING_VERSION INT NOT NULL,\n",
+							"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
+							"\tBUILDING_ID CHAR(6) NOT NULL,\n",
+							"\tBUILDING_NAME VARCHAR(150),\n",
+							"\tBUILDING_STATUS VARCHAR(32) NOT NULL,\n",
+							"\tBUILDING_OWNERSHIP_ID CHAR(2),\n",
+							"\tBUILDING_OWNERSHIP_NAME VARCHAR(32),\n",
+							"\tBUILDING_OWNERSHIP_DESCR VARCHAR(256),\n",
+							"\tPRIMARY_BUILDING_USE_ID CHAR(2),\n",
+							"\tPRIMARY_BUILDING_USE_NAME VARCHAR(64),\n",
+							"\tPRIMARY_BUILDING_USE_DESCR VARCHAR(512),\n",
+							"\tSECONDARY_BUILDING_USE_ID CHAR(3),\n",
+							"\tSECONDARY_BUILDING_USE_NAME VARCHAR(64),\n",
+							"\tSECONDARY_BUILDING_USE_DESCR VARCHAR(512),\n",
+							"\tRENTABLE_AREA INTEGER,\n",
+							"\tBUILDING_ACTIVATION_YEAR SMALLINT,\n",
+							"\tBUILDING_INACTIVATION_YEAR SMALLINT,\n",
+							"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
+							"\tCURRENT_IND\tSTRING\n",
+							",\tEXTRACT_DT TIMESTAMP\n",
+							",\tREC_START_DT TIMESTAMP\n",
+							",\tREC_END_DT TIMESTAMP\n",
+							",\tSOURCE_SYSTEM STRING\n",
+							",\tREC_CHECKSUM STRING\n",
+							",\tREC_STATUS STRING\t\n",
+							",\tIMG_LST_UPD_DT TIMESTAMP\n",
+							",\tIMG_CREATED_DT TIMESTAMP\n",
+							",   ACTIVE_IN_SOURCE_IND STRING\n",
+							")\n",
+							"USING DELTA\n",
+							"PARTITIONED BY (CURRENT_IND)\n",
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS'"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"DROP TABLE etlhubConfirmed.DHT_BUILDING"
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"-- RESOWW.BUILDING definition\n",
+							"\n",
+							"-- Drop table\n",
+							"\n",
+							"-- DROP TABLE RESOWW.BUILDING;\n",
+							"\n",
+							"CREATE TABLE RESOWW.BUILDING (\n",
+							"\tBUILDING_KEY INTEGER NOT NULL,\n",
+							"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
+							"\tBUILDING_ID CHAR(6) NOT NULL,\n",
+							"\tBUILDING_NAME VARCHAR(150),\n",
+							"\tBUILDING_STATUS VARCHAR(32) NOT NULL,\n",
+							"\tBUILDING_OWNERSHIP_ID CHAR(2),\n",
+							"\tBUILDING_OWNERSHIP_NAME VARCHAR(32),\n",
+							"\tBUILDING_OWNERSHIP_DESCR VARCHAR(256),\n",
+							"\tPRIMARY_BUILDING_USE_ID CHAR(2),\n",
+							"\tPRIMARY_BUILDING_USE_NAME VARCHAR(64),\n",
+							"\tPRIMARY_BUILDING_USE_DESCR VARCHAR(512),\n",
+							"\tSECONDARY_BUILDING_USE_ID CHAR(3),\n",
+							"\tSECONDARY_BUILDING_USE_NAME VARCHAR(64),\n",
+							"\tSECONDARY_BUILDING_USE_DESCR VARCHAR(512),\n",
+							"\tRENTABLE_AREA INTEGER,\n",
+							"\tBUILDING_ACTIVATION_YEAR SMALLINT,\n",
+							"\tBUILDING_INACTIVATION_YEAR SMALLINT,\n",
+							"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
+							"\tCONSTRAINT SQL200724134512910 PRIMARY KEY (BUILDING_KEY)\n",
+							");\n",
+							"CREATE UNIQUE INDEX SQL200724134512900 ON RESOWW.BUILDING (BUILDING_KEY);"
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DHT_CAMPUS')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "ETLHub/CreateTableScripts"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sPoolKyn001494",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "e3eba01c-d437-4f18-9dda-1d51b5e03665"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+						"name": "sPoolKyn001494",
+						"type": "Spark",
+						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 8,
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -47465,216 +47643,6 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/DHT_CAMPUS_Copy1')]",
-			"type": "Microsoft.Synapse/workspaces/notebooks",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"folder": {
-					"name": "ETLHub/CreateTableScripts"
-				},
-				"nbformat": 4,
-				"nbformat_minor": 2,
-				"bigDataPool": {
-					"referenceName": "sPoolKyn001494",
-					"type": "BigDataPoolReference"
-				},
-				"sessionProperties": {
-					"driverMemory": "56g",
-					"driverCores": 8,
-					"executorMemory": "56g",
-					"executorCores": 8,
-					"numExecutors": 2,
-					"runAsWorkspaceSystemIdentity": false,
-					"conf": {
-						"spark.dynamicAllocation.enabled": "false",
-						"spark.dynamicAllocation.minExecutors": "2",
-						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "878e398e-9f38-45e5-8feb-b50afe166838"
-					}
-				},
-				"metadata": {
-					"saveOutput": true,
-					"enableDebugMode": false,
-					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "Synapse PySpark"
-					},
-					"language_info": {
-						"name": "python"
-					},
-					"a365ComputeOptions": {
-						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
-						"name": "sPoolKyn001494",
-						"type": "Spark",
-						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
-						"auth": {
-							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
-						},
-						"sparkVersion": "3.1",
-						"nodeCount": 10,
-						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
-				},
-				"cells": [
-					{
-						"cell_type": "code",
-						"metadata": {
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\n",
-							"-- DBXDH.DHT_CAMPUS definition\n",
-							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_CAMPUS  (\t\n",
-							"\tCAMPUS_KEY INTEGER NOT NULL,\n",
-							"\tCAMPUS_VERSION\tINT NOT NULL,\n",
-							"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
-							"\tCAMPUS_NAME VARCHAR(50) NOT NULL,\n",
-							"\tCAMPUS_STATUS VARCHAR(32) NOT NULL,\n",
-							"\tSITE_ID CHAR(8) NOT NULL,\n",
-							"\tCAMPUS_GROUP CHAR(11),\n",
-							"\tPHYSICAL_GEO CHAR(5),\n",
-							"\tWORLD_REGION_CODE CHAR(2),\n",
-							"\tWORLD_REGION_NAME VARCHAR(60),\n",
-							"\tMARKET_TEAM_REGION_CODE CHAR(3),\n",
-							"\tMARKET_TEAM_REGION_NAME VARCHAR(60),\n",
-							"\tWORK_LOCATION_CODE CHAR(3),\n",
-							"\tADDRESS VARCHAR(200),\n",
-							"\tCITY VARCHAR(53),\n",
-							"\tSTATE_PROVINCE_ID CHAR(3),\n",
-							"\tPOSTAL_CODE VARCHAR(15),\n",
-							"\tCOUNTRY_CODE CHAR(2),\n",
-							"\tLATITUDE DECIMAL(11,8),\n",
-							"\tLONGITUDE DECIMAL(11,8),\n",
-							"\tUTC_OFFSET CHAR(9),\n",
-							"\tICU_TIME_ZONE VARCHAR(50),\n",
-							"\tPEOPLE_HOUSED_FLAG CHAR(1),\n",
-							"\tREMOTE_SUPPORT_FLAG CHAR(1),\n",
-							"\tPRIMARY_CAMPUS_USE_ID CHAR(3),\n",
-							"\tPRIMARY_CAMPUS_USE_NAME VARCHAR(32),\n",
-							"\tPRIMARY_CAMPUS_USE_DESCR VARCHAR(128),\n",
-							"\tCAMPUS_OWNERSHIP VARCHAR(40),\n",
-							"\tCAMPUS_ACTIVATION_YEAR SMALLINT,\n",
-							"\tCAMPUS_INACTIVATION_YEAR SMALLINT,\n",
-							"\tSOURCE_SYS_MODIFIED_DT TIMESTAMP,\n",
-							"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
-							"\tCURRENT_IND\tSTRING\n",
-							",\tEXTRACT_DT TIMESTAMP\n",
-							",\tREC_START_DT TIMESTAMP\n",
-							",\tREC_END_DT TIMESTAMP\n",
-							",\tSOURCE_SYSTEM STRING\n",
-							",\tREC_CHECKSUM STRING\n",
-							",\tREC_STATUS STRING\t\n",
-							",\tIMG_LST_UPD_DT TIMESTAMP\n",
-							",\tIMG_CREATED_DT TIMESTAMP\n",
-							",   ACTIVE_IN_SOURCE_IND STRING\n",
-							")\n",
-							"USING DELTA\n",
-							"PARTITIONED BY (CURRENT_IND)\n",
-							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS'"
-						],
-						"outputs": [],
-						"execution_count": 1
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\n",
-							"DROP TABLE etlhubConfirmed.DHT_CAMPUS"
-						],
-						"outputs": [],
-						"execution_count": 4
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"-- RESOWW.CAMPUS definition\n",
-							"\n",
-							"-- Drop table\n",
-							"\n",
-							"-- DROP TABLE RESOWW.CAMPUS;\n",
-							"\n",
-							"CREATE TABLE RESOWW.CAMPUS (\n",
-							"\tCAMPUS_KEY INTEGER NOT NULL,\n",
-							"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
-							"\tCAMPUS_NAME VARCHAR(50) NOT NULL,\n",
-							"\tCAMPUS_STATUS VARCHAR(32) NOT NULL,\n",
-							"\tSITE_ID CHAR(8) NOT NULL,\n",
-							"\tCAMPUS_GROUP CHAR(11),\n",
-							"\tPHYSICAL_GEO CHAR(5),\n",
-							"\tWORLD_REGION_CODE CHAR(2),\n",
-							"\tWORLD_REGION_NAME VARCHAR(60),\n",
-							"\tMARKET_TEAM_REGION_CODE CHAR(3),\n",
-							"\tMARKET_TEAM_REGION_NAME VARCHAR(60),\n",
-							"\tWORK_LOCATION_CODE CHAR(3),\n",
-							"\tADDRESS VARCHAR(200),\n",
-							"\tCITY VARCHAR(53),\n",
-							"\tSTATE_PROVINCE_ID CHAR(3),\n",
-							"\tPOSTAL_CODE VARCHAR(15),\n",
-							"\tCOUNTRY_CODE CHAR(2),\n",
-							"\tLATITUDE DECIMAL(11,8),\n",
-							"\tLONGITUDE DECIMAL(11,8),\n",
-							"\tUTC_OFFSET CHAR(9),\n",
-							"\tICU_TIME_ZONE VARCHAR(50),\n",
-							"\tPEOPLE_HOUSED_FLAG CHAR(1),\n",
-							"\tREMOTE_SUPPORT_FLAG CHAR(1),\n",
-							"\tPRIMARY_CAMPUS_USE_ID CHAR(3),\n",
-							"\tPRIMARY_CAMPUS_USE_NAME VARCHAR(32),\n",
-							"\tPRIMARY_CAMPUS_USE_DESCR VARCHAR(128),\n",
-							"\tCAMPUS_OWNERSHIP VARCHAR(40),\n",
-							"\tCAMPUS_ACTIVATION_YEAR SMALLINT,\n",
-							"\tCAMPUS_INACTIVATION_YEAR SMALLINT,\n",
-							"\tSOURCE_SYS_MODIFIED_DT TIMESTAMP,\n",
-							"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
-							"\tCONSTRAINT SQL200724134412910 PRIMARY KEY (CAMPUS_KEY)\n",
-							");\n",
-							"CREATE INDEX MARKET_TEAM_REGION_IDX ON RESOWW.CAMPUS (MARKET_TEAM_REGION_CODE);\n",
-							"CREATE INDEX PHYSICAL_GEO_IDX ON RESOWW.CAMPUS (PHYSICAL_GEO);\n",
-							"CREATE INDEX SITE_ID_IDX ON RESOWW.CAMPUS (SITE_ID);\n",
-							"CREATE UNIQUE INDEX SQL200724134412900 ON RESOWW.CAMPUS (CAMPUS_KEY);\n",
-							"CREATE UNIQUE INDEX SQL200724134412920 ON RESOWW.CAMPUS (CAMPUS_ID);\n",
-							"CREATE INDEX WORLD_REGION_IDX ON RESOWW.CAMPUS (WORLD_REGION_CODE);"
-						],
-						"outputs": [],
-						"execution_count": null
-					}
-				]
-			},
-			"dependsOn": []
 		}
 	]
 }
