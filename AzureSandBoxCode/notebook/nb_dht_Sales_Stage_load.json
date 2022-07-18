@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c29fffe6-92c4-4a9a-9b45-faf5a279ec8d"
+				"spark.autotune.trackingId": "434276c2-fd9b-43b1-9240-0a714e2ad513"
 			}
 		},
 		"metadata": {
@@ -99,10 +99,10 @@
 					"from azure.storage.blob import BlobClient\n",
 					"import pandas as pd\n",
 					"from io import StringIO\n",
-					"from pyspark.sql.functions import md5, concat_ws,trim\n",
+					"from pyspark.sql.functions import md5, concat_ws\n",
 					"from sqlite3 import connect\n",
 					"from pyspark.sql import functions as F\n",
-					"conn = connect(':memory:')\n",
+					"from pyspark.sql.functions import col\n",
 					"from pyspark.sql import SparkSession \n",
 					"from pyspark.sql.types import * \n",
 					"from delta.tables import *\n",
@@ -110,7 +110,37 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 55
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from azure.storage.blob import BlobClient\n",
+					"import pandas as pd\n",
+					"from io import StringIO\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
+					"from sqlite3 import connect\n",
+					"from pyspark.sql import functions as F\n",
+					"from pyspark.sql.functions import col\n",
+					"from pyspark.sql import SparkSession \n",
+					"from pyspark.sql.types import * \n",
+					"from delta.tables import *\n",
+					"import os\n",
+					"import sys\n",
+					"from datetime import datetime"
+				],
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -152,7 +182,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 50
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -207,9 +237,11 @@
 					"arch_fil_name=file_name.rsplit(\".\")\n",
 					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 					"print (csv_archive_path)\n",
-					"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
-					"#incrementalData_DF.show()\n",
+					"\n",
+					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
+					"\n",
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+					"\n",
 					"# Get column list for creating Rec_Checksum\n",
 					"\n",
 					"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\n",
@@ -220,13 +252,14 @@
 					"    col_list.append(i)\n",
 					"\n",
 					"# Add a checsum column to help identify the changed rows\n",
-					"print(col_list)\n",
-					"incrementalData_SDF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
-					"#incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"\n",
-					"#incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
+					"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
+					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+					"\n",
+					"#sell_cyclecolhashDF.show()\n",
+					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": null
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",

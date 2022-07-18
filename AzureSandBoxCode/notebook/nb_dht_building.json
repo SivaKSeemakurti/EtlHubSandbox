@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1ced7f10-7e0d-4ed0-a145-bd77495fbbec"
+				"spark.autotune.trackingId": "c4cbfedd-198d-4fa8-9d4e-5c36e037eb6f"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 24
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -148,7 +148,7 @@
 				"source": [
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
-					"relative_path = 'extract/ERDM/' # fill in your relative folder path \n",
+					"relative_path = 'extract/Tririga/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='DS_INDUSTRY_HIERARCHY_DATA.csv' \n",
 					"natural_key=\"code\"\n",
