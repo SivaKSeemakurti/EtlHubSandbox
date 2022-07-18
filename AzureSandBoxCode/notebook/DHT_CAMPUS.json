@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ac96cefe-8d20-4859-a055-7c86c81bad88"
+				"spark.autotune.trackingId": "2974d31e-1e7d-4468-8d43-0686139c3b51"
 			}
 		},
 		"metadata": {
@@ -62,27 +62,41 @@
 				},
 				"source": [
 					"%%sql\n",
-					"-- DBXDH.DHT_INDUSTRY_SECTOR definition\n",
-					"\n",
-					"\n",
-					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_INDUSTRY_SECTOR  (\t\n",
-					"\n",
-					"\tINDUSTRY_SECTOR_KEY\tINT NOT NULL\n",
-					",\tINDUSTRY_SECTOR_VERSION\tINT NOT NULL\n",
-					",\tlevelNum\tSTRING\n",
-					",\tparentCode\tSTRING\n",
-					",\tcode\tSTRING\n",
-					",\tlongDescription\tSTRING\n",
-					",\tmediumDescription\tSTRING\n",
-					",\tshortDescription\tSTRING\n",
-					",\tcomments\tSTRING\n",
-					",\trecordStatus\tSTRING\n",
-					",\trowCreateTs\tSTRING\n",
-					",\trowUpdateTs\tSTRING\n",
-					",\tUSAGE_RULE\tSTRING\n",
-					",\tALT_DESC_FULL_1\tSTRING\n",
-					",\tALT_DESC_FULL_2\tSTRING\n",
-					",\tCURRENT_IND\tSTRING\n",
+					"-- DBXDH.DHT_CAMPUS definition\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_CAMPUS  (\t\n",
+					"\tCAMPUS_KEY INTEGER NOT NULL,\n",
+					"\tCAMPUS_VERSION\tINT NOT NULL,\n",
+					"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
+					"\tCAMPUS_NAME VARCHAR(50) NOT NULL,\n",
+					"\tCAMPUS_STATUS VARCHAR(32) NOT NULL,\n",
+					"\tSITE_ID CHAR(8) NOT NULL,\n",
+					"\tCAMPUS_GROUP CHAR(11),\n",
+					"\tPHYSICAL_GEO CHAR(5),\n",
+					"\tWORLD_REGION_CODE CHAR(2),\n",
+					"\tWORLD_REGION_NAME VARCHAR(60),\n",
+					"\tMARKET_TEAM_REGION_CODE CHAR(3),\n",
+					"\tMARKET_TEAM_REGION_NAME VARCHAR(60),\n",
+					"\tWORK_LOCATION_CODE CHAR(3),\n",
+					"\tADDRESS VARCHAR(200),\n",
+					"\tCITY VARCHAR(53),\n",
+					"\tSTATE_PROVINCE_ID CHAR(3),\n",
+					"\tPOSTAL_CODE VARCHAR(15),\n",
+					"\tCOUNTRY_CODE CHAR(2),\n",
+					"\tLATITUDE DECIMAL(11,8),\n",
+					"\tLONGITUDE DECIMAL(11,8),\n",
+					"\tUTC_OFFSET CHAR(9),\n",
+					"\tICU_TIME_ZONE VARCHAR(50),\n",
+					"\tPEOPLE_HOUSED_FLAG CHAR(1),\n",
+					"\tREMOTE_SUPPORT_FLAG CHAR(1),\n",
+					"\tPRIMARY_CAMPUS_USE_ID CHAR(3),\n",
+					"\tPRIMARY_CAMPUS_USE_NAME VARCHAR(32),\n",
+					"\tPRIMARY_CAMPUS_USE_DESCR VARCHAR(128),\n",
+					"\tCAMPUS_OWNERSHIP VARCHAR(40),\n",
+					"\tCAMPUS_ACTIVATION_YEAR SMALLINT,\n",
+					"\tCAMPUS_INACTIVATION_YEAR SMALLINT,\n",
+					"\tSOURCE_SYS_MODIFIED_DT TIMESTAMP,\n",
+					"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
+					"\tCURRENT_IND\tSTRING\n",
 					",\tEXTRACT_DT TIMESTAMP\n",
 					",\tREC_START_DT TIMESTAMP\n",
 					",\tREC_END_DT TIMESTAMP\n",
@@ -91,13 +105,13 @@
 					",\tREC_STATUS STRING\t\n",
 					",\tIMG_LST_UPD_DT TIMESTAMP\n",
 					",\tIMG_CREATED_DT TIMESTAMP\n",
-					",   ACTIVE_IN_SOURCE_IND STRING\t\n",
-					") \n",
+					",   ACTIVE_IN_SOURCE_IND STRING\n",
+					")\n",
 					"USING DELTA\n",
 					"PARTITIONED BY (CURRENT_IND)\n",
-					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_INDUSTRY_SECTOR'"
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS'"
 				],
-				"execution_count": 5
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -118,7 +132,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"DROP TABLE etlhubConfirmed.DHT_INDUSTRY_SECTOR"
+					"DROP TABLE etlhubConfirmed.DHT_CAMPUS"
 				],
 				"execution_count": 4
 			},
@@ -133,129 +147,57 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"DELETE FROM etlhubConfirmed.DHT_INDUSTRY_SECTOR"
-				],
-				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					}
 				},
 				"source": [
-					"#sample table\n",
-					"# Create table in the metastore\n",
-					"from delta.tables import *\n",
+					"-- RESOWW.CAMPUS definition\n",
 					"\n",
-					"DeltaTable.createIfNotExists(spark) \\\n",
-					"  .tableName(\"etlhubConfirmed.test\") \\\n",
-					"  .addColumn(\"id\", \"INT\") \\\n",
-					"  .addColumn(\"firstName\", \"STRING\") \\\n",
-					"  .addColumn(\"middleName\", \"STRING\") \\\n",
-					"  .addColumn(\"lastName\", \"STRING\", comment = \"surname\") \\\n",
-					"  .addColumn(\"gender\", \"STRING\") \\\n",
-					"  .addColumn(\"birthDate\", \"TIMESTAMP\") \\\n",
-					"  .addColumn(\"ssn\", \"STRING\") \\\n",
-					"  .addColumn(\"salary\", \"INT\") \\\n",
-					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST') \\\n",
-					"  .property(\"mergeSchema\", \"true\") \\\n",
-					"  .partitionedBy(\"gender\") \\\n",
-					"  .execute()"
-				],
-				"execution_count": 37
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"#sample table\n",
-					"# Create table in the metastore\n",
-					"from delta.tables import *\n",
+					"-- Drop table\n",
 					"\n",
-					"DeltaTable.createIfNotExists(spark) \\\n",
-					"  .tableName(\"etlhubConfirmed.test_timestamp\") \\\n",
-					"  .addColumn(\"EMPLOYEE_DISCON_DT\", \"TIMESTAMP\") \\\n",
-					"  .addColumn(\"EMPLOYEE_EFF_DT\", \"TIMESTAMP\") \\\n",
-					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST_timestamp') \\\n",
-					"  .property(\"mergeSchema\", \"true\") \\\n",
-					"  .partitionedBy(\"EMPLOYEE_DISCON_DT\") \\\n",
-					"  .execute()"
-				],
-				"execution_count": 42
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					}
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT DISTINCT EMPLOYEE_DISCON_DT\n",
-					",EMPLOYEE_EFF_DT from fullJoin A \n",
-					"--\n",
-					"limit 20"
+					"-- DROP TABLE RESOWW.CAMPUS;\n",
+					"\n",
+					"CREATE TABLE RESOWW.CAMPUS (\n",
+					"\tCAMPUS_KEY INTEGER NOT NULL,\n",
+					"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
+					"\tCAMPUS_NAME VARCHAR(50) NOT NULL,\n",
+					"\tCAMPUS_STATUS VARCHAR(32) NOT NULL,\n",
+					"\tSITE_ID CHAR(8) NOT NULL,\n",
+					"\tCAMPUS_GROUP CHAR(11),\n",
+					"\tPHYSICAL_GEO CHAR(5),\n",
+					"\tWORLD_REGION_CODE CHAR(2),\n",
+					"\tWORLD_REGION_NAME VARCHAR(60),\n",
+					"\tMARKET_TEAM_REGION_CODE CHAR(3),\n",
+					"\tMARKET_TEAM_REGION_NAME VARCHAR(60),\n",
+					"\tWORK_LOCATION_CODE CHAR(3),\n",
+					"\tADDRESS VARCHAR(200),\n",
+					"\tCITY VARCHAR(53),\n",
+					"\tSTATE_PROVINCE_ID CHAR(3),\n",
+					"\tPOSTAL_CODE VARCHAR(15),\n",
+					"\tCOUNTRY_CODE CHAR(2),\n",
+					"\tLATITUDE DECIMAL(11,8),\n",
+					"\tLONGITUDE DECIMAL(11,8),\n",
+					"\tUTC_OFFSET CHAR(9),\n",
+					"\tICU_TIME_ZONE VARCHAR(50),\n",
+					"\tPEOPLE_HOUSED_FLAG CHAR(1),\n",
+					"\tREMOTE_SUPPORT_FLAG CHAR(1),\n",
+					"\tPRIMARY_CAMPUS_USE_ID CHAR(3),\n",
+					"\tPRIMARY_CAMPUS_USE_NAME VARCHAR(32),\n",
+					"\tPRIMARY_CAMPUS_USE_DESCR VARCHAR(128),\n",
+					"\tCAMPUS_OWNERSHIP VARCHAR(40),\n",
+					"\tCAMPUS_ACTIVATION_YEAR SMALLINT,\n",
+					"\tCAMPUS_INACTIVATION_YEAR SMALLINT,\n",
+					"\tSOURCE_SYS_MODIFIED_DT TIMESTAMP,\n",
+					"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
+					"\tCONSTRAINT SQL200724134412910 PRIMARY KEY (CAMPUS_KEY)\n",
+					");\n",
+					"CREATE INDEX MARKET_TEAM_REGION_IDX ON RESOWW.CAMPUS (MARKET_TEAM_REGION_CODE);\n",
+					"CREATE INDEX PHYSICAL_GEO_IDX ON RESOWW.CAMPUS (PHYSICAL_GEO);\n",
+					"CREATE INDEX SITE_ID_IDX ON RESOWW.CAMPUS (SITE_ID);\n",
+					"CREATE UNIQUE INDEX SQL200724134412900 ON RESOWW.CAMPUS (CAMPUS_KEY);\n",
+					"CREATE UNIQUE INDEX SQL200724134412920 ON RESOWW.CAMPUS (CAMPUS_ID);\n",
+					"CREATE INDEX WORLD_REGION_IDX ON RESOWW.CAMPUS (WORLD_REGION_CODE);"
 				],
 				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"select * from etlhubConfirmed.test"
-				],
-				"execution_count": 40
 			}
 		]
 	}
