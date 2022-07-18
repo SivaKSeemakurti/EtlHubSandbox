@@ -7,28 +7,25 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "sPoolKyn001494",
+			"referenceName": "sPool001494New",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
-			"driverMemory": "56g",
-			"driverCores": 8,
-			"executorMemory": "56g",
-			"executorCores": 8,
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
 			"numExecutors": 2,
 			"runAsWorkspaceSystemIdentity": false,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "03c79034-79a4-4782-bc49-4bdd69ff5636"
+				"spark.autotune.trackingId": "852ceb20-95ed-4f7f-9d59-b74dab6b5fad"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -38,20 +35,19 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
-				"name": "sPoolKyn001494",
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
 				"type": "Spark",
-				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
-				"sparkVersion": "3.1",
+				"sparkVersion": "3.2",
 				"nodeCount": 10,
-				"cores": 8,
-				"memory": 56,
-				"extraHeader": null
+				"cores": 80,
+				"memory": 472,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -77,8 +73,7 @@
 					"\n",
 					"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -91,8 +86,7 @@
 				},
 				"source": [
 					"Import all the necessary libraries"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -122,8 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"attachments": null,
-				"execution_count": null
+				"execution_count": 15
 			},
 			{
 				"cell_type": "markdown",
@@ -136,8 +129,7 @@
 				},
 				"source": [
 					"Define Parameters"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -156,18 +148,17 @@
 				"source": [
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
-					"relative_path = 'extract/Tririga/Files' # fill in your relative folder path \n",
+					"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='IWTRIRIGABuildingQuery.csv.20220704' \n",
-					"natural_key=\"BUILDING_CODE\"\n",
+					"natural_key=\"BUILDING_ID\"\n",
 					"tablename=\"etlhubConfirmed.dht_building\"\n",
 					"stagingtable=\"DHTS_BUILDING\"\n",
 					"keycolumn=\"BUILDING_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"attachments": null,
-				"execution_count": 1
+				"execution_count": 16
 			},
 			{
 				"cell_type": "markdown",
@@ -180,8 +171,7 @@
 				},
 				"source": [
 					"Copy source CSV file to archive folder including timestamp in file name"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -198,8 +188,7 @@
 					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ERDM/DS_INDUSTRY_HIERARCHY_DATA.csv\n",
 					"\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -249,8 +238,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"attachments": null,
-				"execution_count": 26
+				"execution_count": 17
 			},
 			{
 				"cell_type": "code",
@@ -296,8 +284,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"attachments": null,
-				"execution_count": 27
+				"execution_count": 18
 			},
 			{
 				"cell_type": "markdown",
@@ -314,8 +301,7 @@
 					"- Check for duplicates in Source data based on natural key\n",
 					"- Check for duplicates in target delta lake table based on natural key\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -374,8 +360,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"attachments": null,
-				"execution_count": 28
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -439,7 +424,6 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"attachments": null,
 				"execution_count": 29
 			},
 			{
@@ -465,7 +449,6 @@
 					"\n",
 					"select * from fullJoin;"
 				],
-				"attachments": null,
 				"execution_count": 30
 			},
 			{
@@ -541,7 +524,6 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 31
 			},
 			{
@@ -565,7 +547,6 @@
 					"%%sql\n",
 					"SELECT count(*) FROM etlhubconfirmed.dht_industry_sector where current_ind='Y'"
 				],
-				"attachments": null,
 				"execution_count": 32
 			},
 			{
@@ -599,7 +580,6 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 33
 			},
 			{
@@ -648,7 +628,6 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
-				"attachments": null,
 				"execution_count": 34
 			},
 			{
@@ -709,7 +688,6 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"attachments": null,
 				"execution_count": 35
 			},
 			{
@@ -743,7 +721,6 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"attachments": null,
 				"execution_count": 36
 			},
 			{
@@ -797,7 +774,6 @@
 					";\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 37
 			},
 			{
@@ -841,7 +817,6 @@
 					"    and date(img_lst_upd_dt)=current_date\n",
 					"        ;  "
 				],
-				"attachments": null,
 				"execution_count": 38
 			},
 			{
@@ -887,7 +862,6 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 39
 			},
 			{
@@ -913,7 +887,6 @@
 					"    --'008915~613'\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 61
 			}
 		]
