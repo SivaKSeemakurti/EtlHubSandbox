@@ -1,0 +1,262 @@
+{
+	"name": "DHT_CAMPUS",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "ac96cefe-8d20-4859-a055-7c86c81bad88"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"-- DBXDH.DHT_INDUSTRY_SECTOR definition\n",
+					"\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_INDUSTRY_SECTOR  (\t\n",
+					"\n",
+					"\tINDUSTRY_SECTOR_KEY\tINT NOT NULL\n",
+					",\tINDUSTRY_SECTOR_VERSION\tINT NOT NULL\n",
+					",\tlevelNum\tSTRING\n",
+					",\tparentCode\tSTRING\n",
+					",\tcode\tSTRING\n",
+					",\tlongDescription\tSTRING\n",
+					",\tmediumDescription\tSTRING\n",
+					",\tshortDescription\tSTRING\n",
+					",\tcomments\tSTRING\n",
+					",\trecordStatus\tSTRING\n",
+					",\trowCreateTs\tSTRING\n",
+					",\trowUpdateTs\tSTRING\n",
+					",\tUSAGE_RULE\tSTRING\n",
+					",\tALT_DESC_FULL_1\tSTRING\n",
+					",\tALT_DESC_FULL_2\tSTRING\n",
+					",\tCURRENT_IND\tSTRING\n",
+					",\tEXTRACT_DT TIMESTAMP\n",
+					",\tREC_START_DT TIMESTAMP\n",
+					",\tREC_END_DT TIMESTAMP\n",
+					",\tSOURCE_SYSTEM STRING\n",
+					",\tREC_CHECKSUM STRING\n",
+					",\tREC_STATUS STRING\t\n",
+					",\tIMG_LST_UPD_DT TIMESTAMP\n",
+					",\tIMG_CREATED_DT TIMESTAMP\n",
+					",   ACTIVE_IN_SOURCE_IND STRING\t\n",
+					") \n",
+					"USING DELTA\n",
+					"PARTITIONED BY (CURRENT_IND)\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_INDUSTRY_SECTOR'"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DROP TABLE etlhubConfirmed.DHT_INDUSTRY_SECTOR"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DELETE FROM etlhubConfirmed.DHT_INDUSTRY_SECTOR"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#sample table\n",
+					"# Create table in the metastore\n",
+					"from delta.tables import *\n",
+					"\n",
+					"DeltaTable.createIfNotExists(spark) \\\n",
+					"  .tableName(\"etlhubConfirmed.test\") \\\n",
+					"  .addColumn(\"id\", \"INT\") \\\n",
+					"  .addColumn(\"firstName\", \"STRING\") \\\n",
+					"  .addColumn(\"middleName\", \"STRING\") \\\n",
+					"  .addColumn(\"lastName\", \"STRING\", comment = \"surname\") \\\n",
+					"  .addColumn(\"gender\", \"STRING\") \\\n",
+					"  .addColumn(\"birthDate\", \"TIMESTAMP\") \\\n",
+					"  .addColumn(\"ssn\", \"STRING\") \\\n",
+					"  .addColumn(\"salary\", \"INT\") \\\n",
+					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST') \\\n",
+					"  .property(\"mergeSchema\", \"true\") \\\n",
+					"  .partitionedBy(\"gender\") \\\n",
+					"  .execute()"
+				],
+				"execution_count": 37
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#sample table\n",
+					"# Create table in the metastore\n",
+					"from delta.tables import *\n",
+					"\n",
+					"DeltaTable.createIfNotExists(spark) \\\n",
+					"  .tableName(\"etlhubConfirmed.test_timestamp\") \\\n",
+					"  .addColumn(\"EMPLOYEE_DISCON_DT\", \"TIMESTAMP\") \\\n",
+					"  .addColumn(\"EMPLOYEE_EFF_DT\", \"TIMESTAMP\") \\\n",
+					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST_timestamp') \\\n",
+					"  .property(\"mergeSchema\", \"true\") \\\n",
+					"  .partitionedBy(\"EMPLOYEE_DISCON_DT\") \\\n",
+					"  .execute()"
+				],
+				"execution_count": 42
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT DISTINCT EMPLOYEE_DISCON_DT\n",
+					",EMPLOYEE_EFF_DT from fullJoin A \n",
+					"--\n",
+					"limit 20"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select * from etlhubConfirmed.test"
+				],
+				"execution_count": 40
+			}
+		]
+	}
+}
