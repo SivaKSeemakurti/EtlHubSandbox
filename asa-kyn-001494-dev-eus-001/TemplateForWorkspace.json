@@ -21431,7 +21431,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "ab0b3788-c799-4980-8104-d2fc8648c998"
+						"spark.autotune.trackingId": "80e56b28-068d-4fda-9c00-fdca87930f3e"
 					}
 				},
 				"metadata": {
@@ -37962,7 +37962,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "10da443d-bda5-44df-a5ce-67a2238e8bd7"
+						"spark.autotune.trackingId": "95c6e88e-8e92-48cc-98ef-6d96de68a9be"
 					}
 				},
 				"metadata": {
@@ -38058,7 +38058,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 86
+						"execution_count": 93
 					},
 					{
 						"cell_type": "markdown",
@@ -38105,7 +38105,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 87
+						"execution_count": 94
 					},
 					{
 						"cell_type": "markdown",
@@ -38190,7 +38190,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 88
+						"execution_count": 95
 					},
 					{
 						"cell_type": "code",
@@ -38237,7 +38237,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 89
+						"execution_count": 96
 					},
 					{
 						"cell_type": "markdown",
@@ -38338,7 +38338,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 90
+						"execution_count": 97
 					},
 					{
 						"cell_type": "code",
@@ -38403,7 +38403,71 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 91
+						"execution_count": 98
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"\n",
+							"\tselect \n",
+							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS BUILDING_KEY \n",
+							",\t1 AS BUILDING_VERSION\n",
+							",   BUILDING_BUSINESS_ID AS BUILDING_BUSINESS_ID\n",
+							",\tCAMPUS_ID\n",
+							",\tBUILDING_ID\n",
+							",\tBUILDING_NAME\n",
+							",\tBUILDING_STATUS\n",
+							",\tBUILDING_OWNERSHIP_ID\n",
+							",\tBUILDING_OWNERSHIP_NAME\n",
+							",\tBUILDING_OWNERSHIP_DESCRIPTION\n",
+							",\tBUILDING_PRIMARY_USE_ID AS PRIMARY_BUILDING_USE_ID\n",
+							",\tBUILDING_PRIMARY_USE_NAME AS PRIMARY_BUILDING_USE_NAME\n",
+							",\tBUILDING_PRIMARY_USE_DESCRIPTION AS PRIMARY_BUILDING_USE_DESCR\n",
+							",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
+							",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
+							",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
+							",\tRENTABLE_AREA \n",
+							",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
+							",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
+							",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
+							",   'Y' AS CURRENT_IND\n",
+							",   CURRENT_TIMESTAMP AS EXTRACT_DT\n",
+							",   CURRENT_TIMESTAMP AS REC_START_DT\n",
+							",   '9999-12-31 00:00:00.000' as REC_END_DT\n",
+							",   'Tririga' AS SOURCE_SYSTEM\n",
+							",    column_hash as REC_CHECKSUM\n",
+							",    'I' as REC_STATUS\n",
+							",    current_timestamp as IMG_LST_UPD_DT\n",
+							",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+							",   'Y' AS ACTIVE_IN_SOURCE_IND \n",
+							"    from dhts_building A \n",
+							"WHERE existing_REC_CHECKSUM is null\n",
+							"AND CAMPUS_ID='RTPMAIN' and BUILDING_ID='404'\n",
+							"AND NOT EXISTS\n",
+							"(SELECT 1 FROM etlhubConfirmed.dht_building B\n",
+							"WHERE A.BUILDING_BUSINESS_ID=B.BUILDING_BUSINESS_ID\n",
+							"and b.CURRENT_IND='Y'\n",
+							"AND A.column_hash=B.REC_CHECKSUM)\n",
+							";"
+						],
+						"outputs": [],
+						"execution_count": 106
 					},
 					{
 						"cell_type": "code",
@@ -38456,7 +38520,7 @@
 							",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
 							",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
 							",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
-							",\tRENTABLE_AREA INTEGER\n",
+							",\tNULL AS RENTABLE_AREA\n",
 							",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
 							",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 							",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
@@ -38480,11 +38544,11 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
+							"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key))\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 92
+						"execution_count": 111
 					},
 					{
 						"cell_type": "code",
@@ -38505,10 +38569,14 @@
 						},
 						"source": [
 							"%%sql\n",
-							"SELECT count(*) FROM etlhubconfirmed.dht_industry_sector where current_ind='Y'"
+							"SELECT * FROM etlhubconfirmed.dht_building \n",
+							"where \n",
+							"    CAMPUS_ID ='RTPMAIN '\n",
+							"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
+							"        "
 						],
 						"outputs": [],
-						"execution_count": 32
+						"execution_count": 121
 					},
 					{
 						"cell_type": "code",
@@ -44013,7 +44081,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "13fe9b43-fbca-4f12-a447-c44f71054879"
+						"spark.autotune.trackingId": "6344526c-8077-458f-bff8-b9de4a622e4c"
 					}
 				},
 				"metadata": {
@@ -44221,7 +44289,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 25
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -44783,7 +44851,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f1f17aa8-57cf-4d23-bf14-8f5832235a7b"
+						"spark.autotune.trackingId": "8cceb73a-9c22-4746-861b-b09ac2ebe7f1"
 					}
 				},
 				"metadata": {
@@ -44863,8 +44931,8 @@
 							"from pyspark.sql.functions import md5, concat_ws,trim\n",
 							"from sqlite3 import connect\n",
 							"from pyspark.sql import functions as F\n",
+							"from pyspark.sql import SparkSession\n",
 							"from pyspark.sql.functions import col\n",
-							"from pyspark.sql import SparkSession \n",
 							"from pyspark.sql.types import * \n",
 							"from delta.tables import *\n",
 							"import os\n",
@@ -44872,7 +44940,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 75
 					},
 					{
 						"cell_type": "markdown",
@@ -44915,7 +44983,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 76
 					},
 					{
 						"cell_type": "markdown",
@@ -44975,106 +45043,22 @@
 							"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
 							"incrementalData_DF.createOrReplaceTempView('SourceView')\n",
 							"#joining with dimension tables\n",
-							"DIMOPPDataDF=spark.sql(\"\")\n",
-							"#DIMJoin=incrementalData_DF.join(DIMOPPDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM), \"fullouter\") \n",
+							"DIMOPPDataDF=spark.sql(\"select distinct Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY as OPPORTUNITY_KEY,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY FROM SourceView Src LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR where current_ind = 'Y') as INDUS ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode\")\n",
 							"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 3
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\r\n",
-							"select Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY ,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,\r\n",
-							"sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,\r\n",
-							"OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,\r\n",
-							"PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY --geo.GEOGRAPHY_KEY,rgn4.REGION_LEVEL_4_KEY,PPORTUNITY_SALES_STAGE_CODE\r\n",
-							"FROM SourceView Src\r\n",
-							"LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM\r\n",
-							"from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM\r\n",
-							"LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST \r\n",
-							"on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD\r\n",
-							"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
-							"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
-							"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID\r\n",
-							"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,\r\n",
-							"t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,\r\n",
-							"row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
-							"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2\r\n",
-							"where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY\r\n",
-							"/*LEFT OUTER JOIN (select distinct GEOGRAPHY_KEY,ISO_COUNTRY_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and current_date >= EFFECTIVE_START_DT\r\n",
-							"and current_date <= EFFECTIVE_END_DT) as geo ON geo.ISO_COUNTRY_CD=Src.ISO_COUNTRY_CODE\r\n",
-							"LEFT OUTER JOIN (select distinct REGION_LEVEL_4_KEY,REGION_LEVEL_4_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and   current date >= EFFECTIVE_START_DT\r\n",
-							"and current date <= EFFECTIVE_END_DT) as rgn4 on Src.REGION_ID=rgn4.REGION_LEVEL_4_CD */\r\n",
-							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales\r\n",
-							"ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD\r\n",
-							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales\r\n",
-							"ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD\r\n",
-							"LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR \r\n",
-							"where current_ind = 'Y') as INDUS \r\n",
-							"ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode"
-						],
-						"outputs": [],
-						"execution_count": null
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"\r\n",
-							"#joining with dimension tables\r\n",
-							"DIMOPPDataDF=spark.sql(\"select distinct OPP.OPPORTUNITY_KEY,role.OPPORTUNITY_ROLE_KEY,crm_role.OPPORTUNITY_ROLE_KEY as CRM_ROLE_KEY,emp.EMPLOYEE_KEY from SourceView src left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM)=trim(OPP.OPPORTUNITY_NUM) left outer join etlhubConfirmed.dht_opportunity_role role on src.OPP_ROLE=role.ROLE_CD left outer join etlhubConfirmed.dht_opportunity_role crm_role on src.CRM_ROLE_CODE=crm_role.ROLE_CD left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y'\")\r\n",
-							"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\r\n",
-							"\r\n",
-							"\r\n",
-							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\r\n",
-							"\r\n",
-							"# Get column list for creating Rec_Checksum\r\n",
-							"\r\n",
-							"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\r\n",
-							"# 2. Dups in target already\r\n",
-							"\r\n",
-							"col_list=[]\r\n",
-							"for i in incrementalData_DF.columns:\r\n",
-							"    col_list.append(i)\r\n",
-							"\r\n",
-							"# Add a checsum column to help identify the changed rows\r\n",
-							"\r\n",
-							"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\r\n",
-							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\r\n",
-							"\r\n",
-							"#sell_cyclecolhashDF.show()\r\n",
+							"\n",
+							"# Get column list for creating Rec_Checksum\n",
+							"col_list=[]\n",
+							"for i in DIMOPPDataDF.columns:\n",
+							"    col_list.append(i)\n",
+							"\n",
+							"# Add a checsum column to help identify the changed rows  \n",
+							"incrementalData_DF2 = DIMOPPDataDF.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+							"\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 77
 					},
 					{
 						"cell_type": "code",
@@ -45094,11 +45078,8 @@
 							"#Create a dataframe with target deltalake table data with necessary columns\n",
 							"\n",
 							"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
-							"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
 							"\n",
 							"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
-							"\n",
-							"#existingMaxKeyDF=spark.sql(\"SELECT MAX(EMPLOYEE_KEY) existing_MAX_KEY from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
 							"\n",
 							"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
 							"\n",
@@ -45121,7 +45102,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": 78
 					},
 					{
 						"cell_type": "markdown",
@@ -45155,7 +45136,7 @@
 						},
 						"source": [
 							"qry3=\"\"\"\n",
-							"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
+							"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 where {} is not null GROUP BY {} HAVING COUNT(*)>1\n",
 							";\n",
 							"\"\"\"\n",
 							"\n",
@@ -45164,7 +45145,7 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"df3=spark.sql(qry3.format(natural_key,natural_key))\n",
+							"df3=spark.sql(qry3.format(natural_key,natural_key,natural_key))\n",
 							"cnt1=df3.count()\n",
 							"\n",
 							"print (cnt1)\n",
@@ -45179,6 +45160,8 @@
 							"    sys.exit(1)\n",
 							"    print(\"This will not be printed\")\n",
 							"\n",
+							"#print(natural_key)\n",
+							"#print(tablename)\n",
 							"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
 							"cnt2=df4.count()\n",
 							"\n",
@@ -45198,7 +45181,45 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 41
+						"execution_count": 82
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"--select Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY as OPPORTUNITY_KEY,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY FROM SourceView Src LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR where current_ind = 'Y') as INDUS ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode\r\n",
+							"--select * from incrementalData_DF2 where opportunity_key=25049\r\n",
+							"select Src.OPPORTUNITY_NUM --,OPP.OPPORTUNITY_KEY as OPPORTUNITY_KEY --,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,\r\n",
+							"--emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,\r\n",
+							"--OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,\r\n",
+							"--PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY \r\n",
+							"FROM (select * from SourceView where opportunity_num='SOC-WIJKD3I') as Src \r\n",
+							"LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM from etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM \r\n",
+							"LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD \r\n",
+							"/*LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID \r\n",
+							"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY \r\n",
+							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD \r\n",
+							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD \r\n",
+							"LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR where current_ind = 'Y') as INDUS ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode\r\n",
+							"where opportunity_key=25049 */"
+						],
+						"outputs": [],
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -45305,7 +45326,6 @@
 						"source": [
 							"\n",
 							"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
-							"#delete FROM etlhubconfirmed.dht_employee;\n",
 							"\n",
 							"qry_4_recon1=\"\"\"\n",
 							"SELECT COUNT(*) from {} A \n",
@@ -45323,50 +45343,9 @@
 							"\n",
 							"INSERT INTO {}\n",
 							"\tselect \n",
-							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as VERSION \n",
-							",\tCUSTOMER_NO\n",
-							",\tCUSTOMER_NM\n",
-							",\tINAC_CD\n",
-							",\tINAC_DESC\n",
-							",\tCOUNTRY_CD\n",
-							",\tMARKET_BUSINESS_CD\n",
-							",\tSMB_IND\n",
-							",\tCOMPANY_NO\n",
-							",\tENTERPRISE_NM\n",
-							",\tENTERPRISE_NO\n",
-							",\tCUST_CITY_NM\n",
-							",\tCUST_STATE_PROV_CD\n",
-							",\tCUST_POSTL_CD\n",
-							",\tISO_COUNTRY_CD\n",
-							",\tISO_COUNTRY_DESC\n",
-							",\tCMR_ISU_CD\n",
-							",\tSUB_INDUSTRY_CD\n",
-							",\tCURR_CVRG_TYP_CD\n",
-							",\tCURR_CVRG_TYP_DESC\n",
-							",\tCURR_CVRG_ID\n",
-							",\tCURR_CVRG_NM\n",
-							",\tDLGTD_CVRG_IND\n",
-							",\tBASE_CVRG_TYP_CD\n",
-							",\tBASE_CVRG_TYP_DESC\n",
-							",\tBASE_CVRG_ID\n",
-							",\tBASE_CVRG_NM\n",
-							",\tTERR_ID\n",
-							",\tTERR_NM\n",
-							",\tDBCS_CUSTOMER_NM\n",
-							",\tCLIENT_ID\n",
-							",\tCLIENT_NM\n",
-							",\tCVI_BRNCH_ID\n",
-							",\tCVI_BRNCH_DESC\n",
-							",\tCVI_BRNCH_GRP_CD\n",
-							",\tCVI_BRNCH_GRP_DESC\n",
-							",\tCVI_BRNCH_UNT_ID\n",
-							",\tCVI_BRNCH_UNT_NM\n",
-							",\tSMB_QUADTIER_CD\n",
-							",\tCUST_ACCT_ID\n",
-							",\tRPTS_TO_IMT_ID\n",
-							",\tRPTS_TO_SCTR_CD\n",
-							",\tRPTS_TO_SCTR_DESC\n",
-							"\t,'Y' AS CURRENT_IND\n",
+							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_FACT_VERSION \n",
+							",\tOPPORTUNITY_KEY\n",
+							",'Y' AS CURRENT_IND\n",
 							"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 							"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
 							"\t,'9999-12-31 00:00:00.000' as REC_END_DT\n",
@@ -45374,34 +45353,11 @@
 							"\t,column_hash as REC_CHECKSUM\n",
 							"\t,'I' as REC_STATUS\n",
 							"\t,'ESA' AS SOURCE_SYSTEM\n",
-							",\tCUST_INDUSTRY_SECTOR_KEY\n",
-							",\tCUST_INDUSTRY_SECTOR_VERSION\n",
-							",\tTERRITORY_RGN_KEY\n",
-							",\tREPORTS_TO_IMT_GEO_KEY\n",
-							",\tFIN_COUNTRY_KEY\n",
-							"\t,current_timestamp as IMG_LST_UPD_DT\n",
+							",\t,current_timestamp as IMG_LST_UPD_DT\n",
 							"\t,CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-							",\tBOID\n",
-							",\tDOMESTIC_CLIENT_ID\n",
-							",\tDOMESTIC_CLIENT_NM\n",
-							",\tGLOBAL_CLIENT_ID\n",
-							",\tGLOBAL_CLIENT_NM\n",
-							",\tGLOBAL_ULTIMATE_CLIENT_ID\n",
-							",\tGLOBAL_ULTIMATE_CLIENT_NM\n",
-							",\tDOMESTIC_BUYING_GROUP_ID\n",
-							",\tDOMESTIC_BUYING_GROUP_NM\n",
-							",\tGLOBAL_BUYING_GROUP_ID\n",
-							",\tGLOBAL_BUYING_GROUP_NM\n",
-							",\tTOP_TREE_ACCT_ID\n",
-							",\tTOP_TREE_ID\n",
-							",\tTOP_TREE_NM\n",
-							",\t'' AS STANDARD_INDUSTRIAL_CLASSIFICATION_CD\n",
-							",\tCOV_CLIENT_TYPE\n",
-							",\tCOV_CLIENT_TYPE_DESC\n",
-							",\tCOV_CLIENT_SUBTYPE\n",
-							",\tCOV_CLIENT_SUBTYPE_DESC\n",
+							"\t,'ED' AS DATA_IND\n",
 							"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
-							"    from {} A \n",
+							",\tfrom {} A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
 							"(SELECT 1 FROM {} B\n",
