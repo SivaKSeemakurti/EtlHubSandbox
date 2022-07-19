@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "46622bbb-f568-4c75-b524-b7a8fb6cd46e"
+				"spark.autotune.trackingId": "9fa29a8e-a48d-4a94-ada5-07019c016ecf"
 			}
 		},
 		"metadata": {
@@ -539,6 +539,7 @@
 					"\t,PRICE_AGREEMENT\n",
 					"    ,PRICING_SECURED\n",
 					"    ,EXECUTIVE_SPONSOR_EMP_KEY\n",
+					"\t,'Y'\n",
 					"\t,'ED' AS DATA_IND\n",
 					"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
 					",\tfrom {} A \n",
