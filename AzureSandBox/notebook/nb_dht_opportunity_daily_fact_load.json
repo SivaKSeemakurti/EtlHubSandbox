@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8cceb73a-9c22-4746-861b-b09ac2ebe7f1"
+				"spark.autotune.trackingId": "4b6adc99-5c84-4314-8ec3-38a48d3cdf42"
 			}
 		},
 		"metadata": {
@@ -464,13 +464,14 @@
 					},
 					"microsoft": {
 						"language": "sparksql"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
+					"SELECT date_format(DECISION_DATE,\"yyyy-MM-dd\").alias(\"yyyy MM dd\") FROM DHTS_OPPORTUNITY_DAILY_FT "
 				],
-				"execution_count": null
+				"execution_count": 83
 			},
 			{
 				"cell_type": "code",
@@ -508,6 +509,12 @@
 					"\tselect \n",
 					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_FACT_VERSION \n",
 					",\tOPPORTUNITY_KEY\n",
+					",EMPLOYEE_KEY\n",
+					",''\n",
+					",INDUSTRY_SECTOR_KEY\n",
+					",MARKET_KEY\n",
+					",SALES_STAGE_KEY\n",
+					",PREV_SALES_STAGE_KEY\n",
 					",'Y' AS CURRENT_IND\n",
 					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
