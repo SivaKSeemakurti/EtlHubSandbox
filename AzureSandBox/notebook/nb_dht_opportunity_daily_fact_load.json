@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "24b5a950-ffd8-49a4-b9fa-2b7c26e18218"
+				"spark.autotune.trackingId": "2dd5b426-00c9-4064-aaa4-1eeeacfea5ed"
 			}
 		},
 		"metadata": {
@@ -218,9 +218,9 @@
 					"col_list=[]\n",
 					"for i in DIMOPPDataDF.columns:\n",
 					"    col_list.append(i)\n",
-					"print (DIMOPPDataDF.columns)\n",
+					"#print (DIMOPPDataDF.columns)\n",
 					"# Add a checsum column to help identify the changed rows  \n",
-					"#incrementalData_DF1=DIMOPPDataDF.withColumn(\"nk_hash\",md5(natural_key))  \n",
+					"incrementalData_DF1=DIMOPPDataDF.withColumn(\"nk_hash\",md5(OPPORTUNITY_KEY))  \n",
 					"#incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"#incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"\n",
@@ -228,7 +228,7 @@
 					"# Add a checsum column to help identify the changed rows\n",
 					"#incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 40
+				"execution_count": 41
 			},
 			{
 				"cell_type": "code",
