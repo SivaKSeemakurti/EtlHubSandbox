@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a2bd3b42-1911-4f5a-8348-db5da5e92bdd"
+				"spark.autotune.trackingId": "008b662e-bf52-4a90-8340-4a0f7295993e"
 			}
 		},
 		"metadata": {
@@ -144,11 +144,11 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='DS_OPPORTUNITY_DAILY_FT_DATA.csv' \n",
+					"file_name='DS_OPPORTUNITY_DAILY_FACT.csv' \n",
 					"natural_key=\"OPPORTUNITY_KEY\"\n",
-					"tablename=\"etlhubConfirmed.dht_market\"\n",
-					"stagingtable=\"DHTS_MARKET\"\n",
-					"keycolumn=\"MARKET_KEY\"\n",
+					"tablename=\"etlhubConfirmed.dht_opportunity_daily_ft\"\n",
+					"stagingtable=\"DHTS_OPPORTUNITY_DAILY_FT\"\n",
+					"keycolumn=\"OPPORTUNITY_FACT_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
