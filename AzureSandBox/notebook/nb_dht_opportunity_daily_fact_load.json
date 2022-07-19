@@ -7,21 +7,21 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "sPoolKyn001494",
+			"referenceName": "sPool001494New",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
-			"driverMemory": "56g",
-			"driverCores": 8,
-			"executorMemory": "56g",
-			"executorCores": 8,
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
 			"numExecutors": 2,
 			"runAsWorkspaceSystemIdentity": false,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a6bca729-1ec3-4239-99e8-d2f4d613705c"
+				"spark.autotune.trackingId": "dbf1a2fb-7940-44a0-a30d-b4e65afb9dbf"
 			}
 		},
 		"metadata": {
@@ -35,18 +35,18 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
-				"name": "sPoolKyn001494",
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
 				"type": "Spark",
-				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 				"auth": {
 					"type": "AAD",
 					"authResource": "https://dev.azuresynapse.net"
 				},
-				"sparkVersion": "3.1",
+				"sparkVersion": "3.2",
 				"nodeCount": 10,
-				"cores": 8,
-				"memory": 56,
+				"cores": 80,
+				"memory": 472,
 				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
@@ -234,9 +234,58 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from SourceView"
+					"select Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY --,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,\r\n",
+					"-- emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,geo.GEOGRAPHY_KEY,rgn4.REGION_LEVEL_4_KEY,sales.SALES_STAGE_KEY,\r\n",
+					"-- prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,INDUS.IMG_INDUSTRY_SECTOR_KEY\r\n",
+					"FROM SourceView Src\r\n",
+					"LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM\r\n",
+					"from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM\r\n",
+					"LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST \r\n",
+					"on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD\r\n",
+					"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
+					"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
+					"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID\r\n",
+					"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,\r\n",
+					"t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,\r\n",
+					"row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
+					"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2\r\n",
+					"where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY\r\n",
+					"/*LEFT OUTER JOIN (select distinct GEOGRAPHY_KEY,ISO_COUNTRY_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and current_date >= EFFECTIVE_START_DT\r\n",
+					"and current_date <= EFFECTIVE_END_DT) as geo ON geo.ISO_COUNTRY_CD=Src.ISO_COUNTRY_CODE\r\n",
+					"LEFT OUTER JOIN (select distinct REGION_LEVEL_4_KEY,REGION_LEVEL_4_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and   current date >= EFFECTIVE_START_DT\r\n",
+					"and current date <= EFFECTIVE_END_DT) as rgn4 on Src.REGION_ID=rgn4.REGION_LEVEL_4_CD */\r\n",
+					"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales\r\n",
+					"ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD\r\n",
+					"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales\r\n",
+					"ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD\r\n",
+					"LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR \r\n",
+					"where current_ind = 'Y') as INDUS \r\n",
+					"ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode"
 				],
-				"execution_count": 4
+				"execution_count": 17
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from etlhubConfirmed.DHT_INDUSTRY_SECTOR "
+				],
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
