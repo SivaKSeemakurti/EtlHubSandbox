@@ -21431,7 +21431,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "62c9bc09-bf58-4f02-b3b1-4d2b2356c7ea"
+						"spark.autotune.trackingId": "7288d758-4a49-4157-bb27-575dabb17274"
 					}
 				},
 				"metadata": {
@@ -21456,7 +21456,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -21473,8 +21474,8 @@
 							"%%sql\n",
 							"-- DBXDH.DHT_BUILDING definition\n",
 							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_BUILDING  (\t\n",
-							"\tBUILDING_KEY INTEGER NOT NULL,\n",
-							"\tBUILDING_VERSION INT NOT NULL,\n",
+							"\tBUILDING_KEY INTEGER NOT NULL, -- Surrogate Key one to one relation with natural Key\n",
+							"\tBUILDING_VERSION INT NOT NULL, -- Inremental version number. Record with max version number is the latest/active row  \n",
 							"\tBUILDING_BUSINESS_ID STRING,\n",
 							"\tCAMPUS_ID STRING NOT NULL,\n",
 							"\tBUILDING_ID STRING NOT NULL,\n",
@@ -21493,16 +21494,16 @@
 							"\tBUILDING_ACTIVATION_YEAR INTEGER,\n",
 							"\tBUILDING_INACTIVATION_YEAR INTEGER,\n",
 							"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
-							"\tCURRENT_IND\tSTRING\n",
-							",\tEXTRACT_DT TIMESTAMP\n",
-							",\tREC_START_DT TIMESTAMP\n",
-							",\tREC_END_DT TIMESTAMP\n",
-							",\tSOURCE_SYSTEM STRING\n",
-							",\tREC_CHECKSUM STRING\n",
-							",\tREC_STATUS STRING\t\n",
-							",\tIMG_LST_UPD_DT TIMESTAMP\n",
-							",\tIMG_CREATED_DT TIMESTAMP\n",
-							",   ACTIVE_IN_SOURCE_IND STRING\n",
+							"\tCURRENT_IND\tSTRING -- Y for active row and N for all rows expired\n",
+							",\tEXTRACT_DT TIMESTAMP -- Load Cycle date\n",
+							",\tREC_START_DT TIMESTAMP --SCD TYpe 2 start date\n",
+							",\tREC_END_DT TIMESTAMP -- SCD Type 2 End date, will have high date (9999-12-31) for active dimensional row\n",
+							",\tSOURCE_SYSTEM STRING -- Name of the source system\n",
+							",\tREC_CHECKSUM STRING -- Hash value of all dimensional columns. Used to identify changed records \n",
+							",\tREC_STATUS STRING\t--I or U depending on the DML operation\n",
+							",\tIMG_LST_UPD_DT TIMESTAMP --Timestamp of when the record got updated in table\n",
+							",\tIMG_CREATED_DT TIMESTAMP --Timestamp of when the record got inserted in table\n",
+							",   ACTIVE_IN_SOURCE_IND STRING --Indicater to represent records no longer present in source\n",
 							")\n",
 							"USING DELTA\n",
 							"PARTITIONED BY (CURRENT_IND)\n",
@@ -21601,6 +21602,25 @@
 							"\tCONSTRAINT SQL200724134512910 PRIMARY KEY (BUILDING_KEY)\n",
 							");\n",
 							"CREATE UNIQUE INDEX SQL200724134512900 ON RESOWW.BUILDING (BUILDING_KEY);"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
 						],
 						"outputs": [],
 						"execution_count": null
@@ -37962,7 +37982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "cf1eb448-8003-447d-aa8e-be2051324a9f"
+						"spark.autotune.trackingId": "25b8d91c-9180-4e3d-9a72-ab7d7f542281"
 					}
 				},
 				"metadata": {
@@ -37987,8 +38007,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -38058,7 +38077,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 16
+						"execution_count": 34
 					},
 					{
 						"cell_type": "markdown",
@@ -38105,7 +38124,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 17
+						"execution_count": 35
 					},
 					{
 						"cell_type": "markdown",
@@ -38190,7 +38209,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 18
+						"execution_count": 36
 					},
 					{
 						"cell_type": "code",
@@ -38237,7 +38256,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": 37
 					},
 					{
 						"cell_type": "markdown",
@@ -38338,7 +38357,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 20
+						"execution_count": 38
 					},
 					{
 						"cell_type": "code",
@@ -38403,7 +38422,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 21
+						"execution_count": 39
 					},
 					{
 						"cell_type": "code",
@@ -44852,7 +44871,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "32a59b91-7515-4324-93a8-a71814d7c9b0"
+						"spark.autotune.trackingId": "ce3fed64-819a-4f25-b27f-7fd4dba4b491"
 					}
 				},
 				"metadata": {
@@ -44941,7 +44960,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 85
+						"execution_count": 96
 					},
 					{
 						"cell_type": "markdown",
@@ -44984,7 +45003,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 76
+						"execution_count": 97
 					},
 					{
 						"cell_type": "markdown",
@@ -45059,7 +45078,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 77
+						"execution_count": 98
 					},
 					{
 						"cell_type": "code",
@@ -45103,7 +45122,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 78
+						"execution_count": 99
 					},
 					{
 						"cell_type": "markdown",
@@ -45182,7 +45201,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 82
+						"execution_count": 100
 					},
 					{
 						"cell_type": "code",
@@ -45306,10 +45325,12 @@
 						},
 						"source": [
 							"%%sql\n",
-							"SELECT date_format(DECISION_DATE,\"yyyy-MM-dd\").alias(\"yyyy MM dd\") FROM DHTS_OPPORTUNITY_DAILY_FT "
+							"SELECT DECISION_DATE ,\n",
+							"date_format(DECISION_DATE,\"yyyyMMdd\") \n",
+							"FROM DHTS_OPPORTUNITY_DAILY_FT "
 						],
 						"outputs": [],
-						"execution_count": 84
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -45348,24 +45369,37 @@
 							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_FACT_VERSION \n",
 							",\tOPPORTUNITY_KEY\n",
 							",EMPLOYEE_KEY\n",
-							",''\n",
+							",-1 as REGION_LEVEL_4_KEY\n",
 							",INDUSTRY_SECTOR_KEY\n",
 							",MARKET_KEY\n",
 							",SALES_STAGE_KEY\n",
 							",PREV_SALES_STAGE_KEY\n",
+							",date_format(DECISION_DATE,\"yyyyMMdd\") as DECISION_DATE_KEY\n",
+							",-1 as EIW_DATE_KEY\n",
+							",date_format(OPPORTUNITY_CLOSE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CLOSE_DATE_KEY\n",
+							",date_format(OPPORTUNITY_CREATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CREATE_DATE_KEY\n",
+							",date_format(OPPORTUNITY_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_UPDATE_DATE_KEY\n",
+							",date_format(OPPORTUNITY_SALES_STAGE_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_SALES_STAGE_UPDATE_DATE_KEY\n",
+							",-1 as GEOGRAPHY_KEY\n",
+							",TOTAL_OPP_VAL_USD\n",
 							",'Y' AS CURRENT_IND\n",
 							"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 							"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
 							"\t,'9999-12-31 00:00:00.000' as REC_END_DT\n",
-							"\t\n",
+							"\t,'ESA' AS SOURCE_SYSTEM\n",
 							"\t,column_hash as REC_CHECKSUM\n",
 							"\t,'I' as REC_STATUS\n",
-							"\t,'ESA' AS SOURCE_SYSTEM\n",
-							",\t,current_timestamp as IMG_LST_UPD_DT\n",
+							"\t,current_timestamp as IMG_LST_UPD_DT\n",
 							"\t,CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+							"\t,date_format(PROP_DELIVERY_DATE,\"yyyyMMdd\") as PROP_DELIVERY_DATE_KEY\n",
+							"\t,PERF_CRITERIA_CONF\n",
+							"\t,PRICE_AGREEMENT\n",
+							"    ,PRICING_SECURED\n",
+							"    ,EXECUTIVE_SPONSOR_EMP_KEY\n",
+							"\t,'Y' as OPP_ACTIVE_IN_SOURCE_IND\n",
 							"\t,'ED' AS DATA_IND\n",
 							"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
-							",\tfrom {} A \n",
+							"from {} A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
 							"(SELECT 1 FROM {} B\n",
@@ -45379,31 +45413,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 45
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\n",
-							"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
-						],
-						"outputs": [],
-						"execution_count": 47
+						"execution_count": 102
 					},
 					{
 						"cell_type": "code",
