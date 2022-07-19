@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "faff845e-dcdc-432c-bf90-021649421c2e"
+				"spark.autotune.trackingId": "261cb1dd-efa1-49dc-944c-ce73374aba5c"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 85
+				"execution_count": 96
 			},
 			{
 				"cell_type": "markdown",
@@ -152,7 +152,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 86
+				"execution_count": 97
 			},
 			{
 				"cell_type": "markdown",
@@ -226,7 +226,7 @@
 					"\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 87
+				"execution_count": 98
 			},
 			{
 				"cell_type": "code",
@@ -269,7 +269,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 88
+				"execution_count": 99
 			},
 			{
 				"cell_type": "markdown",
@@ -347,7 +347,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 82
+				"execution_count": 100
 			},
 			{
 				"cell_type": "code",
@@ -517,13 +517,13 @@
 					",MARKET_KEY\n",
 					",SALES_STAGE_KEY\n",
 					",PREV_SALES_STAGE_KEY\n",
-					",date_format(DECISION_DATE,\"yyyyMMdd\")\n",
-					",''\n",
-					",date_format(OPPORTUNITY_CLOSE_DATE,\"yyyyMMdd\")\n",
-					",date_format(OPPORTUNITY_CREATE_DATE,\"yyyyMMdd\")\n",
-					",date_format(OPPORTUNITY_UPDATE_DATE,\"yyyyMMdd\")\n",
-					",date_format(OPPORTUNITY_SALES_STAGE_UPDATE_DATE,\"yyyyMMdd\")\n",
-					",''\n",
+					",date_format(DECISION_DATE,\"yyyyMMdd\") as DECISION_DATE_KEY\n",
+					",-1 as EIW_DATE_KEY\n",
+					",date_format(OPPORTUNITY_CLOSE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CLOSE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_CREATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CREATE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_UPDATE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_SALES_STAGE_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_SALES_STAGE_UPDATE_DATE_KEY\n",
+					",-1 as GEOGRAPHY_KEY\n",
 					",TOTAL_OPP_VAL_USD\n",
 					",'Y' AS CURRENT_IND\n",
 					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
@@ -534,12 +534,12 @@
 					"\t,'I' as REC_STATUS\n",
 					"\t,current_timestamp as IMG_LST_UPD_DT\n",
 					"\t,CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-					"\t,date_format(PROP_DELIVERY_DATE,\"yyyyMMdd\")\n",
+					"\t,date_format(PROP_DELIVERY_DATE,\"yyyyMMdd\") as PROP_DELIVERY_DATE_KEY\n",
 					"\t,PERF_CRITERIA_CONF\n",
 					"\t,PRICE_AGREEMENT\n",
 					"    ,PRICING_SECURED\n",
 					"    ,EXECUTIVE_SPONSOR_EMP_KEY\n",
-					"\t,'Y'\n",
+					"\t,'Y' as OPP_ACTIVE_IN_SOURCE_IND\n",
 					"\t,'ED' AS DATA_IND\n",
 					"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
 					",\tfrom {} A \n",
@@ -555,7 +555,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 94
+				"execution_count": 101
 			},
 			{
 				"cell_type": "code",
