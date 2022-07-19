@@ -101,24 +101,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/sPool001494New')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sPoolKyn001494')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/BALSEQ0000_MASTER_EN_SEQ')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -21449,14 +21431,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b9d87d61-1daa-40d2-afab-f4a478d7c734"
+						"spark.autotune.trackingId": "35ad603e-9709-4f2b-8cd1-f598e067c434"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -21472,14 +21451,12 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"extraHeader": null
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -21498,6 +21475,7 @@
 							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_BUILDING  (\t\n",
 							"\tBUILDING_KEY INTEGER NOT NULL,\n",
 							"\tBUILDING_VERSION INT NOT NULL,\n",
+							"\tBUILDING_BUSINESS_ID STRING,\n",
 							"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
 							"\tBUILDING_ID CHAR(6) NOT NULL,\n",
 							"\tBUILDING_NAME VARCHAR(150),\n",
@@ -21530,7 +21508,6 @@
 							"PARTITIONED BY (CURRENT_IND)\n",
 							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_BUILDING1'"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 7
 					},
@@ -21555,9 +21532,8 @@
 							"%%sql\n",
 							"DROP TABLE etlhubConfirmed.DHT_BUILDING"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -21580,7 +21556,6 @@
 							"%%sql\n",
 							"DELETE FROM etlhubConfirmed.DHT_BUILDING"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 6
 					},
@@ -21627,7 +21602,6 @@
 							");\n",
 							"CREATE UNIQUE INDEX SQL200724134512900 ON RESOWW.BUILDING (BUILDING_KEY);"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					}
@@ -37988,7 +37962,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "d8e056e5-875d-4e14-b712-3f319d13c087"
+						"spark.autotune.trackingId": "f509edb8-a5eb-46fb-8d15-9bf688295637"
 					}
 				},
 				"metadata": {
@@ -38084,7 +38058,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 15
+						"execution_count": 5
 					},
 					{
 						"cell_type": "markdown",
@@ -38127,7 +38101,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 16
+						"execution_count": 4
 					},
 					{
 						"cell_type": "markdown",
