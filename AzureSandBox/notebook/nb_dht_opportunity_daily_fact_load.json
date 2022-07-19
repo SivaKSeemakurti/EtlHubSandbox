@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "46861d10-752a-48f5-9e44-23f0b11b885e"
+				"spark.autotune.trackingId": "c0622414-4f57-4b42-969f-a49809d45a76"
 			}
 		},
 		"metadata": {
@@ -263,30 +263,7 @@
 					"where current_ind = 'Y') as INDUS \r\n",
 					"ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode"
 				],
-				"execution_count": 20
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select * from etlhubConfirmed.DHT_INDUSTRY_SECTOR "
-				],
-				"execution_count": 15
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
