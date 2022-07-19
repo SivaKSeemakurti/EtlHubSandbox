@@ -21431,7 +21431,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "80e56b28-068d-4fda-9c00-fdca87930f3e"
+						"spark.autotune.trackingId": "8ff6059a-b4e8-4988-b52f-cf9c2aa3f66a"
 					}
 				},
 				"metadata": {
@@ -21476,22 +21476,22 @@
 							"\tBUILDING_KEY INTEGER NOT NULL,\n",
 							"\tBUILDING_VERSION INT NOT NULL,\n",
 							"\tBUILDING_BUSINESS_ID STRING,\n",
-							"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
-							"\tBUILDING_ID CHAR(6) NOT NULL,\n",
-							"\tBUILDING_NAME VARCHAR(150),\n",
-							"\tBUILDING_STATUS VARCHAR(32) NOT NULL,\n",
-							"\tBUILDING_OWNERSHIP_ID CHAR(2),\n",
-							"\tBUILDING_OWNERSHIP_NAME VARCHAR(32),\n",
-							"\tBUILDING_OWNERSHIP_DESCR VARCHAR(256),\n",
-							"\tPRIMARY_BUILDING_USE_ID CHAR(2),\n",
-							"\tPRIMARY_BUILDING_USE_NAME VARCHAR(64),\n",
-							"\tPRIMARY_BUILDING_USE_DESCR VARCHAR(512),\n",
-							"\tSECONDARY_BUILDING_USE_ID CHAR(3),\n",
-							"\tSECONDARY_BUILDING_USE_NAME VARCHAR(64),\n",
-							"\tSECONDARY_BUILDING_USE_DESCR VARCHAR(512),\n",
+							"\tCAMPUS_ID STRING NOT NULL,\n",
+							"\tBUILDING_ID STRING NOT NULL,\n",
+							"\tBUILDING_NAME STRING,\n",
+							"\tBUILDING_STATUS STRING NOT NULL,\n",
+							"\tBUILDING_OWNERSHIP_ID STRING,\n",
+							"\tBUILDING_OWNERSHIP_NAME STRING,\n",
+							"\tBUILDING_OWNERSHIP_DESCR STRING,\n",
+							"\tPRIMARY_BUILDING_USE_ID STRING,\n",
+							"\tPRIMARY_BUILDING_USE_NAME STRING,\n",
+							"\tPRIMARY_BUILDING_USE_DESCR STRING,\n",
+							"\tSECONDARY_BUILDING_USE_ID STRING,\n",
+							"\tSECONDARY_BUILDING_USE_NAME STRING,\n",
+							"\tSECONDARY_BUILDING_USE_DESCR STRING,\n",
 							"\tRENTABLE_AREA INTEGER,\n",
-							"\tBUILDING_ACTIVATION_YEAR SMALLINT,\n",
-							"\tBUILDING_INACTIVATION_YEAR SMALLINT,\n",
+							"\tBUILDING_ACTIVATION_YEAR INTEGER,\n",
+							"\tBUILDING_INACTIVATION_YEAR INTEGER,\n",
 							"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
 							"\tCURRENT_IND\tSTRING\n",
 							",\tEXTRACT_DT TIMESTAMP\n",
@@ -21509,7 +21509,7 @@
 							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_BUILDING'"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -37962,7 +37962,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "95c6e88e-8e92-48cc-98ef-6d96de68a9be"
+						"spark.autotune.trackingId": "98935830-a771-46eb-af0d-85ec109a970a"
 					}
 				},
 				"metadata": {
