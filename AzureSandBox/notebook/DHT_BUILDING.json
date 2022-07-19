@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8ff6059a-b4e8-4988-b52f-cf9c2aa3f66a"
+				"spark.autotune.trackingId": "62c9bc09-bf58-4f02-b3b1-4d2b2356c7ea"
 			}
 		},
 		"metadata": {
@@ -99,7 +99,7 @@
 					"PARTITIONED BY (CURRENT_IND)\n",
 					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_BUILDING'"
 				],
-				"execution_count": 2
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -122,7 +122,7 @@
 					"%%sql\n",
 					"DROP TABLE etlhubConfirmed.DHT_BUILDING"
 				],
-				"execution_count": 1
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -145,7 +145,7 @@
 					"%%sql\n",
 					"DELETE FROM etlhubConfirmed.DHT_BUILDING"
 				],
-				"execution_count": 6
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",

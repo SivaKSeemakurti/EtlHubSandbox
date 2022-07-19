@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "711e4893-0bb2-4314-8e3b-25e54055cbc4"
+				"spark.autotune.trackingId": "4df19697-d33d-471e-a57b-1c1874b7c453"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 93
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -162,7 +162,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 94
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
@@ -246,7 +246,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 95
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -292,7 +292,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 96
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
@@ -392,7 +392,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 97
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -456,7 +456,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 98
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -482,6 +482,7 @@
 					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS BUILDING_KEY \n",
 					",\t1 AS BUILDING_VERSION\n",
 					",   BUILDING_BUSINESS_ID AS BUILDING_BUSINESS_ID\n",
+					",\n",
 					",\tCAMPUS_ID\n",
 					",\tBUILDING_ID\n",
 					",\tBUILDING_NAME\n",
@@ -495,7 +496,7 @@
 					",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
 					",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
 					",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
-					",\tRENTABLE_AREA \n",
+					",\tREPLACE(RENTABLE_AREA,',','') AS RENTABLE_AREA\n",
 					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
 					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 					",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
@@ -519,7 +520,7 @@
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					";"
 				],
-				"execution_count": 106
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -572,7 +573,7 @@
 					",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
 					",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
 					",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
-					",\tNULL AS RENTABLE_AREA\n",
+					",\tREPLACE(RENTABLE_AREA,',','') AS RENTABLE_AREA\n",
 					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
 					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 					",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
