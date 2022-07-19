@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "952bbbf9-303f-42d7-9901-4888169e8667"
+				"spark.autotune.trackingId": "25b8d91c-9180-4e3d-9a72-ab7d7f542281"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 16
+				"execution_count": 34
 			},
 			{
 				"cell_type": "markdown",
@@ -162,7 +162,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 17
+				"execution_count": 35
 			},
 			{
 				"cell_type": "markdown",
@@ -246,7 +246,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 18
+				"execution_count": 36
 			},
 			{
 				"cell_type": "code",
@@ -292,7 +292,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 19
+				"execution_count": 37
 			},
 			{
 				"cell_type": "markdown",
@@ -392,7 +392,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 20
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
@@ -456,7 +456,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 21
+				"execution_count": 39
 			},
 			{
 				"cell_type": "code",

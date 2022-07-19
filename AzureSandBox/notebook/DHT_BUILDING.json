@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "62c9bc09-bf58-4f02-b3b1-4d2b2356c7ea"
+				"spark.autotune.trackingId": "9c62ccc1-a437-42aa-b33b-fe12faca6612"
 			}
 		},
 		"metadata": {
@@ -64,8 +64,8 @@
 					"%%sql\n",
 					"-- DBXDH.DHT_BUILDING definition\n",
 					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_BUILDING  (\t\n",
-					"\tBUILDING_KEY INTEGER NOT NULL,\n",
-					"\tBUILDING_VERSION INT NOT NULL,\n",
+					"\tBUILDING_KEY INTEGER NOT NULL, -- Surrogate Key one to one relation with natural Key\n",
+					"\tBUILDING_VERSION INT NOT NULL, -- Inremental version number. Record with max version number is the latest/active row  \n",
 					"\tBUILDING_BUSINESS_ID STRING,\n",
 					"\tCAMPUS_ID STRING NOT NULL,\n",
 					"\tBUILDING_ID STRING NOT NULL,\n",
@@ -84,16 +84,16 @@
 					"\tBUILDING_ACTIVATION_YEAR INTEGER,\n",
 					"\tBUILDING_INACTIVATION_YEAR INTEGER,\n",
 					"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
-					"\tCURRENT_IND\tSTRING\n",
-					",\tEXTRACT_DT TIMESTAMP\n",
-					",\tREC_START_DT TIMESTAMP\n",
-					",\tREC_END_DT TIMESTAMP\n",
-					",\tSOURCE_SYSTEM STRING\n",
-					",\tREC_CHECKSUM STRING\n",
-					",\tREC_STATUS STRING\t\n",
-					",\tIMG_LST_UPD_DT TIMESTAMP\n",
-					",\tIMG_CREATED_DT TIMESTAMP\n",
-					",   ACTIVE_IN_SOURCE_IND STRING\n",
+					"\tCURRENT_IND\tSTRING -- Y for active row and N for all rows expired\n",
+					",\tEXTRACT_DT TIMESTAMP -- Load Cycle date\n",
+					",\tREC_START_DT TIMESTAMP --SCD TYpe 2 start date\n",
+					",\tREC_END_DT TIMESTAMP -- SCD Type 2 End date, will have high date (9999-12-31) for active dimensional row\n",
+					",\tSOURCE_SYSTEM STRING -- Name of the source system\n",
+					",\tREC_CHECKSUM STRING -- Hash value of all dimensional columns. Used to identify changed records \n",
+					",\tREC_STATUS STRING\t--I or U depending on the DML operation\n",
+					",\tIMG_LST_UPD_DT TIMESTAMP --Timestamp of when the record got updated in table\n",
+					",\tIMG_CREATED_DT TIMESTAMP --Timestamp of when the record got inserted in table\n",
+					",   ACTIVE_IN_SOURCE_IND STRING --Indicater to represent records no longer present in source\n",
 					")\n",
 					"USING DELTA\n",
 					"PARTITIONED BY (CURRENT_IND)\n",
@@ -189,6 +189,24 @@
 					"\tCONSTRAINT SQL200724134512910 PRIMARY KEY (BUILDING_KEY)\n",
 					");\n",
 					"CREATE UNIQUE INDEX SQL200724134512900 ON RESOWW.BUILDING (BUILDING_KEY);"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
 				],
 				"execution_count": null
 			}
