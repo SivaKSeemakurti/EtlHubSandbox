@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "10c64a62-4a64-492d-b72b-eaa468d6cef4"
+				"spark.autotune.trackingId": "7b200386-9a77-4f95-81be-cfe5920d9b7f"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 48
+				"execution_count": 57
 			},
 			{
 				"cell_type": "markdown",
@@ -160,7 +160,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 49
+				"execution_count": 58
 			},
 			{
 				"cell_type": "markdown",
@@ -244,7 +244,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 50
+				"execution_count": 59
 			},
 			{
 				"cell_type": "code",
@@ -290,7 +290,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 52
+				"execution_count": 60
 			},
 			{
 				"cell_type": "markdown",
@@ -366,7 +366,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 53
+				"execution_count": 61
 			},
 			{
 				"cell_type": "code",
@@ -430,7 +430,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 54
+				"execution_count": 62
 			},
 			{
 				"cell_type": "code",
@@ -451,11 +451,11 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_industry_sector where current_ind='Y';\n",
+					"SELECT count(*) FROM etlhubconfirmed.dht_BUILDING where current_ind='Y';\n",
 					"\n",
 					"select * from fullJoin;"
 				],
-				"execution_count": 30
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -493,20 +493,25 @@
 					"INSERT INTO {}\n",
 					"\tselect \n",
 					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {} \n",
-					",\t1 AS INDUSTRY_SECTOR_VERSION\n",
-					",\tlevelNum\n",
-					",\tparentCode\n",
-					",\tcode\n",
-					",\tlongDescription\n",
-					",\tmediumDescription\n",
-					",\tshortDescription\n",
-					",\tcomments\n",
-					",\trecordStatus\n",
-					",\trowCreateTs\n",
-					",\trowUpdateTs\n",
-					",\tUSAGE_RULE\n",
-					",\tALT_DESC_FULL_1\n",
-					",\tALT_DESC_FULL_2\n",
+					",\t1 AS BUILDING_VERSION\n",
+					",   CAMPUS_ID || BUILDING_ID AS BUILDING_BUSINESS_ID\n",
+					",\tCAMPUS_ID\n",
+					",\tBUILDING_ID\n",
+					",\tBUILDING_NAME\n",
+					",\tBUILDING_STATUS\n",
+					",\tBUILDING_OWNERSHIP_ID\n",
+					",\tBUILDING_OWNERSHIP_NAME\n",
+					",\tBUILDING_OWNERSHIP_DESCRIPTION\n",
+					",\tBUILDING_PRIMARY_USE_ID AS PRIMARY_BUILDING_USE_ID\n",
+					",\tBUILDING_PRIMARY_USE_NAME AS PRIMARY_BUILDING_USE_NAME\n",
+					",\tBUILDING_PRIMARY_USE_DESCRIPTION AS PRIMARY_BUILDING_USE_DESCR\n",
+					",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
+					",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
+					",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
+					",\tRENTABLE_AREA INTEGER\n",
+					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
+					",\tBUILDING_INACTIVATION_YEAR\n",
+					",\tPROCESSED_DT\n",
 					",   'Y' AS CURRENT_IND\n",
 					",   CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					",   CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -530,7 +535,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 31
+				"execution_count": 68
 			},
 			{
 				"cell_type": "code",
