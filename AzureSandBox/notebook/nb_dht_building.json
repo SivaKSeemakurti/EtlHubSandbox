@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4df19697-d33d-471e-a57b-1c1874b7c453"
+				"spark.autotune.trackingId": "952bbbf9-303f-42d7-9901-4888169e8667"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 7
+				"execution_count": 16
 			},
 			{
 				"cell_type": "markdown",
@@ -162,7 +162,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 8
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
@@ -246,7 +246,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 9
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -292,7 +292,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 10
+				"execution_count": 19
 			},
 			{
 				"cell_type": "markdown",
@@ -392,7 +392,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 11
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -456,7 +456,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 12
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -600,7 +600,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 111
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -623,11 +623,11 @@
 					"%%sql\n",
 					"SELECT * FROM etlhubconfirmed.dht_building \n",
 					"where \n",
-					"    CAMPUS_ID ='RTPMAIN '\n",
+					"    CAMPUS_ID ='RTPMAIN'\n",
 					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
 					"        "
 				],
-				"execution_count": 121
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -660,7 +660,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 33
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
