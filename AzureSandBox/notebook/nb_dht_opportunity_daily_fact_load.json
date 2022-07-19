@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "98afbcb6-1666-4ed6-bfeb-ec1da6631583"
+				"spark.autotune.trackingId": "630859c8-2ddc-420b-adbb-cc4c1aef19db"
 			}
 		},
 		"metadata": {
@@ -711,155 +711,41 @@
 				},
 				"source": [
 					"%%sql\n",
-					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_market where CURRENT_IND='Y'\n",
+					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
 					";\n",
 					"\n",
 					"\n",
-					"select 'Duplicate Rows based on surrogate key' as Title,market_KEY,count(*) from etlhubconfirmed.dht_market where CURRENT_IND='Y'\n",
-					"    group by market_KEY\n",
+					"select 'Duplicate Rows based on surrogate key' as Title,OPPORTUNITY_FACT_KEY,count(*) from etlhubconfirmed.dht_opportunity_daily_ft \n",
+					"where CURRENT_IND='Y'\n",
+					"    group by OPPORTUNITY_FACT_KEY\n",
 					"    having count(*)>1\n",
 					";\n",
 					"\n",
-					"select 'Duplicate Rows based on natural key' as Title,market_BUSINESS_CD,count(*) from etlhubconfirmed.dht_market where CURRENT_IND='Y'\n",
-					"    group by market_BUSINESS_CD\n",
+					"select 'Duplicate Rows based on natural key' as Title,OPPORTUNITY_KEY,count(*) from etlhubconfirmed.dht_opportunity_daily_ft\n",
+					" where CURRENT_IND='Y'\n",
+					"    group by OPPORTUNITY_KEY\n",
 					"    having count(*)>1\n",
 					";\n",
 					"\n",
-					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_market where CURRENT_IND='Y'\n",
+					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
 					"    and date(extract_dt)=current_date and rec_status='I'\n",
 					";\n",
 					"\n",
-					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_market where CURRENT_IND='Y'\n",
+					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
 					"    and date(extract_dt)=current_date and rec_status='U'\n",
 					";\n",
 					"\n",
-					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_market where CURRENT_IND='N'\n",
+					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='N'\n",
 					"    and date(REC_END_DT)=current_date --and rec_status='I'\n",
 					";\n",
 					"\n",
-					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_market where CURRENT_IND='Y'\n",
+					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
 					"    AND \n",
 					"     date(REC_END_DT)=current_date --and rec_status='I'\n",
 					";\n",
 					""
 				],
-				"execution_count": 54
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT COUNT(*) FROM etlhubconfirmed.dht_market\n",
-					"WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
-					"    and date(img_lst_upd_dt)=current_date\n",
-					"        limit 1\n",
-					";\n",
-					"\n",
-					"\n",
-					"select count(*) from etlhubconfirmed.dht_market where CURRENT_IND='Y'\n",
-					"   and date(extract_dt)=current_date --and rec_status='I'\n",
-					";\n",
-					"\n",
-					"select count(*) from etlhubconfirmed.dht_market\n",
-					"WHERE ACTIVE_IN_SOURCE_IND='N'\n",
-					"    and date(IMG_LST_UPD_DT)=current_date\n",
-					"    ;\n",
-					"UPDATE etlhubconfirmed.dht_market\n",
-					"set CURRENT_IND='Y', \n",
-					"REC_END_DT='9999-12-31'\n",
-					"  WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
-					"    and date(img_lst_upd_dt)=current_date\n",
-					"        ;  "
-				],
-				"execution_count": 55
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"qry3=\"\"\"\n",
-					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
-					";\n",
-					"\"\"\"\n",
-					"\n",
-					"qry4=\"\"\"\n",
-					"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
-					";\n",
-					"\"\"\"\n",
-					"\n",
-					"\n",
-					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
-					"cnt2=df4.count()\n",
-					"\n",
-					"print (cnt2)\n",
-					"if cnt2 == 0:\n",
-					"    print(\"no duplicates in target delta lake table\")\n",
-					"    status = 'success'\n",
-					"else:\n",
-					"    print(\"Below are the duplicates in target delta lake table:\")\n",
-					"    df4.show()\n",
-					"    status = 'fail'\n",
-					"    #os.abort() this will take the spark cluster also down\n",
-					"    sys.exit(2)\n",
-					"    print(\"This will not be printed\")\n",
-					"\n",
-					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
-					""
-				],
-				"execution_count": 62
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT * FROM etlhubconfirmed.dht_market WHERE --CURRENT_IND='N' \n",
-					"MARKET_BUSINESS_CD ='008887~613'\n",
-					"    --'008915~613'\n",
-					"        --71588\n",
-					"        --71590\n",
-					""
-				],
-				"execution_count": 8
+				"execution_count": 104
 			}
 		]
 	}
