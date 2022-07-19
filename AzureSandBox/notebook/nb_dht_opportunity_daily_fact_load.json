@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4b6adc99-5c84-4314-8ec3-38a48d3cdf42"
+				"spark.autotune.trackingId": "45f786b3-83ac-4282-ac14-1485d38004e0"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 75
+				"execution_count": 85
 			},
 			{
 				"cell_type": "markdown",
@@ -471,7 +471,7 @@
 					"%%sql\n",
 					"SELECT date_format(DECISION_DATE,\"yyyy-MM-dd\").alias(\"yyyy MM dd\") FROM DHTS_OPPORTUNITY_DAILY_FT "
 				],
-				"execution_count": 83
+				"execution_count": 84
 			},
 			{
 				"cell_type": "code",
