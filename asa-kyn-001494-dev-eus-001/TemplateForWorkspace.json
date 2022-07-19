@@ -37962,7 +37962,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "d44868c4-a36c-4612-9bf6-115390ae4ac6"
+						"spark.autotune.trackingId": "10da443d-bda5-44df-a5ce-67a2238e8bd7"
 					}
 				},
 				"metadata": {
@@ -38058,7 +38058,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 69
+						"execution_count": 86
 					},
 					{
 						"cell_type": "markdown",
@@ -38105,7 +38105,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 70
+						"execution_count": 87
 					},
 					{
 						"cell_type": "markdown",
@@ -38168,7 +38168,7 @@
 							"\n",
 							"#incrementalData_DF = incrementalData_DF1.withColumn('BUILDING_BUSINESS_ID', concat_ws(\"CAMPUS_ID\", \"BUILDING_ID\"))\n",
 							"\n",
-							"incrementalData_DF = incrementalData_DF1.withColumn(natural_key, concat_ws(\",\", natural_key1, natural_key2))\n",
+							"incrementalData_DF = incrementalData_DF1.withColumn(natural_key, concat_ws(\"~\", natural_key1, natural_key2))\n",
 							"\n",
 							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 							"\n",
@@ -38190,7 +38190,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 71
+						"execution_count": 88
 					},
 					{
 						"cell_type": "code",
@@ -38237,7 +38237,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 72
+						"execution_count": 89
 					},
 					{
 						"cell_type": "markdown",
@@ -38252,7 +38252,9 @@
 							"Data Validation Checks :\n",
 							"\n",
 							"- Check for duplicates in Source data based on natural key\n",
+							"- Check for partial data from source. That is if the file has expected number of rows\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
+							"- Referential Integrity checks\n",
 							""
 						]
 					},
@@ -38336,7 +38338,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 78
+						"execution_count": 90
 					},
 					{
 						"cell_type": "code",
@@ -38401,33 +38403,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 62
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\n",
-							"SELECT count(*) FROM etlhubconfirmed.dht_BUILDING where current_ind='Y';\n",
-							"\n",
-							"select * from fullJoin;"
-						],
-						"outputs": [],
-						"execution_count": null
+						"execution_count": 91
 					},
 					{
 						"cell_type": "code",
@@ -38482,13 +38458,13 @@
 							",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
 							",\tRENTABLE_AREA INTEGER\n",
 							",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
-							",\tBUILDING_INACTIVATION_YEAR\n",
-							",\tPROCESSED_DT\n",
+							",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
+							",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
 							",   'Y' AS CURRENT_IND\n",
 							",   CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 							",   CURRENT_TIMESTAMP AS REC_START_DT\n",
 							",   '9999-12-31 00:00:00.000' as REC_END_DT\n",
-							",   'ERDM' AS SOURCE_SYSTEM\n",
+							",   'Tririga' AS SOURCE_SYSTEM\n",
 							",    column_hash as REC_CHECKSUM\n",
 							",    'I' as REC_STATUS\n",
 							",    current_timestamp as IMG_LST_UPD_DT\n",
@@ -38508,7 +38484,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 68
+						"execution_count": 92
 					},
 					{
 						"cell_type": "code",
@@ -44037,7 +44013,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b9f9ad52-3563-4f5f-a4d2-a22310178d4b"
+						"spark.autotune.trackingId": "13fe9b43-fbca-4f12-a447-c44f71054879"
 					}
 				},
 				"metadata": {
@@ -44057,14 +44033,12 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"extraHeader": null
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -44084,8 +44058,7 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_opportunity_assignment_daily_ft by sourceing data from ESA database.\n",
 							"Since ESA is not accessible from Azure, a datastage job srcESA_OpportunityAssignment_DailyFact_Azure is executed on datastage to push the ESA extract to adls.\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -44098,8 +44071,7 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -44130,7 +44102,6 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -44145,8 +44116,7 @@
 						},
 						"source": [
 							"Define Parameters"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -44173,7 +44143,6 @@
 							"keycolumn=\"OPPORTUNITY_ASSIGNMENT_KEY\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 3
 					},
@@ -44188,8 +44157,7 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -44204,8 +44172,7 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_OPPORTUNITY_ROLE_DATA.csv"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -44253,9 +44220,59 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 25
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							}
+						},
+						"source": [
+							"%%sql\r\n",
+							"select Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,\r\n",
+							"emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,geo.GEOGRAPHY_KEY,rgn4.REGION_LEVEL_4_KEY,sales.SALES_STAGE_KEY,\r\n",
+							"prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,INDUS.IMG_INDUSTRY_SECTOR_KEY,\r\n",
+							"FROM SourceView Src\r\n",
+							"LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM\r\n",
+							"from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM\r\n",
+							"LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST \r\n",
+							"on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD\r\n",
+							"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
+							"from( select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
+							"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null\r\n",
+							") t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID\r\n",
+							"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,\r\n",
+							"t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,\r\n",
+							"row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
+							"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2\r\n",
+							"where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP_KEY=Src.EXECUTIVE_SPONSOR_EMP_KEY\r\n",
+							"LEFT OUTER JOIN (select distinct GEOGRAPHY_KEY,ISO_COUNTRY_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and current date >= EFFECTIVE_START_DT\r\n",
+							"and current date <= EFFECTIVE_END_DT) as geo ON geo.ISO_COUNTRY_CD=Src.ISO_COUNTRY_CODE\r\n",
+							"LEFT OUTER JOIN (select distinct REGION_LEVEL_4_KEY,REGION_LEVEL_4_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and   current date >= EFFECTIVE_START_DT\r\n",
+							"and current date <= EFFECTIVE_END_DT) as rgn4 on Src.REGION_ID=rgn4.REGION_LEVEL_4_CD\r\n",
+							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales\r\n",
+							"ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD\r\n",
+							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales\r\n",
+							"ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD\r\n",
+							"LEFT OUTER JOIN (select CMR_ISU_CD,IMG_INDUSTRY_SECTOR_KEY,SUB_INDUSTRY_CD from etlhubConfirmed.DHT_IMG_INDUSTRY_SECTOR \r\n",
+							"where current_ind = 'Y' and current_date > EFFECTIVE_START_DATE and current_date < EFFECTIVE_END_DATE) as INDUS \r\n",
+							"ON Src.CMR_ISU_CODE=INDUS.CMR_ISU_CD AND Src.SUB_INDUSTRY_CODE = INDUS.SUB_INDUSTRY_CD\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -44297,7 +44314,6 @@
 							"  .saveAsTable(\"DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA\")\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 28
 					},
@@ -44322,7 +44338,6 @@
 							"%%sql\r\n",
 							"select * from DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -44341,8 +44356,7 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -44401,7 +44415,6 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 30
 					},
@@ -44469,7 +44482,6 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 42
 					},
@@ -44542,7 +44554,6 @@
 							"\n",
 							"#d.show(10)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 43
 					},
@@ -44567,7 +44578,6 @@
 							"%%sql\r\n",
 							"select count(*) from etlhubConfirmed.dht_opportunity_assignment_daily_ft"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 44
 					},
@@ -44604,7 +44614,6 @@
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 26
 					},
@@ -44655,7 +44664,6 @@
 							"e=spark.sql(qry_ins_changed_rows)\n",
 							"#e.show(4)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 32
 					},
@@ -44690,7 +44698,6 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 33
 					},
@@ -44744,7 +44751,6 @@
 							";\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 35
 					}
@@ -44763,21 +44769,21 @@
 				"nbformat": 4,
 				"nbformat_minor": 2,
 				"bigDataPool": {
-					"referenceName": "sPoolKyn001494",
+					"referenceName": "sPool001494New",
 					"type": "BigDataPoolReference"
 				},
 				"sessionProperties": {
-					"driverMemory": "56g",
-					"driverCores": 8,
-					"executorMemory": "56g",
-					"executorCores": 8,
+					"driverMemory": "472g",
+					"driverCores": 80,
+					"executorMemory": "472g",
+					"executorCores": 80,
 					"numExecutors": 2,
 					"runAsWorkspaceSystemIdentity": false,
 					"conf": {
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6968940f-adbf-4d4b-ab88-419e6fd67f33"
+						"spark.autotune.trackingId": "f1f17aa8-57cf-4d23-bf14-8f5832235a7b"
 					}
 				},
 				"metadata": {
@@ -44791,18 +44797,18 @@
 						"name": "python"
 					},
 					"a365ComputeOptions": {
-						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
-						"name": "sPoolKyn001494",
+						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+						"name": "sPool001494New",
 						"type": "Spark",
-						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 						"auth": {
 							"type": "AAD",
 							"authResource": "https://dev.azuresynapse.net"
 						},
-						"sparkVersion": "3.1",
+						"sparkVersion": "3.2",
 						"nodeCount": 10,
-						"cores": 8,
-						"memory": 56
+						"cores": 80,
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -44909,7 +44915,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 17
+						"execution_count": 2
 					},
 					{
 						"cell_type": "markdown",
@@ -44968,33 +44974,107 @@
 							"\n",
 							"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
 							"incrementalData_DF.createOrReplaceTempView('SourceView')\n",
-							"\n",
 							"#joining with dimension tables\n",
-							"DIMOPPDataDF=spark.sql(\"select distinct OPP.OPPORTUNITY_KEY,role.OPPORTUNITY_ROLE_KEY,crm_role.OPPORTUNITY_ROLE_KEY as CRM_ROLE_KEY,emp.EMPLOYEE_KEY from SourceView src left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM)=trim(OPP.OPPORTUNITY_NUM) left outer join etlhubConfirmed.dht_opportunity_role role on src.OPP_ROLE=role.ROLE_CD left outer join etlhubConfirmed.dht_opportunity_role crm_role on src.CRM_ROLE_CODE=crm_role.ROLE_CD left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y'\")\n",
+							"DIMOPPDataDF=spark.sql(\"\")\n",
+							"#DIMJoin=incrementalData_DF.join(DIMOPPDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM), \"fullouter\") \n",
 							"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\n",
-							"\n",
-							"\n",
-							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
-							"\n",
-							"# Get column list for creating Rec_Checksum\n",
-							"\n",
-							"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\n",
-							"# 2. Dups in target already\n",
-							"\n",
-							"col_list=[]\n",
-							"for i in incrementalData_DF.columns:\n",
-							"    col_list.append(i)\n",
-							"\n",
-							"# Add a checsum column to help identify the changed rows\n",
-							"\n",
-							"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
-							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
-							"\n",
-							"#sell_cyclecolhashDF.show()\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY ,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,\r\n",
+							"sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,\r\n",
+							"OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,\r\n",
+							"PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY --geo.GEOGRAPHY_KEY,rgn4.REGION_LEVEL_4_KEY,PPORTUNITY_SALES_STAGE_CODE\r\n",
+							"FROM SourceView Src\r\n",
+							"LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM\r\n",
+							"from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM\r\n",
+							"LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST \r\n",
+							"on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD\r\n",
+							"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
+							"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
+							"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID\r\n",
+							"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,\r\n",
+							"t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,\r\n",
+							"row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq\r\n",
+							"from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2\r\n",
+							"where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY\r\n",
+							"/*LEFT OUTER JOIN (select distinct GEOGRAPHY_KEY,ISO_COUNTRY_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and current_date >= EFFECTIVE_START_DT\r\n",
+							"and current_date <= EFFECTIVE_END_DT) as geo ON geo.ISO_COUNTRY_CD=Src.ISO_COUNTRY_CODE\r\n",
+							"LEFT OUTER JOIN (select distinct REGION_LEVEL_4_KEY,REGION_LEVEL_4_CD from etlhubConfirmed.DHT_GEOGRAPHY where CURRENT_IND='Y' and   current date >= EFFECTIVE_START_DT\r\n",
+							"and current date <= EFFECTIVE_END_DT) as rgn4 on Src.REGION_ID=rgn4.REGION_LEVEL_4_CD */\r\n",
+							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales\r\n",
+							"ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD\r\n",
+							"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales\r\n",
+							"ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD\r\n",
+							"LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR \r\n",
+							"where current_ind = 'Y') as INDUS \r\n",
+							"ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"\r\n",
+							"#joining with dimension tables\r\n",
+							"DIMOPPDataDF=spark.sql(\"select distinct OPP.OPPORTUNITY_KEY,role.OPPORTUNITY_ROLE_KEY,crm_role.OPPORTUNITY_ROLE_KEY as CRM_ROLE_KEY,emp.EMPLOYEE_KEY from SourceView src left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM)=trim(OPP.OPPORTUNITY_NUM) left outer join etlhubConfirmed.dht_opportunity_role role on src.OPP_ROLE=role.ROLE_CD left outer join etlhubConfirmed.dht_opportunity_role crm_role on src.CRM_ROLE_CODE=crm_role.ROLE_CD left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y'\")\r\n",
+							"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\r\n",
+							"\r\n",
+							"\r\n",
+							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\r\n",
+							"\r\n",
+							"# Get column list for creating Rec_Checksum\r\n",
+							"\r\n",
+							"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\r\n",
+							"# 2. Dups in target already\r\n",
+							"\r\n",
+							"col_list=[]\r\n",
+							"for i in incrementalData_DF.columns:\r\n",
+							"    col_list.append(i)\r\n",
+							"\r\n",
+							"# Add a checsum column to help identify the changed rows\r\n",
+							"\r\n",
+							"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\r\n",
+							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\r\n",
+							"\r\n",
+							"#sell_cyclecolhashDF.show()\r\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 18
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
