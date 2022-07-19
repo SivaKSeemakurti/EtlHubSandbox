@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "261cb1dd-efa1-49dc-944c-ce73374aba5c"
+				"spark.autotune.trackingId": "a99e584b-e7ae-4b61-98bd-04fcefd54cd3"
 			}
 		},
 		"metadata": {
@@ -512,7 +512,7 @@
 					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_FACT_VERSION \n",
 					",\tOPPORTUNITY_KEY\n",
 					",EMPLOYEE_KEY\n",
-					",''\n",
+					",-1 as REGION_LEVEL_4_KEY\n",
 					",INDUSTRY_SECTOR_KEY\n",
 					",MARKET_KEY\n",
 					",SALES_STAGE_KEY\n",
@@ -542,7 +542,7 @@
 					"\t,'Y' as OPP_ACTIVE_IN_SOURCE_IND\n",
 					"\t,'ED' AS DATA_IND\n",
 					"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
-					",\tfrom {} A \n",
+					"from {} A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
@@ -555,7 +555,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 101
+				"execution_count": 102
 			},
 			{
 				"cell_type": "code",
