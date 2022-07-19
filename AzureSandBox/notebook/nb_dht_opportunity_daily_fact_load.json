@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c0622414-4f57-4b42-969f-a49809d45a76"
+				"spark.autotune.trackingId": "f1f17aa8-57cf-4d23-bf14-8f5832235a7b"
 			}
 		},
 		"metadata": {
@@ -211,6 +211,10 @@
 					"\n",
 					"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
 					"incrementalData_DF.createOrReplaceTempView('SourceView')\n",
+					"#joining with dimension tables\n",
+					"DIMOPPDataDF=spark.sql(\"\")\n",
+					"#DIMJoin=incrementalData_DF.join(DIMOPPDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM), \"fullouter\") \n",
+					"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\n",
 					""
 				],
 				"execution_count": 3
