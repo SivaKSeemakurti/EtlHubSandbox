@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "77d61c4f-b9ea-4d04-b7f2-285a8f91b29f"
+				"spark.autotune.trackingId": "a54cde11-33e8-41c3-abd7-a4a79c8e803a"
 			}
 		},
 		"metadata": {
@@ -224,9 +224,7 @@
 					"incrementalData_DF2 = DIMOPPDataDF.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"\n",
-					"\n",
-					"# Add a checsum column to help identify the changed rows\n",
-					"#incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
+					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
 				"execution_count": 54
 			},
