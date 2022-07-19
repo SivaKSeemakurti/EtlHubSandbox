@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3152bb88-8f1d-4082-b003-23570789b912"
+				"spark.autotune.trackingId": "ef207efb-4778-4deb-bea7-ea0e949a2d03"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 49
+				"execution_count": 75
 			},
 			{
 				"cell_type": "markdown",
@@ -152,7 +152,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 50
+				"execution_count": 76
 			},
 			{
 				"cell_type": "markdown",
@@ -226,7 +226,7 @@
 					"\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 74
+				"execution_count": 77
 			},
 			{
 				"cell_type": "code",
@@ -269,7 +269,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 57
+				"execution_count": 78
 			},
 			{
 				"cell_type": "markdown",
@@ -303,7 +303,7 @@
 				},
 				"source": [
 					"qry3=\"\"\"\n",
-					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
+					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 where {} is not null GROUP BY {} HAVING COUNT(*)>1\n",
 					";\n",
 					"\"\"\"\n",
 					"\n",
@@ -312,7 +312,7 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"df3=spark.sql(qry3.format(natural_key,natural_key))\n",
+					"df3=spark.sql(qry3.format(natural_key,natural_key,natural_key))\n",
 					"cnt1=df3.count()\n",
 					"\n",
 					"print (cnt1)\n",
@@ -327,6 +327,8 @@
 					"    sys.exit(1)\n",
 					"    print(\"This will not be printed\")\n",
 					"\n",
+					"print(natural_key)\n",
+					"print(tablename)\n",
 					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
 					"cnt2=df4.count()\n",
 					"\n",
@@ -345,7 +347,30 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 82
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT COUNT(*) as CNT, opportunity_key FROM etlhubConfirmed.dht_opportunity_daily_ft WHERE CURRENT_IND='Y' GROUP BY opportunity_key HAVING COUNT(*)>1"
+				],
+				"execution_count": 80
 			},
 			{
 				"cell_type": "code",
