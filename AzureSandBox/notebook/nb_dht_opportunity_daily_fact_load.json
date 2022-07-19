@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a54cde11-33e8-41c3-abd7-a4a79c8e803a"
+				"spark.autotune.trackingId": "532662f5-79c2-444f-8964-99b67995b728"
 			}
 		},
 		"metadata": {
@@ -226,7 +226,7 @@
 					"\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 54
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -247,9 +247,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from SrcDIMJoinView"
+					"select * from incrementalData_DF2"
 				],
-				"execution_count": 33
+				"execution_count": 56
 			},
 			{
 				"cell_type": "code",
