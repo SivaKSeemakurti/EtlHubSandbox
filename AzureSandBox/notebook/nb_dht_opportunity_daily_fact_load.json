@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "54344fe4-015f-4fa6-ab6b-cf3a0e608cec"
+				"spark.autotune.trackingId": "5ffd97f8-d667-486b-88ad-802de985efef"
 			}
 		},
 		"metadata": {
@@ -213,10 +213,44 @@
 					"incrementalData_DF.createOrReplaceTempView('SourceView')\n",
 					"#joining with dimension tables\n",
 					"DIMOPPDataDF=spark.sql(\"select Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY FROM SourceView Src LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR where current_ind = 'Y') as INDUS ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode\")\n",
-					"#DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\n",
-					""
+					"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\n",
+					"\n",
+					"col_list=[]\n",
+					"for i in DIMOPPDataDF.columns:\n",
+					"    col_list.append(i)\n",
+					"# Add a checsum column to help identify the changed rows  \n",
+					"incrementalData_DF1 = DIMOPPDataDF.withColumn(\"nk_hash\",md5(natural_key))  \n",
+					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+					"\n",
+					"# Get column list for creating Rec_Checksum\n",
+					"# Add a checsum column to help identify the changed rows\n",
+					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": null
+				"execution_count": 32
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from SrcDIMJoinView"
+				],
+				"execution_count": 33
 			},
 			{
 				"cell_type": "code",
