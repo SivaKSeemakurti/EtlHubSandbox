@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "32a59b91-7515-4324-93a8-a71814d7c9b0"
+				"spark.autotune.trackingId": "87160a3a-593a-44b2-96de-431223fad79b"
 			}
 		},
 		"metadata": {
@@ -152,7 +152,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 76
+				"execution_count": 86
 			},
 			{
 				"cell_type": "markdown",
@@ -226,7 +226,7 @@
 					"\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 77
+				"execution_count": 87
 			},
 			{
 				"cell_type": "code",
@@ -269,7 +269,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 78
+				"execution_count": 88
 			},
 			{
 				"cell_type": "markdown",
@@ -469,9 +469,11 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT date_format(DECISION_DATE,\"yyyy-MM-dd\").alias(\"yyyy MM dd\") FROM DHTS_OPPORTUNITY_DAILY_FT "
+					"SELECT DECISION_DATE ,\n",
+					"date_format(DECISION_DATE,\"yyyyMMdd\") \n",
+					"FROM DHTS_OPPORTUNITY_DAILY_FT "
 				],
-				"execution_count": 84
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -515,6 +517,11 @@
 					",MARKET_KEY\n",
 					",SALES_STAGE_KEY\n",
 					",PREV_SALES_STAGE_KEY\n",
+					",date_format(DECISION_DATE,\"yyyyMMdd\")\n",
+					",''\n",
+					",date_format(OPPORTUNITY_CLOSE_DATE,\"yyyyMMdd\")\n",
+					",date_format(OPPORTUNITY_CREATE_DATE,\"yyyyMMdd\")\n",
+					",date_format(OPPORTUNITY_UPDATE_DATE,\"yyyyMMdd\")\n",
 					",'Y' AS CURRENT_IND\n",
 					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
