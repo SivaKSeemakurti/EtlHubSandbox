@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1889f8ab-9b9d-4b83-adeb-1bc4505a8ac4"
+				"spark.autotune.trackingId": "befb5a5d-e459-4bc8-a5d4-46e491816c99"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 86
+				"execution_count": 93
 			},
 			{
 				"cell_type": "markdown",
@@ -162,7 +162,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 87
+				"execution_count": 94
 			},
 			{
 				"cell_type": "markdown",
@@ -246,7 +246,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 88
+				"execution_count": 95
 			},
 			{
 				"cell_type": "code",
@@ -292,7 +292,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 89
+				"execution_count": 96
 			},
 			{
 				"cell_type": "markdown",
@@ -392,7 +392,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 90
+				"execution_count": 97
 			},
 			{
 				"cell_type": "code",
@@ -456,7 +456,70 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 91
+				"execution_count": 98
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"\n",
+					"\tselect \n",
+					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS BUILDING_KEY \n",
+					",\t1 AS BUILDING_VERSION\n",
+					",   BUILDING_BUSINESS_ID AS BUILDING_BUSINESS_ID\n",
+					",\tCAMPUS_ID\n",
+					",\tBUILDING_ID\n",
+					",\tBUILDING_NAME\n",
+					",\tBUILDING_STATUS\n",
+					",\tBUILDING_OWNERSHIP_ID\n",
+					",\tBUILDING_OWNERSHIP_NAME\n",
+					",\tBUILDING_OWNERSHIP_DESCRIPTION\n",
+					",\tBUILDING_PRIMARY_USE_ID AS PRIMARY_BUILDING_USE_ID\n",
+					",\tBUILDING_PRIMARY_USE_NAME AS PRIMARY_BUILDING_USE_NAME\n",
+					",\tBUILDING_PRIMARY_USE_DESCRIPTION AS PRIMARY_BUILDING_USE_DESCR\n",
+					",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
+					",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
+					",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
+					",\tRENTABLE_AREA \n",
+					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
+					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
+					",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
+					",   'Y' AS CURRENT_IND\n",
+					",   CURRENT_TIMESTAMP AS EXTRACT_DT\n",
+					",   CURRENT_TIMESTAMP AS REC_START_DT\n",
+					",   '9999-12-31 00:00:00.000' as REC_END_DT\n",
+					",   'Tririga' AS SOURCE_SYSTEM\n",
+					",    column_hash as REC_CHECKSUM\n",
+					",    'I' as REC_STATUS\n",
+					",    current_timestamp as IMG_LST_UPD_DT\n",
+					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+					",   'Y' AS ACTIVE_IN_SOURCE_IND \n",
+					"    from dhts_building A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND CAMPUS_ID='RTPMAIN' and BUILDING_ID='404'\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_building B\n",
+					"WHERE A.BUILDING_BUSINESS_ID=B.BUILDING_BUSINESS_ID\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					";"
+				],
+				"execution_count": 106
 			},
 			{
 				"cell_type": "code",
@@ -509,7 +572,7 @@
 					",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
 					",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
 					",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
-					",\tRENTABLE_AREA INTEGER\n",
+					",\tNULL AS RENTABLE_AREA\n",
 					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
 					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 					",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
@@ -533,10 +596,10 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
+					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 92
+				"execution_count": 111
 			},
 			{
 				"cell_type": "code",
@@ -557,9 +620,13 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_industry_sector where current_ind='Y'"
+					"SELECT * FROM etlhubconfirmed.dht_building \n",
+					"where \n",
+					"    CAMPUS_ID ='RTPMAIN '\n",
+					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
+					"        "
 				],
-				"execution_count": 32
+				"execution_count": 121
 			},
 			{
 				"cell_type": "code",
