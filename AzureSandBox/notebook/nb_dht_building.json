@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "954c9583-8857-4a20-9cc8-0b48fff09842"
+				"spark.autotune.trackingId": "1889f8ab-9b9d-4b83-adeb-1bc4505a8ac4"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 69
+				"execution_count": 86
 			},
 			{
 				"cell_type": "markdown",
@@ -162,7 +162,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 70
+				"execution_count": 87
 			},
 			{
 				"cell_type": "markdown",
@@ -225,7 +225,7 @@
 					"\n",
 					"#incrementalData_DF = incrementalData_DF1.withColumn('BUILDING_BUSINESS_ID', concat_ws(\"CAMPUS_ID\", \"BUILDING_ID\"))\n",
 					"\n",
-					"incrementalData_DF = incrementalData_DF1.withColumn(natural_key, concat_ws(\",\", natural_key1, natural_key2))\n",
+					"incrementalData_DF = incrementalData_DF1.withColumn(natural_key, concat_ws(\"~\", natural_key1, natural_key2))\n",
 					"\n",
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"\n",
@@ -246,7 +246,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 71
+				"execution_count": 88
 			},
 			{
 				"cell_type": "code",
@@ -292,7 +292,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 72
+				"execution_count": 89
 			},
 			{
 				"cell_type": "markdown",
@@ -307,7 +307,9 @@
 					"Data Validation Checks :\n",
 					"\n",
 					"- Check for duplicates in Source data based on natural key\n",
+					"- Check for partial data from source. That is if the file has expected number of rows\n",
 					"- Check for duplicates in target delta lake table based on natural key\n",
+					"- Referential Integrity checks\n",
 					""
 				]
 			},
@@ -390,7 +392,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 78
+				"execution_count": 90
 			},
 			{
 				"cell_type": "code",
@@ -454,32 +456,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 62
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_BUILDING where current_ind='Y';\n",
-					"\n",
-					"select * from fullJoin;"
-				],
-				"execution_count": null
+				"execution_count": 91
 			},
 			{
 				"cell_type": "code",
@@ -534,13 +511,13 @@
 					",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
 					",\tRENTABLE_AREA INTEGER\n",
 					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
-					",\tBUILDING_INACTIVATION_YEAR\n",
-					",\tPROCESSED_DT\n",
+					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
+					",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
 					",   'Y' AS CURRENT_IND\n",
 					",   CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					",   CURRENT_TIMESTAMP AS REC_START_DT\n",
 					",   '9999-12-31 00:00:00.000' as REC_END_DT\n",
-					",   'ERDM' AS SOURCE_SYSTEM\n",
+					",   'Tririga' AS SOURCE_SYSTEM\n",
 					",    column_hash as REC_CHECKSUM\n",
 					",    'I' as REC_STATUS\n",
 					",    current_timestamp as IMG_LST_UPD_DT\n",
@@ -559,7 +536,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 68
+				"execution_count": 92
 			},
 			{
 				"cell_type": "code",
