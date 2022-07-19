@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7b200386-9a77-4f95-81be-cfe5920d9b7f"
+				"spark.autotune.trackingId": "954c9583-8857-4a20-9cc8-0b48fff09842"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 57
+				"execution_count": 69
 			},
 			{
 				"cell_type": "markdown",
@@ -154,13 +154,15 @@
 					"natural_key1=\"CAMPUS_ID\"\n",
 					"natural_key2=\"BUILDING_ID\"\n",
 					"natural_key=\"BUILDING_BUSINESS_ID\"\n",
+					"MinimumTririgaBuildingCount=750\n",
+					"MinimumTririgaCampusCount=450\n",
 					"tablename=\"etlhubConfirmed.dht_building\"\n",
 					"stagingtable=\"DHTS_BUILDING\"\n",
 					"keycolumn=\"BUILDING_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 58
+				"execution_count": 70
 			},
 			{
 				"cell_type": "markdown",
@@ -244,7 +246,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 59
+				"execution_count": 71
 			},
 			{
 				"cell_type": "code",
@@ -290,7 +292,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 60
+				"execution_count": 72
 			},
 			{
 				"cell_type": "markdown",
@@ -333,6 +335,11 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
+					"qry5=\"\"\"\n",
+					"SELECT * FROM incrementalData_DF2\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
 					"df3=spark.sql(qry3.format(natural_key,natural_key))\n",
 					"cnt1=df3.count()\n",
 					"\n",
@@ -363,10 +370,27 @@
 					"    sys.exit(2)\n",
 					"    print(\"This will not be printed\")\n",
 					"\n",
+					"\n",
+					"df5=spark.sql(qry5)\n",
+					"cnt3=df5.count()\n",
+					"\n",
+					"if cnt3 >= MinimumTririgaBuildingCount:\n",
+					"    print(\"The number of rows in source data is more than the threshold, data can be processed\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    print(\"The source data is having less number of rows than expected. Please check:\" )\n",
+					"    print(cnt3)\n",
+					"    status = 'fail'\n",
+					"    #os.abort() this will take the spark cluster also down\n",
+					"    sys.exit(2)\n",
+					"    print(\"This will not be printed\")\n",
+					"\n",
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
+					"\n",
+					"\n",
 					""
 				],
-				"execution_count": 61
+				"execution_count": 78
 			},
 			{
 				"cell_type": "code",
