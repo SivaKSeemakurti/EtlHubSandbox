@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f794e5ed-4049-490f-a775-d0b96f46baa2"
+				"spark.autotune.trackingId": "8de562ba-7e19-422b-b933-4e9d56beb327"
 			}
 		},
 		"metadata": {
@@ -348,29 +348,6 @@
 					""
 				],
 				"execution_count": 82
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"SELECT COUNT(*) as CNT, opportunity_key FROM etlhubConfirmed.dht_opportunity_daily_ft WHERE CURRENT_IND='Y' GROUP BY opportunity_key HAVING COUNT(*)>1"
-				],
-				"execution_count": 80
 			},
 			{
 				"cell_type": "code",
