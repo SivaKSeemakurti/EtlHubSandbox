@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1151c6ea-8d49-428d-b2cd-8747ec913848"
+				"spark.autotune.trackingId": "10c64a62-4a64-492d-b72b-eaa468d6cef4"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 5
+				"execution_count": 48
 			},
 			{
 				"cell_type": "markdown",
@@ -151,14 +151,16 @@
 					"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='IWTRIRIGABuildingQuery.csv.20220704' \n",
-					"natural_key=\"BUILDING_ID\"\n",
+					"natural_key1=\"CAMPUS_ID\"\n",
+					"natural_key2=\"BUILDING_ID\"\n",
+					"natural_key=\"BUILDING_BUSINESS_ID\"\n",
 					"tablename=\"etlhubConfirmed.dht_building\"\n",
 					"stagingtable=\"DHTS_BUILDING\"\n",
 					"keycolumn=\"BUILDING_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 4
+				"execution_count": 49
 			},
 			{
 				"cell_type": "markdown",
@@ -217,7 +219,11 @@
 					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 					"print (csv_archive_path)\n",
 					"\n",
-					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
+					"incrementalData_DF1 = spark.read.csv(csv_path, header = 'true')\n",
+					"\n",
+					"#incrementalData_DF = incrementalData_DF1.withColumn('BUILDING_BUSINESS_ID', concat_ws(\"CAMPUS_ID\", \"BUILDING_ID\"))\n",
+					"\n",
+					"incrementalData_DF = incrementalData_DF1.withColumn(natural_key, concat_ws(\",\", natural_key1, natural_key2))\n",
 					"\n",
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"\n",
@@ -238,7 +244,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 17
+				"execution_count": 50
 			},
 			{
 				"cell_type": "code",
@@ -284,7 +290,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 18
+				"execution_count": 52
 			},
 			{
 				"cell_type": "markdown",
@@ -360,7 +366,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 19
+				"execution_count": 53
 			},
 			{
 				"cell_type": "code",
@@ -424,7 +430,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 29
+				"execution_count": 54
 			},
 			{
 				"cell_type": "code",
