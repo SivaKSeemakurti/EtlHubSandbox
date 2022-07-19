@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ef207efb-4778-4deb-bea7-ea0e949a2d03"
+				"spark.autotune.trackingId": "f794e5ed-4049-490f-a775-d0b96f46baa2"
 			}
 		},
 		"metadata": {
@@ -327,8 +327,8 @@
 					"    sys.exit(1)\n",
 					"    print(\"This will not be printed\")\n",
 					"\n",
-					"print(natural_key)\n",
-					"print(tablename)\n",
+					"#print(natural_key)\n",
+					"#print(tablename)\n",
 					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
 					"cnt2=df4.count()\n",
 					"\n",
