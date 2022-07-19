@@ -21431,7 +21431,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8ff6059a-b4e8-4988-b52f-cf9c2aa3f66a"
+						"spark.autotune.trackingId": "62c9bc09-bf58-4f02-b3b1-4d2b2356c7ea"
 					}
 				},
 				"metadata": {
@@ -21509,7 +21509,7 @@
 							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_BUILDING'"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 7
 					},
 					{
 						"cell_type": "code",
@@ -21533,7 +21533,7 @@
 							"DROP TABLE etlhubConfirmed.DHT_BUILDING"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -21557,7 +21557,7 @@
 							"DELETE FROM etlhubConfirmed.DHT_BUILDING"
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -37962,7 +37962,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "98935830-a771-46eb-af0d-85ec109a970a"
+						"spark.autotune.trackingId": "405f9834-4c62-4b92-a3c7-2dd6ab69abea"
 					}
 				},
 				"metadata": {
@@ -38058,7 +38058,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 93
+						"execution_count": 7
 					},
 					{
 						"cell_type": "markdown",
@@ -38105,7 +38105,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": 94
+						"execution_count": 8
 					},
 					{
 						"cell_type": "markdown",
@@ -38190,7 +38190,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 95
+						"execution_count": 9
 					},
 					{
 						"cell_type": "code",
@@ -38237,7 +38237,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 96
+						"execution_count": 10
 					},
 					{
 						"cell_type": "markdown",
@@ -38338,7 +38338,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 97
+						"execution_count": 11
 					},
 					{
 						"cell_type": "code",
@@ -38403,7 +38403,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 98
+						"execution_count": 12
 					},
 					{
 						"cell_type": "code",
@@ -38429,6 +38429,7 @@
 							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS BUILDING_KEY \n",
 							",\t1 AS BUILDING_VERSION\n",
 							",   BUILDING_BUSINESS_ID AS BUILDING_BUSINESS_ID\n",
+							",\n",
 							",\tCAMPUS_ID\n",
 							",\tBUILDING_ID\n",
 							",\tBUILDING_NAME\n",
@@ -38442,7 +38443,7 @@
 							",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
 							",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
 							",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
-							",\tRENTABLE_AREA \n",
+							",\tREPLACE(RENTABLE_AREA,',','') AS RENTABLE_AREA\n",
 							",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
 							",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 							",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
@@ -38467,7 +38468,7 @@
 							";"
 						],
 						"outputs": [],
-						"execution_count": 106
+						"execution_count": 14
 					},
 					{
 						"cell_type": "code",
@@ -38520,7 +38521,7 @@
 							",\tBUILDING_SECONDARY_USE_ID AS SECONDARY_BUILDING_USE_ID\n",
 							",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
 							",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
-							",\tNULL AS RENTABLE_AREA\n",
+							",\tREPLACE(RENTABLE_AREA,',','') AS RENTABLE_AREA\n",
 							",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
 							",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 							",\tCURRENT_TIMESTAMP AS PROCESSED_DT\n",
@@ -44851,7 +44852,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8cceb73a-9c22-4746-861b-b09ac2ebe7f1"
+						"spark.autotune.trackingId": "45f786b3-83ac-4282-ac14-1485d38004e0"
 					}
 				},
 				"metadata": {
@@ -44940,7 +44941,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 75
+						"execution_count": 85
 					},
 					{
 						"cell_type": "markdown",
@@ -45300,14 +45301,15 @@
 							},
 							"microsoft": {
 								"language": "sparksql"
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"%%sql\n",
-							"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
+							"SELECT date_format(DECISION_DATE,\"yyyy-MM-dd\").alias(\"yyyy MM dd\") FROM DHTS_OPPORTUNITY_DAILY_FT "
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 84
 					},
 					{
 						"cell_type": "code",
@@ -45345,6 +45347,12 @@
 							"\tselect \n",
 							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_FACT_VERSION \n",
 							",\tOPPORTUNITY_KEY\n",
+							",EMPLOYEE_KEY\n",
+							",''\n",
+							",INDUSTRY_SECTOR_KEY\n",
+							",MARKET_KEY\n",
+							",SALES_STAGE_KEY\n",
+							",PREV_SALES_STAGE_KEY\n",
 							",'Y' AS CURRENT_IND\n",
 							"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 							"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
