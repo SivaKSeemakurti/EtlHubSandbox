@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a6a36985-bbe2-440e-ace8-d3fc94ac73dc"
+				"spark.autotune.trackingId": "4c6a87be-d83f-4e19-b236-c380cb241f48"
 			}
 		},
 		"metadata": {
@@ -784,22 +784,22 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT COUNT(*) FROM etlhubconfirmed.dht_sales_stage\n",
+					"SELECT COUNT(*) FROM etlhubconfirmed.dht_service\n",
 					"WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
 					"    and date(img_lst_upd_dt)=current_date\n",
 					"        limit 1\n",
 					";\n",
 					"\n",
 					"\n",
-					"select count(*) from etlhubconfirmed.dht_sales_stage where CURRENT_IND='Y'\n",
+					"select count(*) from etlhubconfirmed.dht_service where CURRENT_IND='Y'\n",
 					"   and date(extract_dt)=current_date --and rec_status='I'\n",
 					";\n",
 					"\n",
-					"select count(*) from etlhubconfirmed.dht_sales_stage\n",
+					"select count(*) from etlhubconfirmed.dht_service\n",
 					"WHERE ACTIVE_IN_SOURCE_IND='N'\n",
 					"    and date(IMG_LST_UPD_DT)=current_date\n",
 					"    ;\n",
-					"UPDATE etlhubconfirmed.dht_sales_stage\n",
+					"UPDATE etlhubconfirmed.dht_service\n",
 					"set CURRENT_IND='Y', \n",
 					"REC_END_DT='9999-12-31'\n",
 					"  WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
