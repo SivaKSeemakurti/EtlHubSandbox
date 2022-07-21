@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8374b914-3be1-47ba-bda4-ee66eed9f2d9"
+				"spark.autotune.trackingId": "9854f0a6-ae2b-4244-9c74-23b2350b82c8"
 			}
 		},
 		"metadata": {
@@ -145,11 +145,11 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='DS_SALES_STAGE_DATA.csv' \n",
-					"natural_key=\"SALES_STAGE_CD\"\n",
-					"tablename=\"etlhubConfirmed.dht_sales_stage\"\n",
-					"stagingtable=\"DHTS_SALES_STAGE\"\n",
-					"keycolumn=\"SALES_STAGE_KEY\"\n",
+					"file_name='DS_SERVICE_DATA.csv' \n",
+					"natural_key=\"OFFERING_COMPNT_CD\"\n",
+					"tablename=\"etlhubConfirmed.dht_service\"\n",
+					"stagingtable=\"DHTS_SERVICE\"\n",
+					"keycolumn=\"SERVICE_COMPONENT_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
