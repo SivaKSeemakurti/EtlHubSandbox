@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4c6a87be-d83f-4e19-b236-c380cb241f48"
+				"spark.autotune.trackingId": "39489d35-bb29-4c97-9706-a7eaf0c8946c"
 			}
 		},
 		"metadata": {
@@ -111,7 +111,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 51
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -153,7 +153,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 36
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -223,7 +223,7 @@
 					"incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 37
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -266,7 +266,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 38
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -342,7 +342,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 39
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -406,7 +406,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 40
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -445,25 +445,25 @@
 					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as SERVICE_COMPONENT_VERSION \n",
 					"    ,OFFERING_COMPNT_CD\n",
 					"\t,OFFERING_COMPNT_DESC\n",
-					"\t,-1\n",
+					"\t,-1 as OFFERING_CODE_KEY\n",
 					"\t,OFFERING_CD\n",
 					"\t,OFFERING_DESC\n",
-					"\t,-1\n",
+					"\t,-1 as SERVICE_KEY\n",
 					"\t,SERVICE_CD\n",
 					"\t,SERVICE_DESC\n",
-					"\t,-1\n",
+					"\t,-1 as OFFERING_CATEGORY_KEY\n",
 					"\t,OFFERING_CAT_CD\n",
 					"\t,OFFERING_CAT_DESC\n",
 					"\t,OFFERING_GROUP\n",
-					"\t,-1\n",
+					"\t,-1 as BUS_MEASMNT_DIV_KEY\n",
 					"\t,BUS_MEASMNT_DIV_CD\n",
-					"\t,''\n",
-					"\t,-1\n",
-					"\t,''\n",
-					"\t,''\n",
-					"\t,-1\n",
-					"\t,''\n",
-					"\t,''\n",
+					"\t,'' as BUS_MEASMNT_DIV_DESC\n",
+					"\t,-1 as LOB_KEY\n",
+					"\t,'' as LOB_CD\n",
+					"\t,'' as LOB_DESC\n",
+					"\t,-1 as BUSINESS_UNIT_KEY\n",
+					"\t,'' as BUSINESS_UNIT_ID\n",
+					"\t,'' as BUSINESS_UNIT_DESC\n",
 					"\t,'Y' AS CURRENT_IND\n",
 					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -481,6 +481,7 @@
 					"\t,SERVICE_GROUP_DESC\n",
 					"\t,BRAND_CODE\n",
 					"\t,BRAND_DESC\n",
+					"\t,-1 as SERVICE_GROUP_KEY\n",
 					"\t,'ED' AS DATA_IND\n",
 					"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
 					"    from {} A \n",
@@ -496,7 +497,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 41
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -517,7 +518,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"SELECT * from etlhubconfirmed.dht_sales_stage"
+					""
 				],
 				"execution_count": 44
 			},
