@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f1e1bc94-bf3a-4df6-946e-71163922e1b4"
+				"spark.autotune.trackingId": "258a14c4-05e9-4845-9880-f4ce0c87fb11"
 			}
 		},
 		"metadata": {
@@ -712,7 +712,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 48
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -765,7 +765,7 @@
 					";\n",
 					""
 				],
-				"execution_count": 49
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -808,7 +808,7 @@
 					"    and date(img_lst_upd_dt)=current_date\n",
 					"        ;  "
 				],
-				"execution_count": 50
+				"execution_count": 16
 			}
 		]
 	}
