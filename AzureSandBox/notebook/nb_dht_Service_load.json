@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8bd5a207-ad88-4eb6-8562-f5c0472a8159"
+				"spark.autotune.trackingId": "8374b914-3be1-47ba-bda4-ee66eed9f2d9"
 			}
 		},
 		"metadata": {
@@ -62,10 +62,10 @@
 					}
 				},
 				"source": [
-					"**Sales Stage Dimension load**\n",
+					"**Service data load**\n",
 					"\n",
 					"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
-					"Since ESA is not accessible from Azure, a datastage job src_ESA_Sales_Stage_Azure is executed on datastage to push the ESA extract to adls.\n",
+					"Since ESA is not accessible from Azure, a datastage job srcESA_Service_Azure is executed on datastage to push the ESA extract to adls.\n",
 					""
 				]
 			},
