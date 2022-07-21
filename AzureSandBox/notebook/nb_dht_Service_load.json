@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4d09022e-18c7-44a6-89cd-f79e82a2f7aa"
+				"spark.autotune.trackingId": "e2779e2f-2801-413a-8ea7-6a1160f62431"
 			}
 		},
 		"metadata": {
@@ -420,54 +420,6 @@
 							"deleting": false
 						}
 					},
-					"microsoft": {
-						"language": "sparksql"
-					}
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_sales_stage where current_ind='Y'"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select \r\n",
-					"\t* \r\n",
-					"    from dhts_sales_stage A \r\n",
-					"WHERE existing_REC_CHECKSUM is null"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
 					"collapsed": false
 				},
 				"source": [
@@ -490,7 +442,7 @@
 					"\n",
 					"INSERT INTO {}\n",
 					"\tselect \n",
-					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as SALES_STAGE_VERSION \n",
+					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as SERVICE_COMPONENT_VERSION \n",
 					"    ,SALES_STAGE_CD\n",
 					"\t,SIEBEL_SALES_STAGE_NAME\n",
 					"\t,SSM_STEP_NO\n",
