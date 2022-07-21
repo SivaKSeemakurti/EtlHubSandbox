@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "39489d35-bb29-4c97-9706-a7eaf0c8946c"
+				"spark.autotune.trackingId": "f1e1bc94-bf3a-4df6-946e-71163922e1b4"
 			}
 		},
 		"metadata": {
@@ -497,7 +497,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -518,9 +518,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					""
+					"select * from etlhubConfirmed.DHT_SERVICE "
 				],
-				"execution_count": 44
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -553,7 +553,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 45
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -601,7 +601,7 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
-				"execution_count": 46
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -662,6 +662,7 @@
 					"\t,SERVICE_GROUP_DESC\n",
 					"\t,BRAND_CODE\n",
 					"\t,BRAND_DESC\n",
+					"\t,-1 \n",
 					"\t,'ED' AS DATA_IND\n",
 					"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
 					"from {} A \n",
@@ -678,7 +679,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 47
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
