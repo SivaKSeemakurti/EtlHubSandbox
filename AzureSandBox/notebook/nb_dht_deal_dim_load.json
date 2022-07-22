@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d0e4af7b-4a11-49ae-b6df-2b2b2b8ac813"
+				"spark.autotune.trackingId": "acaac401-7532-4e13-b075-90971f73d019"
 			}
 		},
 		"metadata": {
@@ -147,7 +147,7 @@
 					"relative_archive_path='archive/'\n",
 					"file_name='DS_DEALS_DATA.csv' \n",
 					"natural_key=\"DEAL_IDENTIFIER\"\n",
-					"tablename=\"etlhubConfirmed.dht_deal_dim\"\n",
+					"tablename=\"etlhubConfirmed.dht_deal_dim1\"\n",
 					"stagingtable=\"DHTS_DEAL_DIM\"\n",
 					"keycolumn=\"DEAL_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
@@ -179,7 +179,7 @@
 				},
 				"source": [
 					"#Read data from adls csv file extracted from source at \n",
-					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_SALES_STAGE_DATA.csv"
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/DCA/DS_DEALS_DATA.csv"
 				]
 			},
 			{
@@ -426,7 +426,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_sales_stage where current_ind='Y'"
+					"SELECT count(*) FROM etlhubconfirmed.dht_deal_dim1 where current_ind='Y'"
 				],
 				"execution_count": null
 			},
