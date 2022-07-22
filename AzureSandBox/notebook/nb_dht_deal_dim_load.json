@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e85b7bb1-a0e7-41e6-bbe5-85307c7bb021"
+				"spark.autotune.trackingId": "ec297529-bb83-4541-a9b8-9066a7bf8971"
 			}
 		},
 		"metadata": {
@@ -143,13 +143,13 @@
 				"source": [
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
-					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
+					"relative_path = 'extract/DCA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='DS_SALES_STAGE_DATA.csv' \n",
-					"natural_key=\"SALES_STAGE_CD\"\n",
-					"tablename=\"etlhubConfirmed.dht_sales_stage\"\n",
-					"stagingtable=\"DHTS_SALES_STAGE\"\n",
-					"keycolumn=\"SALES_STAGE_KEY\"\n",
+					"file_name='DS_DEALS_DATA.csv' \n",
+					"natural_key=\"DEAL_ID\"\n",
+					"tablename=\"etlhubConfirmed.dht_deal_dim\"\n",
+					"stagingtable=\"DHTS_DEAL_DIM\"\n",
+					"keycolumn=\"DEAL_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],

@@ -21,14 +21,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2e188c61-8148-41c2-8d36-fac2a47bfe6c"
+				"spark.autotune.trackingId": "79cdc02e-5f5d-42be-8bea-d86197745107"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -44,14 +41,13 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -71,8 +67,7 @@
 					"This notebook loads data to deltalake table etlhubconfirme.dht_deal_dim by sourceing data from DCA deal data.\n",
 					"Since DCA is not accessible from Azure, a datastage job src_DCA_DEAL_Azure is executed on datastage to push the DCA extract to adls.\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -85,8 +80,7 @@
 				},
 				"source": [
 					"Import all the necessary libraries"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -117,7 +111,6 @@
 					"#import os\n",
 					"import sys"
 				],
-				"attachments": null,
 				"execution_count": 10
 			},
 			{
@@ -131,8 +124,7 @@
 				},
 				"source": [
 					"Define Parameters"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -158,7 +150,6 @@
 					"tablename=\"etlhubConfirmed.dht_deal_dim\"\n",
 					"keycolumn=\"DEAL_KEY\""
 				],
-				"attachments": null,
 				"execution_count": 11
 			},
 			{
@@ -174,8 +165,7 @@
 					"\n",
 					"#Read data from adls csv file extracted from source at \n",
 					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/DCA/DS_DEALS_DATA.csv"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -240,7 +230,6 @@
 					"fullJoin2.createOrReplaceTempView('fullJoin')\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 12
 			},
 			{
@@ -258,8 +247,7 @@
 					"- Check for duplicates in Source data based on natural key\n",
 					"- Check for duplicates in target delta lake table based on natural key\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -311,7 +299,6 @@
 					"    sys.exit(2)\r\n",
 					"    print(\"This will not be printed\")"
 				],
-				"attachments": null,
 				"execution_count": 14
 			},
 			{
@@ -419,7 +406,6 @@
 					"d=spark.sql(qry_insert)\r\n",
 					"#d.show(10)"
 				],
-				"attachments": null,
 				"execution_count": 15
 			},
 			{
@@ -554,7 +540,6 @@
 					"\"\"\"\r\n",
 					"df3=spark.sql(softdelqry)"
 				],
-				"attachments": null,
 				"execution_count": 16
 			},
 			{
@@ -606,7 +591,6 @@
 					";\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -631,7 +615,6 @@
 					" from etlhubConfirmed.dht_deal_dim1 where ACTIVE_IN_SOURCE_IND='N' \r\n",
 					"    --where DEAL_IDENTIFIER in (7840900,7840899)"
 				],
-				"attachments": null,
 				"execution_count": 18
 			}
 		]
