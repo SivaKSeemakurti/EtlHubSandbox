@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "84ecfa71-7e94-4935-9b27-681cef4d0ed7"
+				"spark.autotune.trackingId": "64b53bc2-8e02-4ab1-9daa-47a73f50b8b9"
 			}
 		},
 		"metadata": {
@@ -503,7 +503,7 @@
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
-					"WHERE A.{}=B.{}\n",
+					"WHERE trim(A.{})=trim(B.{})\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					";\n",
@@ -533,7 +533,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"SELECT * from etlhubconfirmed.dht_sales_stage"
+					"SELECT * from etlhubconfirmed.dht_opportunity"
 				],
 				"execution_count": 44
 			},
@@ -590,26 +590,26 @@
 				"source": [
 					"%%sql\n",
 					"--existing data\n",
-					"select 'existing data',count(*) from DHTS_SALES_STAGE where existing_CURRENT_IND='Y';\n",
+					"select 'existing data',count(*) from dhts_opportunity where existing_CURRENT_IND='Y';\n",
 					"  \n",
 					"select 'rows for Update', count(*)\n",
-					"from etlhubConfirmed.dht_sales_stage B\n",
+					"from etlhubConfirmed.dht_opportunity B\n",
 					"join\n",
-					"DHTS_SALES_STAGE A \n",
+					"dhts_opportunity A \n",
 					"WHERE A.SALES_STAGE_CD = B.SALES_STAGE_CD\n",
 					"and LOWER(A.SALES_STAGE_CD) = LOWER(A.existing_SALES_STAGE_CD) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
 					"AND B.REC_START_DT=A.existing_REC_START_DT\n",
 					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.DHT_SALES_STAGE B\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity B\n",
 					"WHERE LOWER(A.SALES_STAGE_CD)=LOWER(B.SALES_STAGE_CD)\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM\n",
 					")\n",
 					";\n",
 					"\n",
-					"SELECT COUNT(*) FROM etlhubConfirmed.DHT_SALES_STAGE A\n",
-					"JOIN DHTS_SALES_STAGE B\n",
+					"SELECT COUNT(*) FROM etlhubConfirmed.dht_opportunity A\n",
+					"JOIN dhts_opportunity B\n",
 					"ON A.SALES_STAGE_CD = B.SALES_STAGE_CD\n",
 					"AND LOWER(B.SALES_STAGE_CD) = LOWER(B.existing_SALES_STAGE_CD) \n",
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
