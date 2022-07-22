@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1f064586-4af5-4496-9970-ec61e5ecf141"
+				"spark.autotune.trackingId": "ec093cb9-dcf1-45eb-849d-c0f1b1c1da63"
 			}
 		},
 		"metadata": {
@@ -426,7 +426,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_sales_stage where current_ind='Y'"
+					"SELECT count(*) FROM etlhubconfirmed.dht_opportunity where current_ind='Y'"
 				],
 				"execution_count": null
 			},
@@ -451,7 +451,7 @@
 					"%%sql\r\n",
 					"select \r\n",
 					"\t* \r\n",
-					"    from dhts_sales_stage A \r\n",
+					"    from dhts_opportunity A \r\n",
 					"WHERE existing_REC_CHECKSUM is null"
 				],
 				"execution_count": null
