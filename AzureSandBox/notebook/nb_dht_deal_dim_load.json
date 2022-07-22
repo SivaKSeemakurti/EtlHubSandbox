@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "acaac401-7532-4e13-b075-90971f73d019"
+				"spark.autotune.trackingId": "121619a8-f668-4b9c-a452-3860cd3c152d"
 			}
 		},
 		"metadata": {
@@ -242,7 +242,7 @@
 					"\n",
 					"#Create a dataframe with target deltalake table data with necessary columns\n",
 					"\n",
-					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
+					"existingDataDF=spark.sql(\"SELECT DEAL_KEY,DEAL_VERSION_NUMBER,trim(DEAL_IDENTIFIER) as DEAL_ID,REC_CHECKSUM,IMG_CREATED_DT,REC_START_DT FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
 					"\n",
 					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
 					"\n",
@@ -451,7 +451,7 @@
 					"%%sql\r\n",
 					"select \r\n",
 					"\t* \r\n",
-					"    from dhts_sales_stage A \r\n",
+					"    from dhts_deal_dim A \r\n",
 					"WHERE existing_REC_CHECKSUM is null"
 				],
 				"execution_count": null
