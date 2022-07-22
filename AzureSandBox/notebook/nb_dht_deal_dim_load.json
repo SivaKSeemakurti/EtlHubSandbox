@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ec297529-bb83-4541-a9b8-9066a7bf8971"
+				"spark.autotune.trackingId": "d0e4af7b-4a11-49ae-b6df-2b2b2b8ac813"
 			}
 		},
 		"metadata": {
@@ -146,7 +146,7 @@
 					"relative_path = 'extract/DCA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='DS_DEALS_DATA.csv' \n",
-					"natural_key=\"DEAL_ID\"\n",
+					"natural_key=\"DEAL_IDENTIFIER\"\n",
 					"tablename=\"etlhubConfirmed.dht_deal_dim\"\n",
 					"stagingtable=\"DHTS_DEAL_DIM\"\n",
 					"keycolumn=\"DEAL_KEY\"\n",
