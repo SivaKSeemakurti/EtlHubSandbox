@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "593ea607-1b01-4b8f-b2c5-1522cd5d6c17"
+				"spark.autotune.trackingId": "6897131f-2993-41ab-876c-4b110e793027"
 			}
 		},
 		"metadata": {
@@ -610,8 +610,8 @@
 					"\n",
 					"SELECT COUNT(*) FROM etlhubConfirmed.dht_opportunity A\n",
 					"JOIN dhts_opportunity B\n",
-					"ON A.SALES_STAGE_CD = B.SALES_STAGE_CD\n",
-					"AND LOWER(B.SALES_STAGE_CD) = LOWER(B.existing_SALES_STAGE_CD) \n",
+					"ON trim(A.OPPORTUNITY_NUM) = trim(B.OPPORTUNITY_NUM)\n",
+					"AND trim(LOWER(B.OPPORTUNITY_NUM)) = trim(LOWER(B.existing_OPPORTUNITY_NUM)) \n",
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
