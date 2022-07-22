@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2c8dfce3-bf23-4821-bcbf-f9c0f39f4c44"
+				"spark.autotune.trackingId": "5b46505a-a5cb-4d87-be77-bb5df53f2aea"
 			}
 		},
 		"metadata": {
@@ -565,7 +565,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 45
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -613,7 +613,7 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
-				"execution_count": 46
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -635,7 +635,7 @@
 					"INSERT INTO {}\n",
 					"\tselect \n",
 					"    existing_OPPORTUNITY_KEY\n",
-					"    ,1 + existing_OPPORTUNITY_VERSION as OPPORTUNITY_VERSION\n",
+					"    ,1 + existing_OPPORTUNITY_VERSION as OPPORTUNITY_VERSION,\n",
 					"    A.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \n",
 					"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, A.column_hash as REC_CHECKSUM, \n",
 					"'U' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\n",
@@ -658,7 +658,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 47
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -691,7 +691,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 48
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -744,7 +744,7 @@
 					";\n",
 					""
 				],
-				"execution_count": 49
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -787,7 +787,7 @@
 					"    and date(img_lst_upd_dt)=current_date\n",
 					"        ;  "
 				],
-				"execution_count": 50
+				"execution_count": 25
 			}
 		]
 	}
