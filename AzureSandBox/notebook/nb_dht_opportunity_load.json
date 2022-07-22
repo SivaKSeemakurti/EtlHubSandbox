@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7efe6621-a780-4c5a-bd90-ca793ee3feef"
+				"spark.autotune.trackingId": "2c8dfce3-bf23-4821-bcbf-f9c0f39f4c44"
 			}
 		},
 		"metadata": {
@@ -111,7 +111,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 51
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
@@ -145,7 +145,7 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='DS_OPPORTUNITY_DATA_UPD.csv'  \n",
+					"file_name='DS_OPPORTUNITY_DATA.csv'  \n",
 					"natural_key=\"OPPORTUNITY_NUM\"\n",
 					"tablename=\"etlhubConfirmed.dht_opportunity\"\n",
 					"stagingtable=\"DHTS_OPPORTUNITY\"\n",
@@ -153,7 +153,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 36
+				"execution_count": 12
 			},
 			{
 				"cell_type": "markdown",
@@ -223,7 +223,7 @@
 					"incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 37
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -266,7 +266,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 38
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -342,7 +342,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 39
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -406,7 +406,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 40
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -489,17 +489,15 @@
 					"qry_ins_new_rows=\"\"\"\n",
 					"\n",
 					"INSERT INTO {}\n",
-					"\tselect \n",
-					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_VERSION \n",
-					"    A.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \n",
+					"select COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_VERSION, \n",
+					"A.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \n",
 					"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, A.column_hash as REC_CHECKSUM, \n",
 					"'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\n",
 					"A.ISA_CODE,A.ARCHIVE_REASON_CODE,A.BUSINESS_TRANSACTION_TYPE,A.CLIENT_REPRESENTATIVE_NAME,A.COMPETITOR_LIST, \n",
 					"A.IDENTIFIER_NAME,A.OPPORTUNITY_NAME,A.OPPORTUNITY_SOURCE_CODE,A.SBS_SOL_VALID_IND, \n",
 					"A.OPPORTUNITY_IDENTIFIER,A.ROGUE_IND,A.REASON_TO_ACT,A.SOLUTION_CATG,A.BRAND_SPONSOR_LIST,A.GBS_GEOGRAPHY_NAME, \n",
 					"A.GBS_BUSINESS_UNIT_GROUP_NAME,A.GBS_BUSINESS_UNIT_NAME,A.TAG_LIST,A.OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \n",
-					"'Y' AS ACTIVE_IN_SOURCE_IND  \n",
-					"    from {} A \n",
+					"'Y' AS ACTIVE_IN_SOURCE_IND  from {} A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM {} B\n",
@@ -508,11 +506,10 @@
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					";\n",
 					"\"\"\"\n",
-					"\n",
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 41
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
