@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "121619a8-f668-4b9c-a452-3860cd3c152d"
+				"spark.autotune.trackingId": "690f57ba-81fd-46bc-9bf0-634bf616bb99"
 			}
 		},
 		"metadata": {
@@ -111,7 +111,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 51
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -153,7 +153,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 36
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -209,6 +209,14 @@
 					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 					"print (csv_archive_path)\n",
 					"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
+					"incrementalData_DF.createOrReplaceTempView('DF_req')\n",
+					"#incrementalData_DF.printSchema()\n",
+					"incrementalData_Srcreq_DF=spark.sql(\"select DEAL_IDENTIFIER,BID_SUPPORT_INET_ID,BID_SUPPORT_NOTES_ID,BUS_UNIT_ID,CLNT_NM,CLNT_NUM,COMPLEXITY,COMNTS_TXT,CMPLXTY_CMMNT_TXT,CMPLXTY_OVERRD,CNTRCT_TYP_DESC,ENGG_SPPRT_TXN_LINK_TXT,ENGG_SPPRT_TXN_NUM,INDSTRY_NM,INIT_SIEBEL_IND,CNTRY_ID,LEAD_ACCT_PRTNR_BTT_CD,LEAD_PRTNR_BTT_CD,LEAD_PRTNR_NOTES_ID,OLD_OWNR_INET_ID,OWNR_INET_ID,PROJ_DESC,OPPTNY_ID,OWNR_NOTES_ID,PARENT_DEAL_ID,PRPSL_MGR_NOTES_ID,REAS_TXT,RMVD_IND,RISK_RTNG,RISK_RTNG_CMNT_TXT,RSK_RTNG_OVERRD,SALES_STAGE_CD,SECONDARY_SERVICE,SCTR_NM,SVC_NM,SIEBEL_IND,SRC_CD,STAT_CD,RCA1_ANSWR_TXT,RCA1_ANSWR_CMMNT,RCA2_ANSWR_TXT,RCA2_ANSWR_CMMNT,RCA3_ANSWR_TXT,RCA3_ANSWR_CMMNT,RCA4_ANSWR_TXT,RCA4_ANSWR_CMMNT,RCA5_ANSWR_TXT,RCA5_ANSWR_CMMNT,RCA6_ANSWR_TXT,RCA6_ANSWR_CMMNT,RCA7_ANSWR_TXT,RCA7_ANSWR_CMMNT,RCA8_ANSWR_TXT,RCA8_ANSWR_CMMNT,APPRVR_CNT,RVWR_CNT,DEAL_TYPE,GEO_CD,HYBRD_TYPE_A,HYBRD_TYPE_B,LOAD_LOB,CRDT_RTNG,DD_OFFERG_CS_USD_AMT,DD_OFFERG_IS_USD_AMT,DD_OFFERG_SS_USD_AMT,DD_OFFERG_WCP_USD_AMT,RISK_CONSULTANT_NOTES_ID,SENIOR_SOLUTION_MANAGER_NOTES_ID,SIH_GM_NOTES_ID,RULES_EFFECTIVE_DATE,DEAL_LEAD_NOTES_ID,CNTRCT_SIGNOFF_APPRVL_STAT_CD,PAYBACK_TXT from DF_req\")\n",
+					"#incrementalData_Srcreq_DF.show()\n",
+					"changedTypedf = incrementalData_Srcreq_DF.withColumn(natural_key, incrementalData_Srcreq_DF[natural_key].cast(StringType()))\n",
+					"#changedTypedf.printSchema()\n",
+					"\n",
+					"\n",
 					"#incrementalData_DF.show()\n",
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"# Get column list for creating Rec_Checksum\n",
@@ -223,7 +231,7 @@
 					"incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 37
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
