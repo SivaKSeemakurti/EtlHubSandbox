@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e0379fb3-6063-4236-823f-abceb70e4e6e"
+				"spark.autotune.trackingId": "7dff10ba-d5ca-4cb8-91f5-61ea06de727a"
 			}
 		},
 		"metadata": {
@@ -90,16 +90,15 @@
 					",\tREC_END_DT TIMESTAMP -- SCD Type 2 End date, will have high date (9999-12-31) for active dimensional row\n",
 					",\tSOURCE_SYSTEM STRING -- Name of the source system\n",
 					",\tREC_CHECKSUM STRING -- Hash value of all dimensional columns. Used to identify changed records \n",
-					",\tREC_STATUS STRING\t--I or U depending on the DML operation\n",
+					"--,\tREC_STATUS STRING\t--I or U depending on the DML operation\n",
 					",\tIMG_LST_UPD_DT TIMESTAMP --Timestamp of when the record got updated in table\n",
 					",\tIMG_CREATED_DT TIMESTAMP --Timestamp of when the record got inserted in table\n",
-					",   ACTIVE_IN_SOURCE_IND STRING --Indicater to represent records no longer present in source\n",
 					")\n",
 					"USING DELTA\n",
 					"PARTITIONED BY (CURRENT_IND)\n",
 					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_BUILDING'"
 				],
-				"execution_count": 2
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -122,7 +121,7 @@
 					"%%sql\n",
 					"DROP TABLE etlhubConfirmed.DHT_BUILDING"
 				],
-				"execution_count": 1
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",

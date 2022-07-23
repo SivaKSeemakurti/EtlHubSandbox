@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "791ff9f7-fd6c-4d67-979f-8dd5fc980e93"
+				"spark.autotune.trackingId": "2559f5f6-3234-4aa0-9c03-324f2d9457df"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 1
+				"execution_count": 49
 			},
 			{
 				"cell_type": "markdown",
@@ -160,10 +160,10 @@
 					"stagingtable=\"DHTS_BUILDING\"\n",
 					"keycolumn=\"BUILDING_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
-					"extract_dt=date #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
+					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 					"print(extract_dt)"
 				],
-				"execution_count": 6
+				"execution_count": 50
 			},
 			{
 				"cell_type": "markdown",
@@ -247,7 +247,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 7
+				"execution_count": 51
 			},
 			{
 				"cell_type": "code",
@@ -293,7 +293,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 8
+				"execution_count": 52
 			},
 			{
 				"cell_type": "markdown",
@@ -393,7 +393,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 9
+				"execution_count": 53
 			},
 			{
 				"cell_type": "code",
@@ -441,23 +441,9 @@
 					"df_4_recon2=spark.sql(qry_4_recon2.format(stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))\n",
 					"print('Changed records or Updates are:') \n",
 					"df_4_recon2.show()\n",
-					"\n",
-					"qry_4_recon3=\"\"\"\n",
-					"SELECT COUNT(*) from \n",
-					"{} A\n",
-					"join fullJoin B\n",
-					"ON A.{} = B.existing_{}\n",
-					"AND B.{} is NULL\n",
-					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
-					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					"\n",
-					"\"\"\"\n",
-					"\n",
-					"df_4_recon3=spark.sql(qry_4_recon3.format(tablename,natural_key,natural_key,natural_key))\n",
-					"print('Soft Deletes are:') \n",
-					"df_4_recon3.show()"
+					""
 				],
-				"execution_count": 10
+				"execution_count": 54
 			},
 			{
 				"cell_type": "code",
@@ -494,9 +480,9 @@
 					"\n",
 					"INSERT INTO {}\n",
 					"\tselect \n",
-					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {} \n",
+					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
 					",\t1 AS VERSION\n",
-					",   CAMPUS_ID || BUILDING_ID AS BUSINESS_ID\n",
+					",   BUSINESS_ID\n",
 					",\tCAMPUS_ID\n",
 					",\tBUILDING_ID\n",
 					",\tBUILDING_NAME\n",
@@ -511,12 +497,11 @@
 					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
 					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 					",   'Y' AS CURRENT_IND\n",
-					",   CURRENT_TIMESTAMP AS EXTRACT_DT\n",
+					",   '{}' AS EXTRACT_DT\n",
 					",   CURRENT_TIMESTAMP AS REC_START_DT\n",
-					",   '9999-12-31 00:00:00.000' as REC_END_DT\n",
+					",   '9999-12-31 00:00:00' as REC_END_DT\n",
 					",   'Tririga' AS SOURCE_SYSTEM\n",
 					",    column_hash as REC_CHECKSUM\n",
-					",    'I' as REC_STATUS\n",
 					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
 					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
 					"    from {} A \n",
@@ -529,10 +514,10 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,extract_dt,stagingtable,tablename,natural_key, natural_key))\n",
+					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 14
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -553,13 +538,12 @@
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT * FROM etlhubconfirmed.dht_building \n",
-					"where \n",
-					"    CAMPUS_ID ='RTPMAIN'\n",
+					"SELECT min(BUILDING_KEY), MAX(BUILDING_KEY) FROM etlhubconfirmed.dht_building \n",
+					"--where CAMPUS_ID ='RTPMAIN'\n",
 					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
 					"        "
 				],
-				"execution_count": null
+				"execution_count": 56
 			},
 			{
 				"cell_type": "code",
@@ -592,55 +576,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 26
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"--existing data\n",
-					"select 'existing data',count(*) from DHTS_INDUSTRY_SECTOR where existing_CURRENT_IND='Y';\n",
-					"  \n",
-					"select 'rows for Update', count(*)\n",
-					"from etlhubConfirmed.DHT_INDUSTRY_SECTOR B\n",
-					"join\n",
-					"DHTS_INDUSTRY_SECTOR A \n",
-					"WHERE A.CODE = B.CODE\n",
-					"and LOWER(A.CODE) = LOWER(A.existing_CODE) \n",
-					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
-					"AND B.REC_START_DT=A.existing_REC_START_DT\n",
-					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.DHT_INDUSTRY_SECTOR B\n",
-					"WHERE LOWER(A.code)=LOWER(B.code)\n",
-					"and b.CURRENT_IND='Y'\n",
-					"AND A.column_hash=B.REC_CHECKSUM\n",
-					")\n",
-					";\n",
-					"\n",
-					"SELECT COUNT(*) FROM etlhubConfirmed.DHT_INDUSTRY_SECTOR A\n",
-					"JOIN DHTS_INDUSTRY_SECTOR B\n",
-					"ON A.code = B.code\n",
-					"AND LOWER(B.code) = LOWER(B.existing_code) \n",
-					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
-					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					";"
-				],
-				"execution_count": 34
+				"execution_count": 57
 			},
 			{
 				"cell_type": "code",
@@ -661,31 +597,30 @@
 					"qry_ins_changed_rows=\"\"\"\n",
 					"INSERT INTO {}\n",
 					"\tselect \n",
-					"    existing_INDUSTRY_SECTOR_KEY\n",
-					"    ,1 + existing_INDUSTRY_SECTOR_VERSION as VERSION\n",
-					",\tlevelNum\n",
-					",\tparentCode\n",
-					",\tcode\n",
-					",\tlongDescription\n",
-					",\tmediumDescription\n",
-					",\tshortDescription\n",
-					",\tcomments\n",
-					",\trecordStatus\n",
-					",\trowCreateTs\n",
-					",\trowUpdateTs\n",
-					",\tUSAGE_RULE\n",
-					",\tALT_DESC_FULL_1\n",
-					",\tALT_DESC_FULL_2\n",
+					"    existing_BUILDING_KEY\n",
+					",\t1 + existing_VERSION\n",
+					",   BUSINESS_ID\n",
+					",\tCAMPUS_ID\n",
+					",\tBUILDING_ID\n",
+					",\tBUILDING_NAME\n",
+					",\tBUILDING_STATUS\n",
+					",\tBUILDING_OWNERSHIP_NAME\n",
+					",\tBUILDING_OWNERSHIP_DESCRIPTION\n",
+					",\tBUILDING_PRIMARY_USE_NAME AS PRIMARY_BUILDING_USE_NAME\n",
+					",\tBUILDING_PRIMARY_USE_DESCRIPTION AS PRIMARY_BUILDING_USE_DESCR\n",
+					",\tBUILDING_SECONDARY_USE_NAME AS SECONDARY_BUILDING_USE_NAME\n",
+					",\tBUILDING_SECONDARY_USE_DESCRIPTION AS SECONDARY_BUILDING_USE_DESCR\n",
+					",\tREPLACE(RENTABLE_AREA,',','') AS RENTABLE_AREA\n",
+					",\tACTIVE_YEAR AS BUILDING_ACTIVATION_YEAR\n",
+					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 					",   'Y' AS CURRENT_IND\n",
-					",   CURRENT_TIMESTAMP AS EXTRACT_DT\n",
+					",   '{}' AS EXTRACT_DT\n",
 					",   CURRENT_TIMESTAMP AS REC_START_DT\n",
-					",   '9999-12-31 00:00:00.000' as REC_END_DT\n",
-					",   'ERDM' AS SOURCE_SYSTEM\n",
+					",   '9999-12-31 00:00:00' as REC_END_DT\n",
+					",   'Tririga' AS SOURCE_SYSTEM\n",
 					",    column_hash as REC_CHECKSUM\n",
-					",    'U' as REC_STATUS\n",
-					",    current_timestamp as IMG_LST_UPD_DT\n",
-					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-					",   'Y' AS ACTIVE_IN_SOURCE_IND  \n",
+					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
+					",    existing_IMG_CREATED_DT\n",
 					"from {} A \n",
 					"WHERE LOWER({}) = LOWER(existing_{}) \n",
 					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
@@ -698,138 +633,9 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
+					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 35
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"#Soft Deletes - Update Active_Ind for the rows no longer active in source:\n",
-					"\n",
-					"qry_4_upd_deleted_rows=\"\"\"\n",
-					"\n",
-					"MERGE INTO {} A\n",
-					"USING {} B\n",
-					"ON A.{} = B.existing_{}\n",
-					"AND B.{} is NULL\n",
-					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
-					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					"WHEN MATCHED THEN UPDATE SET ACTIVE_IN_SOURCE_IND='N'\n",
-					"    ,IMG_LST_UPD_DT=current_timestamp\n",
-					"\n",
-					";\n",
-					"\"\"\"\n",
-					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
-				],
-				"execution_count": 36
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='Y'\n",
-					";\n",
-					"\n",
-					"\n",
-					"select 'Duplicate Rows based on surrogate key' as Title,INDUSTRY_SECTOR_KEY,count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='Y'\n",
-					"    group by INDUSTRY_SECTOR_KEY\n",
-					"    having count(*)>1\n",
-					";\n",
-					"\n",
-					"select 'Duplicate Rows based on natural key' as Title,code,count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='Y'\n",
-					"    group by code\n",
-					"    having count(*)>1\n",
-					";\n",
-					"\n",
-					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)=current_date and rec_status='I'\n",
-					";\n",
-					"\n",
-					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)=current_date and rec_status='U'\n",
-					";\n",
-					"\n",
-					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='N'\n",
-					"    and date(REC_END_DT)=current_date --and rec_status='I'\n",
-					";\n",
-					"\n",
-					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='Y'\n",
-					"    AND \n",
-					"     date(REC_END_DT)=current_date --and rec_status='I'\n",
-					";\n",
-					""
-				],
-				"execution_count": 37
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT COUNT(*) FROM etlhubconfirmed.dht_INDUSTRY_SECTOR\n",
-					"WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
-					"    and date(img_lst_upd_dt)=current_date\n",
-					"        limit 1\n",
-					";\n",
-					"\n",
-					"\n",
-					"select count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR where CURRENT_IND='Y'\n",
-					"   and date(extract_dt)=current_date --and rec_status='I'\n",
-					";\n",
-					"\n",
-					"select count(*) from etlhubconfirmed.dht_INDUSTRY_SECTOR\n",
-					"WHERE ACTIVE_IN_SOURCE_IND='N'\n",
-					"    and date(IMG_LST_UPD_DT)=current_date\n",
-					"    ;\n",
-					"UPDATE etlhubconfirmed.dht_INDUSTRY_SECTOR\n",
-					"set CURRENT_IND='Y', \n",
-					"REC_END_DT='9999-12-31'\n",
-					"  WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
-					"    and date(img_lst_upd_dt)=current_date\n",
-					"        ;  "
-				],
-				"execution_count": 38
+				"execution_count": 58
 			},
 			{
 				"cell_type": "code",
@@ -874,32 +680,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 39
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT * FROM etlhubconfirmed.dht_INDUSTRY_SECTOR where Code ='008887~613'\n",
-					"    --'008915~613'\n",
-					""
-				],
-				"execution_count": 61
+				"execution_count": 59
 			}
 		]
 	}
