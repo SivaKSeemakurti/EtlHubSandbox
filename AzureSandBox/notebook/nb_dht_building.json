@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2559f5f6-3234-4aa0-9c03-324f2d9457df"
+				"spark.autotune.trackingId": "6194b4f2-66c5-49c1-a496-67459d53a2c3"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 49
+				"execution_count": 78
 			},
 			{
 				"cell_type": "markdown",
@@ -161,9 +161,10 @@
 					"keycolumn=\"BUILDING_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
+					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 					"print(extract_dt)"
 				],
-				"execution_count": 50
+				"execution_count": 79
 			},
 			{
 				"cell_type": "markdown",
@@ -247,7 +248,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 51
+				"execution_count": 80
 			},
 			{
 				"cell_type": "code",
@@ -293,7 +294,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 52
+				"execution_count": 81
 			},
 			{
 				"cell_type": "markdown",
@@ -393,7 +394,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 53
+				"execution_count": 82
 			},
 			{
 				"cell_type": "code",
@@ -443,7 +444,7 @@
 					"df_4_recon2.show()\n",
 					""
 				],
-				"execution_count": 54
+				"execution_count": 83
 			},
 			{
 				"cell_type": "code",
@@ -498,7 +499,7 @@
 					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 					",   'Y' AS CURRENT_IND\n",
 					",   '{}' AS EXTRACT_DT\n",
-					",   CURRENT_TIMESTAMP AS REC_START_DT\n",
+					",   '{}' AS REC_START_DT\n",
 					",   '9999-12-31 00:00:00' as REC_END_DT\n",
 					",   'Tririga' AS SOURCE_SYSTEM\n",
 					",    column_hash as REC_CHECKSUM\n",
@@ -514,10 +515,10 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,stagingtable,tablename,natural_key, natural_key))\n",
+					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 55
+				"execution_count": 84
 			},
 			{
 				"cell_type": "code",
@@ -543,7 +544,7 @@
 					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
 					"        "
 				],
-				"execution_count": 56
+				"execution_count": 85
 			},
 			{
 				"cell_type": "code",
@@ -576,7 +577,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 57
+				"execution_count": 86
 			},
 			{
 				"cell_type": "code",
@@ -615,7 +616,7 @@
 					",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 					",   'Y' AS CURRENT_IND\n",
 					",   '{}' AS EXTRACT_DT\n",
-					",   CURRENT_TIMESTAMP AS REC_START_DT\n",
+					",   '{}' AS REC_START_DT\n",
 					",   '9999-12-31 00:00:00' as REC_END_DT\n",
 					",   'Tririga' AS SOURCE_SYSTEM\n",
 					",    column_hash as REC_CHECKSUM\n",
@@ -633,9 +634,9 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
+					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 58
+				"execution_count": 87
 			},
 			{
 				"cell_type": "code",
@@ -680,7 +681,31 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 59
+				"execution_count": 88
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select distinct IMG_CREATED_DT from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
+					"    --EXTRACT_DT"
+				],
+				"execution_count": 71
 			}
 		]
 	}
