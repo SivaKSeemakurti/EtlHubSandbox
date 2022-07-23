@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "37c3a985-1420-4a13-a66f-e1b2e149442c"
+				"spark.autotune.trackingId": "430dcc3c-246e-49c1-bef2-740dc7ca7d8c"
 			}
 		},
 		"metadata": {
@@ -150,7 +150,7 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd2' \n",
+					"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd2' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key1=\"CAMPUS_ID\"\n",
 					"natural_key2=\"BUILDING_ID\"\n",
 					"natural_key=\"BUSINESS_ID\"\n",
