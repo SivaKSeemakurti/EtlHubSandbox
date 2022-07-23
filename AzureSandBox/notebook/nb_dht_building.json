@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6194b4f2-66c5-49c1-a496-67459d53a2c3"
+				"spark.autotune.trackingId": "ad4b5f6e-2c0b-4272-8abb-e723a5729771"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 78
+				"execution_count": 115
 			},
 			{
 				"cell_type": "markdown",
@@ -150,7 +150,7 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='IWTRIRIGABuildingQuery.csv.20220704' \n",
+					"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd1' \n",
 					"natural_key1=\"CAMPUS_ID\"\n",
 					"natural_key2=\"BUILDING_ID\"\n",
 					"natural_key=\"BUSINESS_ID\"\n",
@@ -164,7 +164,7 @@
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 					"print(extract_dt)"
 				],
-				"execution_count": 79
+				"execution_count": 116
 			},
 			{
 				"cell_type": "markdown",
@@ -248,7 +248,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 80
+				"execution_count": 117
 			},
 			{
 				"cell_type": "code",
@@ -294,7 +294,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 81
+				"execution_count": 118
 			},
 			{
 				"cell_type": "markdown",
@@ -394,7 +394,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 82
+				"execution_count": 119
 			},
 			{
 				"cell_type": "code",
@@ -444,7 +444,7 @@
 					"df_4_recon2.show()\n",
 					""
 				],
-				"execution_count": 83
+				"execution_count": 120
 			},
 			{
 				"cell_type": "code",
@@ -518,7 +518,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 84
+				"execution_count": 121
 			},
 			{
 				"cell_type": "code",
@@ -544,7 +544,7 @@
 					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
 					"        "
 				],
-				"execution_count": 85
+				"execution_count": 122
 			},
 			{
 				"cell_type": "code",
@@ -577,7 +577,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 86
+				"execution_count": 123
 			},
 			{
 				"cell_type": "code",
@@ -636,7 +636,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 87
+				"execution_count": 124
 			},
 			{
 				"cell_type": "code",
@@ -681,7 +681,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 88
+				"execution_count": 125
 			},
 			{
 				"cell_type": "code",
@@ -702,10 +702,15 @@
 				},
 				"source": [
 					"%%sql\n",
-					"select distinct IMG_CREATED_DT from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
-					"    --EXTRACT_DT"
+					"select distinct EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,current_ind,count(*) from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
+					"    group by EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,current_ind\n",
+					"    --EXTRACT_DT\n",
+					"\n",
+					"    --BLDMAIN, 006\n",
+					"    --CYNICOSI, 0002\n",
+					"    --RTPMAIN, 002"
 				],
-				"execution_count": 71
+				"execution_count": 132
 			}
 		]
 	}
