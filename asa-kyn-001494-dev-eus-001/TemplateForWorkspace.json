@@ -38982,7 +38982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "23378247-af93-4204-a852-4c6be84260f1"
+						"spark.autotune.trackingId": "27caff51-bef4-4987-a119-0c00b4a03c0f"
 					}
 				},
 				"metadata": {
@@ -39674,16 +39674,19 @@
 						},
 						"source": [
 							"%%sql\n",
-							"select distinct EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,current_ind,count(*) from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
-							"    group by EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,current_ind\n",
+							"select distinct VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND,count(*) from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
+							"    group by VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
 							"    --EXTRACT_DT\n",
 							"\n",
 							"    --BLDMAIN, 006\n",
 							"    --CYNICOSI, 0002\n",
-							"    --RTPMAIN, 002"
+							"    --RTPMAIN, 002\n",
+							"    ;\n",
+							"\n",
+							"    "
 						],
 						"outputs": [],
-						"execution_count": 132
+						"execution_count": 134
 					}
 				]
 			},
