@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "41cdae71-ce0a-4bda-9e94-a3dca6281e2a"
+				"spark.autotune.trackingId": "791ff9f7-fd6c-4d67-979f-8dd5fc980e93"
 			}
 		},
 		"metadata": {
@@ -495,7 +495,7 @@
 					"INSERT INTO {}\n",
 					"\tselect \n",
 					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {} \n",
-					",\t1 AS BUILDING_VERSION\n",
+					",\t1 AS VERSION\n",
 					",   CAMPUS_ID || BUILDING_ID AS BUSINESS_ID\n",
 					",\tCAMPUS_ID\n",
 					",\tBUILDING_ID\n",
@@ -519,7 +519,6 @@
 					",    'I' as REC_STATUS\n",
 					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
 					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-					",   'Y' AS ACTIVE_IN_SOURCE_IND \n",
 					"    from {} A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
