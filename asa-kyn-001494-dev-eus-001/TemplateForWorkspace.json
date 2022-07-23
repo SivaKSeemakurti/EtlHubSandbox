@@ -38982,7 +38982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "27caff51-bef4-4987-a119-0c00b4a03c0f"
+						"spark.autotune.trackingId": "4d47004a-6472-44fc-81ce-51901dee9518"
 					}
 				},
 				"metadata": {
@@ -39408,7 +39408,21 @@
 							"df_4_recon2=spark.sql(qry_4_recon2.format(stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))\n",
 							"print('Changed records or Updates are:') \n",
 							"df_4_recon2.show()\n",
-							""
+							"\n",
+							"qry_4_recon3=\"\"\"\n",
+							"SELECT COUNT(*) from \n",
+							"{} A\n",
+							"join fullJoin B\n",
+							"ON A.{} = B.existing_{}\n",
+							"AND B.{} is NULL\n",
+							"AND A.CURRENT_IND='Y' --AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
+							"AND A.REC_START_DT=b.existing_REC_START_DT\n",
+							"\n",
+							"\"\"\"\n",
+							"\n",
+							"df_4_recon3=spark.sql(qry_4_recon3.format(tablename,natural_key,natural_key,natural_key))\n",
+							"print('Soft Deletes are:') \n",
+							"df_4_recon3.show()"
 						],
 						"outputs": [],
 						"execution_count": 120
@@ -39623,6 +39637,41 @@
 							}
 						},
 						"source": [
+							"#Soft Deletes - Update Active_Ind for the rows no longer active in source:\n",
+							"\n",
+							"qry_4_upd_deleted_rows=\"\"\"\n",
+							"\n",
+							"MERGE INTO {} A\n",
+							"USING {} B\n",
+							"ON A.{} = B.existing_{}\n",
+							"AND B.{} is NULL\n",
+							"AND A.CURRENT_IND='Y' --AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
+							"AND A.REC_START_DT=b.existing_REC_START_DT\n",
+							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
+							"    ,IMG_LST_UPD_DT=current_timestamp\n",
+							"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+							"\n",
+							";\n",
+							"\"\"\"\n",
+							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
 							"qry3=\"\"\"\n",
 							"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
 							";\n",
@@ -39674,7 +39723,8 @@
 						},
 						"source": [
 							"%%sql\n",
-							"select distinct VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND,count(*) from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
+							"select distinct VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND,count(*) \n",
+							"from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
 							"    group by VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
 							"    --EXTRACT_DT\n",
 							"\n",
@@ -39683,10 +39733,14 @@
 							"    --RTPMAIN, 002\n",
 							"    ;\n",
 							"\n",
-							"    "
+							"SELECT BUILDING_KEY,BUSINESS_ID, BUILDING_OWNERSHIP_DESCR,VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
+							" from etlhubconfirmed.dht_building A\n",
+							"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002')\n",
+							"ORDER BY BUSINESS_ID, REC_START_DT\n",
+							"    ;"
 						],
 						"outputs": [],
-						"execution_count": 134
+						"execution_count": 137
 					}
 				]
 			},
@@ -52362,6 +52416,18 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/sPoolKyn001494')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -52406,18 +52472,6 @@
 				"sparkVersion": "3.2",
 				"isComputeIsolationEnabled": true,
 				"sessionLevelPackagesEnabled": false,
-				"annotations": []
-			},
-			"dependsOn": [],
-			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],
