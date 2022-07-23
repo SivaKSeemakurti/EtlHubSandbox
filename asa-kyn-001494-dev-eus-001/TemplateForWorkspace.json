@@ -38982,7 +38982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8e0c9174-3c4b-42e8-ab92-6ed9319f0873"
+						"spark.autotune.trackingId": "04b95f33-2b2c-4bfb-bf49-f66e2715596b"
 					}
 				},
 				"metadata": {
@@ -39078,7 +39078,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 49
+						"execution_count": 90
 					},
 					{
 						"cell_type": "markdown",
@@ -39123,10 +39123,11 @@
 							"keycolumn=\"BUILDING_KEY\"\n",
 							"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 							"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
+							"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 							"print(extract_dt)"
 						],
 						"outputs": [],
-						"execution_count": 50
+						"execution_count": 91
 					},
 					{
 						"cell_type": "markdown",
@@ -39211,7 +39212,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 51
+						"execution_count": 92
 					},
 					{
 						"cell_type": "code",
@@ -39258,7 +39259,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 52
+						"execution_count": 93
 					},
 					{
 						"cell_type": "markdown",
@@ -39359,7 +39360,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 53
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -39410,7 +39411,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 54
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -39465,7 +39466,7 @@
 							",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 							",   'Y' AS CURRENT_IND\n",
 							",   '{}' AS EXTRACT_DT\n",
-							",   CURRENT_TIMESTAMP AS REC_START_DT\n",
+							",   '{}' AS REC_START_DT\n",
 							",   '9999-12-31 00:00:00' as REC_END_DT\n",
 							",   'Tririga' AS SOURCE_SYSTEM\n",
 							",    column_hash as REC_CHECKSUM\n",
@@ -39481,11 +39482,11 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,stagingtable,tablename,natural_key, natural_key))\n",
+							"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 55
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -39512,7 +39513,7 @@
 							"        "
 						],
 						"outputs": [],
-						"execution_count": 56
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -39546,7 +39547,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 57
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -39585,7 +39586,7 @@
 							",\tACTUAL_RETIREMENT_INACTIVATION AS BUILDING_INACTIVATION_YEAR\n",
 							",   'Y' AS CURRENT_IND\n",
 							",   '{}' AS EXTRACT_DT\n",
-							",   CURRENT_TIMESTAMP AS REC_START_DT\n",
+							",   '{}' AS REC_START_DT\n",
 							",   '9999-12-31 00:00:00' as REC_END_DT\n",
 							",   'Tririga' AS SOURCE_SYSTEM\n",
 							",    column_hash as REC_CHECKSUM\n",
@@ -39603,10 +39604,10 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
+							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 58
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -39652,7 +39653,32 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 59
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"select distinct IMG_CREATED_DT from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
+							"    --EXTRACT_DT"
+						],
+						"outputs": [],
+						"execution_count": null
 					}
 				]
 			},
