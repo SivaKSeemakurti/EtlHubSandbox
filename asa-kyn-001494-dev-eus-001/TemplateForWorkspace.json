@@ -38982,7 +38982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4d47004a-6472-44fc-81ce-51901dee9518"
+						"spark.autotune.trackingId": "297b21b0-0e0c-4ab2-abe2-57d342da9b5c"
 					}
 				},
 				"metadata": {
@@ -39078,7 +39078,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 115
+						"execution_count": 138
 					},
 					{
 						"cell_type": "markdown",
@@ -39112,7 +39112,7 @@
 							"container_name = 'etlhubfilestorage' # fill in your container name \n",
 							"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 							"relative_archive_path='archive/'\n",
-							"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd1' \n",
+							"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd2' \n",
 							"natural_key1=\"CAMPUS_ID\"\n",
 							"natural_key2=\"BUILDING_ID\"\n",
 							"natural_key=\"BUSINESS_ID\"\n",
@@ -39127,7 +39127,7 @@
 							"print(extract_dt)"
 						],
 						"outputs": [],
-						"execution_count": 116
+						"execution_count": 139
 					},
 					{
 						"cell_type": "markdown",
@@ -39212,7 +39212,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 117
+						"execution_count": 140
 					},
 					{
 						"cell_type": "code",
@@ -39259,7 +39259,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 118
+						"execution_count": 141
 					},
 					{
 						"cell_type": "markdown",
@@ -39360,7 +39360,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 119
+						"execution_count": 142
 					},
 					{
 						"cell_type": "code",
@@ -39425,7 +39425,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 120
+						"execution_count": 143
 					},
 					{
 						"cell_type": "code",
@@ -39500,7 +39500,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 121
+						"execution_count": 144
 					},
 					{
 						"cell_type": "code",
@@ -39527,7 +39527,7 @@
 							"        "
 						],
 						"outputs": [],
-						"execution_count": 122
+						"execution_count": 145
 					},
 					{
 						"cell_type": "code",
@@ -39553,7 +39553,7 @@
 							"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-							"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+							"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds\n",
 							"    ,IMG_LST_UPD_DT=current_timestamp\n",
 							";\n",
 							"\"\"\"\n",
@@ -39561,7 +39561,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 123
+						"execution_count": 146
 					},
 					{
 						"cell_type": "code",
@@ -39621,7 +39621,7 @@
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 124
+						"execution_count": 147
 					},
 					{
 						"cell_type": "code",
@@ -39649,14 +39649,14 @@
 							"AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
 							"    ,IMG_LST_UPD_DT=current_timestamp\n",
-							"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+							"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds\n",
 							"\n",
 							";\n",
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 148
 					},
 					{
 						"cell_type": "code",
@@ -39702,7 +39702,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 125
+						"execution_count": 149
 					},
 					{
 						"cell_type": "code",
@@ -39726,21 +39726,27 @@
 							"select distinct VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND,count(*) \n",
 							"from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
 							"    group by VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
-							"    --EXTRACT_DT\n",
-							"\n",
-							"    --BLDMAIN, 006\n",
-							"    --CYNICOSI, 0002\n",
-							"    --RTPMAIN, 002\n",
+							"    \n",
+							"--Updated File\n",
+							"    --BLDMAIN, 006 Updated\n",
+							"    --CYNICOSI, 0002 Updated\n",
+							"    --RTPMAIN, 002 Updated\n",
+							"--Further Updated File\n",
+							"    --ITMEDMLN,004 removed\n",
+							"    --MQFORTFR,001 Updated\n",
+							"    --CYNICOSI,0002 Updated again\n",
+							"    --JPATAGOE, 001 Updated\n",
+							"    --RTPMAIN, 002 removed\n",
 							"    ;\n",
 							"\n",
 							"SELECT BUILDING_KEY,BUSINESS_ID, BUILDING_OWNERSHIP_DESCR,VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
 							" from etlhubconfirmed.dht_building A\n",
-							"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002')\n",
+							"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001')\n",
 							"ORDER BY BUSINESS_ID, REC_START_DT\n",
 							"    ;"
 						],
 						"outputs": [],
-						"execution_count": 137
+						"execution_count": 150
 					}
 				]
 			},
@@ -44680,7 +44686,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "32504cd4-ae29-4b58-8f3e-70e30fbe13dd"
+						"spark.autotune.trackingId": "a80d54dc-faae-4a7d-9f54-2e2bf8af513c"
 					}
 				},
 				"metadata": {
@@ -44700,14 +44706,12 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"extraHeader": null
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -44727,8 +44731,7 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
 							"Since ESA is not accessible from Azure, a datastage job src_ESA_Market_Azure is executed on datastage to push the ESA extract to adls.\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -44741,8 +44744,7 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -44772,7 +44774,6 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 1
 					},
@@ -44787,8 +44788,7 @@
 						},
 						"source": [
 							"Define Parameters"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -44817,7 +44817,6 @@
 							"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 							"print(date)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 17
 					},
@@ -44832,8 +44831,7 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -44848,8 +44846,7 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_MARKET_DATA.csv"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -44899,7 +44896,6 @@
 							"#sell_cyclecolhashDF.show()\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 18
 					},
@@ -44947,7 +44943,6 @@
 							"  .saveAsTable(stagingtable)\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 19
 					},
@@ -44966,8 +44961,7 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -45026,7 +45020,6 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 41
 					},
@@ -45092,7 +45085,6 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 44
 					},
@@ -45116,7 +45108,6 @@
 							"%%sql\n",
 							"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -45246,7 +45237,6 @@
 							"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 45
 					},
@@ -45271,7 +45261,6 @@
 							"%%sql\n",
 							"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 47
 					},
@@ -45299,14 +45288,13 @@
 							"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-							"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+							"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds --current_timestamp --existing_REC_START_DT-1\n",
 							"    ,IMG_LST_UPD_DT=current_timestamp\n",
 							";\n",
 							"\"\"\"\n",
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 60
 					},
@@ -45356,7 +45344,6 @@
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							";"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 50
 					},
@@ -45425,7 +45412,7 @@
 							",\tRPTS_TO_SCTR_DESC\n",
 							",'Y' AS CURRENT_IND\n",
 							"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
-							"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
+							"\t,existing_REC_START_DT AS REC_START_DT\n",
 							"\t,'9999-12-31 00:00:00.000' as REC_END_DT\t\n",
 							"\t,column_hash as REC_CHECKSUM\n",
 							"\t,'U' as REC_STATUS\n",
@@ -45471,7 +45458,6 @@
 							"\n",
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 52
 					},
@@ -45506,7 +45492,6 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 53
 					},
@@ -45561,7 +45546,6 @@
 							";\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 54
 					},
@@ -45606,7 +45590,6 @@
 							"    and date(img_lst_upd_dt)=current_date\n",
 							"        ;  "
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 55
 					},
@@ -45653,7 +45636,6 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 62
 					},
@@ -45683,7 +45665,6 @@
 							"        --71590\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 8
 					}
@@ -52416,18 +52397,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
-				"annotations": []
-			},
-			"dependsOn": [],
-			"location": "eastus"
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/sPoolKyn001494')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -52472,6 +52441,18 @@
 				"sparkVersion": "3.2",
 				"isComputeIsolationEnabled": true,
 				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],
