@@ -38982,7 +38982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "04b95f33-2b2c-4bfb-bf49-f66e2715596b"
+						"spark.autotune.trackingId": "23378247-af93-4204-a852-4c6be84260f1"
 					}
 				},
 				"metadata": {
@@ -39078,7 +39078,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 90
+						"execution_count": 115
 					},
 					{
 						"cell_type": "markdown",
@@ -39112,7 +39112,7 @@
 							"container_name = 'etlhubfilestorage' # fill in your container name \n",
 							"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 							"relative_archive_path='archive/'\n",
-							"file_name='IWTRIRIGABuildingQuery.csv.20220704' \n",
+							"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd1' \n",
 							"natural_key1=\"CAMPUS_ID\"\n",
 							"natural_key2=\"BUILDING_ID\"\n",
 							"natural_key=\"BUSINESS_ID\"\n",
@@ -39127,7 +39127,7 @@
 							"print(extract_dt)"
 						],
 						"outputs": [],
-						"execution_count": 91
+						"execution_count": 116
 					},
 					{
 						"cell_type": "markdown",
@@ -39212,7 +39212,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 92
+						"execution_count": 117
 					},
 					{
 						"cell_type": "code",
@@ -39259,7 +39259,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 93
+						"execution_count": 118
 					},
 					{
 						"cell_type": "markdown",
@@ -39360,7 +39360,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 119
 					},
 					{
 						"cell_type": "code",
@@ -39411,7 +39411,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 120
 					},
 					{
 						"cell_type": "code",
@@ -39486,7 +39486,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 121
 					},
 					{
 						"cell_type": "code",
@@ -39513,7 +39513,7 @@
 							"        "
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 122
 					},
 					{
 						"cell_type": "code",
@@ -39547,7 +39547,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 123
 					},
 					{
 						"cell_type": "code",
@@ -39607,7 +39607,7 @@
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 124
 					},
 					{
 						"cell_type": "code",
@@ -39653,7 +39653,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 125
 					},
 					{
 						"cell_type": "code",
@@ -39674,11 +39674,16 @@
 						},
 						"source": [
 							"%%sql\n",
-							"select distinct IMG_CREATED_DT from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
-							"    --EXTRACT_DT"
+							"select distinct EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,current_ind,count(*) from etlhubconfirmed.dht_building --WHERE CURRENT_IND='Y'\n",
+							"    group by EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,current_ind\n",
+							"    --EXTRACT_DT\n",
+							"\n",
+							"    --BLDMAIN, 006\n",
+							"    --CYNICOSI, 0002\n",
+							"    --RTPMAIN, 002"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 132
 					}
 				]
 			},
