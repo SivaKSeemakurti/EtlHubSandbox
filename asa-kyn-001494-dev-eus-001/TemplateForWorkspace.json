@@ -46649,7 +46649,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "059d4cf8-7d93-4824-b2a0-1d2d693ee9c1"
+						"spark.autotune.trackingId": "192d4f96-9111-424b-a05d-d0c216eabf10"
 					}
 				},
 				"metadata": {
@@ -46674,8 +46674,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -46907,11 +46906,13 @@
 							"'Y' AS ACTIVE_IN_SOURCE_IND from SourceView src \r\n",
 							"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
 							"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
-							"where OPP.OPPORTUNITY_NUM is null\r\n",
+							"where OPP.OPPORTUNITY_NUM is null ;\r\n",
+							"\r\n",
+							"\r\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 49
+						"execution_count": 52
 					},
 					{
 						"cell_type": "code",
@@ -49676,7 +49677,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "686deddc-221f-4b17-89ac-1b20c971c806"
+						"spark.autotune.trackingId": "2f485584-92a8-4ced-b043-e01239742bfa"
 					}
 				},
 				"metadata": {
@@ -49701,7 +49702,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -49805,6 +49807,7 @@
 							"tablename=\"etlhubConfirmed.dht_opportunity_role\"\n",
 							"#natural_key=\"ROLE_CD\"\n",
 							"keycolumn=\"OPPORTUNITY_ROLE_KEY\"\n",
+							"stagingtable=\"DHTS_OPPORTUNITY_ROLE\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
 						"outputs": [],
@@ -49927,7 +49930,7 @@
 							"  .mode(\"overwrite\") \\\n",
 							"  .option(\"overwriteSchema\", \"true\") \\\n",
 							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_OPPORTUNITY_ROLE\") \\\n",
-							"  .saveAsTable(\"DHTS_OPPORTUNITY_ROLE\")\n",
+							"  .saveAsTable(stagingtable)\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
