@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "38ecff31-8e7f-4ce8-9d1a-00a26ab1f04b"
+				"spark.autotune.trackingId": "5a6eae29-5312-47d0-9940-7cb08f7cabac"
 			}
 		},
 		"metadata": {
@@ -148,6 +148,7 @@
 					"natural_key=['CRM_ROLE_KEY','OPPORTUNITY_KEY','OPPORTUNITY_ROLE_KEY','EMPLOYEE_KEY']\n",
 					"tablename=\"etlhubConfirmed.dht_opportunity_assignment_daily_ft\"\n",
 					"keycolumn=\"OPPORTUNITY_ASSIGNMENT_KEY\"\n",
+					"stagingtable=\"DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT\"\n",
 					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 				],
 				"execution_count": 3
@@ -315,7 +316,7 @@
 					"  .mode(\"overwrite\") \\\n",
 					"  .option(\"overwriteSchema\", \"true\") \\\n",
 					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_OPPORTUNITY_ROLE\") \\\n",
-					"  .saveAsTable(\"DHTS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA\")\n",
+					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
 				"execution_count": 28
