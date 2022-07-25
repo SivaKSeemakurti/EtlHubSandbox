@@ -23251,11 +23251,14 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f2760f02-7429-42a7-a877-cf03a1464b11"
+						"spark.autotune.trackingId": "c87f68eb-826d-4fab-9783-a3270ea3d9b2"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -23271,13 +23274,14 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"automaticScaleJobs": false
+						"extraHeader": null
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -23315,6 +23319,7 @@
 							"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_OPPORTUNITY_ROLE'      \n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -23339,6 +23344,7 @@
 							"%%sql\n",
 							"DROP TABLE etlhubconfirmed.dht_opportunity_role"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 45
 					},
@@ -23363,6 +23369,7 @@
 							"%%sql\n",
 							"DELETE FROM etlhubconfirmed.dht_opportunity_role"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 9
 					}
@@ -23886,7 +23893,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "28dfa312-b646-4d45-93d5-b483afe6a4de"
+						"spark.autotune.trackingId": "a6459e81-ff4f-4ebc-afff-bbee3bf435b5"
 					}
 				},
 				"metadata": {
@@ -23911,8 +23918,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -38145,7 +38151,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "57e0568b-4560-485d-8ce3-3f5b8c917f66"
+						"spark.autotune.trackingId": "a2382f90-4fdd-474c-b7cf-d30554338103"
 					}
 				},
 				"metadata": {
@@ -38170,8 +38176,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -38958,7 +38963,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"folder": {
-					"name": "ETLHub/Dimensions&Facts"
+					"name": "ETLHub/Dimensions&Facts/GREIW"
 				},
 				"nbformat": 4,
 				"nbformat_minor": 2,
@@ -38977,7 +38982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8123bd0b-d564-4668-9640-0fe6a750b981"
+						"spark.autotune.trackingId": "690ab1e1-6d35-4976-9523-1f91d2d913cb"
 					}
 				},
 				"metadata": {
@@ -39002,7 +39007,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -39024,10 +39030,9 @@
 							"\n",
 							"The CSV formatted file is uploaded to adls for loading to BUILDING deltalake table created.\n",
 							"\n",
-							"ERDM Industry Sector Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmStandardDetails/102\n",
+							"The script used for file transfer is /home/resodba/trrgprocget.sh\n",
 							"\n",
-							"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
-							""
+							"File Name: IWTRIRIGABuildingQuery.csv from /GlobalDir/CustomerFiles/tririga"
 						]
 					},
 					{
@@ -45760,7 +45765,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "04ff77c7-f0a5-43a3-87b3-1db1bb143eab"
+						"spark.autotune.trackingId": "6344526c-8077-458f-bff8-b9de4a622e4c"
 					}
 				},
 				"metadata": {
@@ -45785,8 +45790,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -46531,7 +46535,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "07a7b049-c0c4-4b42-88f3-5d8c75e31a0d"
+						"spark.autotune.trackingId": "86f6b3dd-555b-41b9-a044-02d22bce6624"
 					}
 				},
 				"metadata": {
@@ -46556,8 +46560,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -48648,7 +48651,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "0dcaae1d-b917-4f96-8d8a-f17729cf9074"
+						"spark.autotune.trackingId": "686deddc-221f-4b17-89ac-1b20c971c806"
 					}
 				},
 				"metadata": {
@@ -48673,8 +48676,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
