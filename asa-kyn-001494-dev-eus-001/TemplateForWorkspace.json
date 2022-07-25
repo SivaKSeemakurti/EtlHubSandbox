@@ -21431,7 +21431,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "182c3e2e-14aa-4cae-b120-3749040f2fd9"
+						"spark.autotune.trackingId": "85c6c5ef-1a21-4f9e-bbb6-82f1c3a01a2d"
 					}
 				},
 				"metadata": {
@@ -21556,7 +21556,7 @@
 							"DELETE FROM etlhubConfirmed.DHT_BUILDING"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -28468,7 +28468,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "21aebe07-e287-419d-8adb-bbf06cd0df8c"
+						"spark.autotune.trackingId": "ba5b67c2-c7da-46ad-a63a-2af7a10dda0e"
 					}
 				},
 				"metadata": {
@@ -28493,8 +28493,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -39847,7 +39846,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b44906c8-ff74-44e7-9562-c599353e9fde"
+						"spark.autotune.trackingId": "b2969104-1149-4279-8df1-95bad7568c32"
 					}
 				},
 				"metadata": {
@@ -39872,7 +39871,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -39941,7 +39941,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": 20
 					},
 					{
 						"cell_type": "markdown",
@@ -39977,7 +39977,7 @@
 							"container_name = 'etlhubfilestorage' # fill in your container name \n",
 							"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 							"relative_archive_path='archive/'\n",
-							"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd2' # 20220705, 20220705_upd1, 20220705_upd2\n",
+							"file_name='IWTRIRIGABuildingQuery.csv.20220705' # 20220705, 20220705_upd1, 20220705_upd2\n",
 							"natural_key1=\"CAMPUS_ID\"\n",
 							"natural_key2=\"BUILDING_ID\"\n",
 							"natural_key=\"BUSINESS_ID\"\n",
@@ -39992,7 +39992,7 @@
 							"print(extract_dt)"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 21
 					},
 					{
 						"cell_type": "markdown",
@@ -40057,7 +40057,7 @@
 							"\n",
 							"incrementalData_DF = incrementalData_DF1.withColumn(natural_key, concat_ws(\"~\", natural_key1, natural_key2))\n",
 							"\n",
-							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+							"#incrementalData_DF.write.csv(csv_archive_path, header = 'true') : Write file into archive directory\n",
 							"\n",
 							"# Get column list for creating Rec_Checksum\n",
 							"\n",
@@ -40077,7 +40077,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 22
 					},
 					{
 						"cell_type": "code",
@@ -40101,7 +40101,7 @@
 							"print (my_string)"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 23
 					},
 					{
 						"cell_type": "code",
@@ -40148,7 +40148,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 24
 					},
 					{
 						"cell_type": "markdown",
@@ -40249,7 +40249,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": 25
 					},
 					{
 						"cell_type": "code",
@@ -40314,7 +40314,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 7
+						"execution_count": 26
 					},
 					{
 						"cell_type": "code",
@@ -40389,7 +40389,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": 27
 					},
 					{
 						"cell_type": "code",
@@ -40434,7 +40434,7 @@
 							"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 9
+						"execution_count": 28
 					},
 					{
 						"cell_type": "code",
@@ -40461,7 +40461,7 @@
 							"        "
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 29
 					},
 					{
 						"cell_type": "code",
@@ -40495,7 +40495,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 146
+						"execution_count": 30
 					},
 					{
 						"cell_type": "code",
@@ -40555,7 +40555,7 @@
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 31
 					},
 					{
 						"cell_type": "code",
@@ -40590,7 +40590,7 @@
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 12
+						"execution_count": 32
 					},
 					{
 						"cell_type": "code",
@@ -40636,7 +40636,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 13
+						"execution_count": 33
 					},
 					{
 						"cell_type": "code",
@@ -40680,7 +40680,26 @@
 							"    ;"
 						],
 						"outputs": [],
-						"execution_count": 14
+						"execution_count": 34
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')"
+						],
+						"outputs": [],
+						"execution_count": 36
 					}
 				]
 			},
