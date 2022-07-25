@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "30bf20b7-9e3a-4e81-9165-aa1c3e8aa034"
+				"spark.autotune.trackingId": "ab1be362-cb5f-4b08-a80d-85e33c736a27"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 151
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -163,7 +163,7 @@
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 					"print(extract_dt)"
 				],
-				"execution_count": 152
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -247,7 +247,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 153
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -270,7 +270,7 @@
 					"my_string = ','.join(dim_col_list)\n",
 					"print (my_string)"
 				],
-				"execution_count": 167
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -316,7 +316,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 156
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -416,7 +416,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 157
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -480,7 +480,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 158
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -554,7 +554,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 159
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -598,7 +598,7 @@
 					"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 				],
-				"execution_count": 169
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -624,7 +624,7 @@
 					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
 					"        "
 				],
-				"execution_count": 145
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -716,7 +716,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 147
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -750,7 +750,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 148
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -795,7 +795,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 149
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -838,7 +838,7 @@
 					"ORDER BY BUSINESS_ID, REC_START_DT\n",
 					"    ;"
 				],
-				"execution_count": 150
+				"execution_count": 14
 			}
 		]
 	}
