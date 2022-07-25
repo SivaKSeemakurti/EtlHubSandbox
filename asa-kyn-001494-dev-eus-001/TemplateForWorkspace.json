@@ -46649,7 +46649,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "192d4f96-9111-424b-a05d-d0c216eabf10"
+						"spark.autotune.trackingId": "3c35b3eb-a258-4d4e-b69a-b0639fdfe827"
 					}
 				},
 				"metadata": {
@@ -46674,7 +46674,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -46908,7 +46909,25 @@
 							"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
 							"where OPP.OPPORTUNITY_NUM is null ;\r\n",
 							"\r\n",
-							"\r\n",
+							"INSERT INTO etlhubconfirmed.dht_opportunity_role\r\n",
+							"select \r\n",
+							"COALESCE(max_role.OPPORTUNITY_ROLE_KEY) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \r\n",
+							",ROLE_CD ,'' as ROLE_DESC\r\n",
+							",'Y' AS CURRENT_IND\r\n",
+							",CURRENT_TIMESTAMP AS EXTRACT_DT\r\n",
+							",CURRENT_TIMESTAMP AS REC_START_DT\r\n",
+							",'9999-12-31 00:00:00.000' as REC_END_DT\r\n",
+							",'ESA' AS SOURCE_SYSTEM\r\n",
+							",column_hash as REC_CHECKSUM\r\n",
+							",'I' as REC_STATUS\r\n",
+							",current_timestamp as IMG_LST_UPD_DT\r\n",
+							",CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
+							",'ED' AS DATA_IND\r\n",
+							",'Y' AS ACTIVE_IN_SOURCE_IND \r\n",
+							"from SourceView src \r\n",
+							"LEFT OUTER JOIN etlhubconfirmed.dht_opportunity_role role ON src.OPP_ROLE=role.ROLE_CD\r\n",
+							"left outer join (select max(OPPORTUNITY_ROLE_KEY) from etlhubconfirmed.dht_opportunity_role ) as max_role ON 1=1 \r\n",
+							"where role.ROLE_CD is null\r\n",
 							""
 						],
 						"outputs": [],
@@ -49677,7 +49696,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "2f485584-92a8-4ced-b043-e01239742bfa"
+						"spark.autotune.trackingId": "bb72bf62-092b-4e4f-a781-bf839554452f"
 					}
 				},
 				"metadata": {
@@ -49702,8 +49721,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
