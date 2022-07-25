@@ -2,7 +2,7 @@
 	"name": "nb_dht_building",
 	"properties": {
 		"folder": {
-			"name": "ETLHub/Dimensions&Facts"
+			"name": "ETLHub/Dimensions&Facts/GREIW"
 		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8123bd0b-d564-4668-9640-0fe6a750b981"
+				"spark.autotune.trackingId": "30bf20b7-9e3a-4e81-9165-aa1c3e8aa034"
 			}
 		},
 		"metadata": {
@@ -69,10 +69,9 @@
 					"\n",
 					"The CSV formatted file is uploaded to adls for loading to BUILDING deltalake table created.\n",
 					"\n",
-					"ERDM Industry Sector Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmStandardDetails/102\n",
+					"The script used for file transfer is /home/resodba/trrgprocget.sh\n",
 					"\n",
-					"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
-					""
+					"File Name: IWTRIRIGABuildingQuery.csv from /GlobalDir/CustomerFiles/tririga"
 				]
 			},
 			{
