@@ -46649,7 +46649,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "a407090a-e2cd-42c7-9a9a-c6aea28a740c"
+						"spark.autotune.trackingId": "059d4cf8-7d93-4824-b2a0-1d2d693ee9c1"
 					}
 				},
 				"metadata": {
@@ -46739,7 +46739,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 29
+						"execution_count": 39
 					},
 					{
 						"cell_type": "markdown",
@@ -46781,7 +46781,7 @@
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 40
 					},
 					{
 						"cell_type": "markdown",
@@ -46874,46 +46874,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 32
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							}
-						},
-						"source": [
-							"%%sql\r\n",
-							"select distinct OPP.OPPORTUNITY_KEY, \r\n",
-							"CASE WHEN OPP.OPPORTUNITY_KEY IS NULL THEN \r\n",
-							"(INSERT INTO etlhubConfirmed.dht_opportunity \r\n",
-							"select COALESCE(OPP.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_VERSION, \r\n",
-							"src.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
-							"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, md5(src.OPPORTUNITY_NUM) as REC_CHECKSUM, \r\n",
-							"'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
-							"'' as ISA_CODE,'' as ARCHIVE_REASON_CODE,'' as BUSINESS_TRANSACTION_TYPE,'' as CLIENT_REPRESENTATIVE_NAME,'' as COMPETITOR_LIST, \r\n",
-							"'' as IDENTIFIER_NAME,'' as OPPORTUNITY_NAME,'' as OPPORTUNITY_SOURCE_CODE,'' as SBS_SOL_VALID_IND, \r\n",
-							"'' as OPPORTUNITY_IDENTIFIER,'' as ROGUE_IND, '' as REASON_TO_ACT,''as SOLUTION_CATG,'' as BRAND_SPONSOR_LIST,'' as GBS_GEOGRAPHY_NAME, \r\n",
-							"'' as GBS_BUSINESS_UNIT_GROUP_NAME,'' as GBS_BUSINESS_UNIT_NAME,'' as TAG_LIST,'' as OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
-							"'Y' AS ACTIVE_IN_SOURCE_IND from SourceView src \r\n",
-							"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) <> trim(OPP.OPPORTUNITY_NUM) )\r\n",
-							"else 'OPPORTUNITY NUMBER IS AVAILABLE in BASE Table' END as ISER_REC\r\n",
-							"from SourceView src \r\n",
-							"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) <> trim(OPP.OPPORTUNITY_NUM)\r\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": null
+						"execution_count": 41
 					},
 					{
 						"cell_type": "code",
@@ -46934,9 +46895,8 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"\r\n",
-							"\r\n",
-							"select COALESCE(OPP.OPPORTUNITY_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION, \r\n",
+							"INSERT INTO etlhubConfirmed.dht_opportunity \r\n",
+							"select COALESCE(max_key.max_OPPORTUNITY_KEY + ROW_NUMBER () OVER (ORDER BY 1),0) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION, \r\n",
 							"src.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
 							"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, md5(src.OPPORTUNITY_NUM) as REC_CHECKSUM, \r\n",
 							"'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
@@ -46946,10 +46906,72 @@
 							"'' as GBS_BUSINESS_UNIT_GROUP_NAME,'' as GBS_BUSINESS_UNIT_NAME,'' as TAG_LIST,'' as OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
 							"'Y' AS ACTIVE_IN_SOURCE_IND from SourceView src \r\n",
 							"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
+							"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
+							"where OPP.OPPORTUNITY_NUM is null\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 49
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from etlhubConfirmed.dht_opportunity OPP\r\n",
+							"where date(REC_START_DT) = date('2022-07-25')"
+						],
+						"outputs": [],
+						"execution_count": 51
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select COALESCE(max_key.max_OPPORTUNITY_KEY + ROW_NUMBER () OVER (ORDER BY 1),0) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION, \r\n",
+							"src.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
+							"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, md5(src.OPPORTUNITY_NUM) as REC_CHECKSUM, \r\n",
+							"'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
+							"'' as ISA_CODE,'' as ARCHIVE_REASON_CODE,'' as BUSINESS_TRANSACTION_TYPE,'' as CLIENT_REPRESENTATIVE_NAME,'' as COMPETITOR_LIST, \r\n",
+							"'' as IDENTIFIER_NAME,'' as OPPORTUNITY_NAME,'' as OPPORTUNITY_SOURCE_CODE,'' as SBS_SOL_VALID_IND, \r\n",
+							"'' as OPPORTUNITY_IDENTIFIER,'' as ROGUE_IND, '' as REASON_TO_ACT,''as SOLUTION_CATG,'' as BRAND_SPONSOR_LIST,'' as GBS_GEOGRAPHY_NAME, \r\n",
+							"'' as GBS_BUSINESS_UNIT_GROUP_NAME,'' as GBS_BUSINESS_UNIT_NAME,'' as TAG_LIST,'' as OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
+							"'Y' AS ACTIVE_IN_SOURCE_IND from SourceView src \r\n",
+							"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
+							"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
 							"where OPP.OPPORTUNITY_NUM is null"
 						],
 						"outputs": [],
-						"execution_count": 38
+						"execution_count": 45
 					},
 					{
 						"cell_type": "code",
