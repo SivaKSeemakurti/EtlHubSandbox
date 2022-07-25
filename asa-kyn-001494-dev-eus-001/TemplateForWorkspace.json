@@ -21431,7 +21431,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7dff10ba-d5ca-4cb8-91f5-61ea06de727a"
+						"spark.autotune.trackingId": "faefd092-9093-400b-8ec9-01950462c0e1"
 					}
 				},
 				"metadata": {
@@ -38982,7 +38982,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "690ab1e1-6d35-4976-9523-1f91d2d913cb"
+						"spark.autotune.trackingId": "6adc7499-cf3f-44ff-bef6-86b2d2117b74"
 					}
 				},
 				"metadata": {
@@ -39077,7 +39077,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 151
+						"execution_count": 1
 					},
 					{
 						"cell_type": "markdown",
@@ -39126,7 +39126,7 @@
 							"print(extract_dt)"
 						],
 						"outputs": [],
-						"execution_count": 152
+						"execution_count": 2
 					},
 					{
 						"cell_type": "markdown",
@@ -39211,7 +39211,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 153
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -39235,7 +39235,7 @@
 							"print (my_string)"
 						],
 						"outputs": [],
-						"execution_count": 167
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -39282,7 +39282,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 156
+						"execution_count": 5
 					},
 					{
 						"cell_type": "markdown",
@@ -39383,7 +39383,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 157
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -39448,7 +39448,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 158
+						"execution_count": 7
 					},
 					{
 						"cell_type": "code",
@@ -39523,7 +39523,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 159
+						"execution_count": 8
 					},
 					{
 						"cell_type": "code",
@@ -39568,7 +39568,7 @@
 							"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 169
+						"execution_count": 9
 					},
 					{
 						"cell_type": "code",
@@ -39595,7 +39595,7 @@
 							"        "
 						],
 						"outputs": [],
-						"execution_count": 145
+						"execution_count": 10
 					},
 					{
 						"cell_type": "code",
@@ -39689,7 +39689,7 @@
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 147
+						"execution_count": 11
 					},
 					{
 						"cell_type": "code",
@@ -39724,7 +39724,7 @@
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 148
+						"execution_count": 12
 					},
 					{
 						"cell_type": "code",
@@ -39770,7 +39770,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 149
+						"execution_count": 13
 					},
 					{
 						"cell_type": "code",
@@ -39814,7 +39814,7 @@
 							"    ;"
 						],
 						"outputs": [],
-						"execution_count": 150
+						"execution_count": 14
 					}
 				]
 			},
