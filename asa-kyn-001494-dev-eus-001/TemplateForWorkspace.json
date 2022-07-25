@@ -46716,7 +46716,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "96b43dc5-c52e-4c9d-96d9-bb9315fa3718"
+						"spark.autotune.trackingId": "4b308d4b-1b9a-46b0-abbd-87f9e742b59d"
 					}
 				},
 				"metadata": {
@@ -46985,7 +46985,7 @@
 							",CURRENT_TIMESTAMP AS REC_START_DT\r\n",
 							",'9999-12-31 00:00:00.000' as REC_END_DT\r\n",
 							",'ESA' AS SOURCE_SYSTEM\r\n",
-							",column_hash as REC_CHECKSUM\r\n",
+							",md5(src.ROLE_CD) as REC_CHECKSUM\r\n",
 							",'I' as REC_STATUS\r\n",
 							",current_timestamp as IMG_LST_UPD_DT\r\n",
 							",CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
