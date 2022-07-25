@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4aeb2c30-fb87-4cc9-b900-95592a45e1a6"
+				"spark.autotune.trackingId": "250ea63d-7eec-4217-9895-8750da4f76c3"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 20
+				"execution_count": 41
 			},
 			{
 				"cell_type": "markdown",
@@ -151,7 +151,7 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/Tririga/Files/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='IWTRIRIGABuildingQuery.csv.20220705' # 20220705, 20220705_upd1, 20220705_upd2\n",
+					"file_name='IWTRIRIGABuildingQuery.csv.20220705_upd1' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key1=\"CAMPUS_ID\"\n",
 					"natural_key2=\"BUILDING_ID\"\n",
 					"natural_key=\"BUSINESS_ID\"\n",
@@ -165,7 +165,7 @@
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 					"print(extract_dt)"
 				],
-				"execution_count": 21
+				"execution_count": 42
 			},
 			{
 				"cell_type": "markdown",
@@ -249,7 +249,32 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 22
+				"execution_count": 43
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select * from incrementalData_DF2\n",
+					"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001')\n",
+					""
+				],
+				"execution_count": 44
 			},
 			{
 				"cell_type": "code",
@@ -272,7 +297,7 @@
 					"my_string = ','.join(dim_col_list)\n",
 					"print (my_string)"
 				],
-				"execution_count": 23
+				"execution_count": 45
 			},
 			{
 				"cell_type": "code",
@@ -318,7 +343,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 24
+				"execution_count": 46
 			},
 			{
 				"cell_type": "markdown",
@@ -418,7 +443,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 25
+				"execution_count": 47
 			},
 			{
 				"cell_type": "code",
@@ -482,7 +507,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 26
+				"execution_count": 48
 			},
 			{
 				"cell_type": "code",
@@ -556,7 +581,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 27
+				"execution_count": 49
 			},
 			{
 				"cell_type": "code",
@@ -600,7 +625,7 @@
 					"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 				],
-				"execution_count": 28
+				"execution_count": 50
 			},
 			{
 				"cell_type": "code",
@@ -626,7 +651,7 @@
 					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
 					"        "
 				],
-				"execution_count": 29
+				"execution_count": 51
 			},
 			{
 				"cell_type": "code",
@@ -659,7 +684,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 30
+				"execution_count": 52
 			},
 			{
 				"cell_type": "code",
@@ -718,7 +743,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 31
+				"execution_count": 53
 			},
 			{
 				"cell_type": "code",
@@ -752,7 +777,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 32
+				"execution_count": 54
 			},
 			{
 				"cell_type": "code",
@@ -797,7 +822,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 33
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -838,9 +863,17 @@
 					" from etlhubconfirmed.dht_building A\n",
 					"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001')\n",
 					"ORDER BY BUSINESS_ID, REC_START_DT\n",
+					"    ;\n",
+					"\n",
+					"SELECT BUILDING_KEY,BUSINESS_ID, BUILDING_OWNERSHIP_DESCR,VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND,A.*\n",
+					" from etlhubconfirmed.dht_building A\n",
+					"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001'\n",
+					"    ,'BLDNEW1~999','POKNEW2~999'\n",
+					")\n",
+					"ORDER BY BUSINESS_ID, REC_START_DT\n",
 					"    ;"
 				],
-				"execution_count": 34
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -858,7 +891,39 @@
 				"source": [
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')"
 				],
-				"execution_count": 36
+				"execution_count": 57
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT BUILDING_KEY,BUSINESS_ID, BUILDING_OWNERSHIP_DESCR,VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
+					" from etlhubconfirmed.dht_building A\n",
+					"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001')\n",
+					"ORDER BY BUSINESS_ID, REC_START_DT\n",
+					"    ;\n",
+					"SELECT BUSINESS_ID\n",
+					"from etlhubconfirmed.dht_building A\n",
+					"where CURRENT_IND='N'\n",
+					"    and BUSINESS_ID NOT IN (SELECT BUSINESS_ID FROM etlhubconfirmed.dht_building A WHERE CURRENT_IND='Y')\n",
+					"  ;"
+				],
+				"execution_count": 59
 			}
 		]
 	}
