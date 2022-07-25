@@ -45764,7 +45764,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "fdd862fa-027a-48d2-b131-629fee474a4b"
+						"spark.autotune.trackingId": "65d5f661-6e59-441b-b282-c496667ac5bb"
 					}
 				},
 				"metadata": {
@@ -45854,7 +45854,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 3
 					},
 					{
 						"cell_type": "markdown",
@@ -45896,7 +45896,7 @@
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 4
 					},
 					{
 						"cell_type": "markdown",
@@ -45923,7 +45923,7 @@
 						"source": [
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
-							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_OPPORTUNITY_ROLE_DATA.csv"
+							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_OPPORTUNITY_ASSIGNMENT_DAILY_FT_DATA.csv"
 						]
 					},
 					{
@@ -45958,7 +45958,6 @@
 							"#joining with dimension tables\n",
 							"\n",
 							"qry_DIMOPPDataDF=\"\"\"\n",
-							"\n",
 							"select distinct OPP.OPPORTUNITY_KEY,role.OPPORTUNITY_ROLE_KEY,crm_role.OPPORTUNITY_ROLE_KEY as CRM_ROLE_KEY,emp.EMPLOYEE_KEY \n",
 							"from SourceView src \n",
 							"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM)=trim(OPP.OPPORTUNITY_NUM) \n",
@@ -45968,9 +45967,8 @@
 							"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq \n",
 							"from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 \n",
 							"where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y'\");\n",
-							"\n",
 							"\"\"\"\n",
-							"DIMOPPDataDF=spark.sql()\n",
+							"DIMOPPDataDF=spark.sql(qry_DIMOPPDataDF)\n",
 							"\n",
 							"#DIMOPPDataDF=spark.sql(\"select distinct OPP.OPPORTUNITY_KEY,role.OPPORTUNITY_ROLE_KEY,crm_role.OPPORTUNITY_ROLE_KEY as CRM_ROLE_KEY,emp.EMPLOYEE_KEY from SourceView src left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM)=trim(OPP.OPPORTUNITY_NUM) left outer join etlhubConfirmed.dht_opportunity_role role on src.OPP_ROLE=role.ROLE_CD left outer join etlhubConfirmed.dht_opportunity_role crm_role on src.CRM_ROLE_CODE=crm_role.ROLE_CD left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y'\")\n",
 							"#DIMJoin=incrementalData_DF.join(DIMOPPDataDF,(trim(incrementalData_DF.OPPORTUNITY_NUM) == trim(DIMDataDF.OPPORTUNITY_NUM), \"fullouter\") \n",
@@ -45989,7 +45987,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
