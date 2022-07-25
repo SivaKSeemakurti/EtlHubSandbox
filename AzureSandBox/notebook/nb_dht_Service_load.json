@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "258a14c4-05e9-4845-9880-f4ce0c87fb11"
+				"spark.autotune.trackingId": "a2382f90-4fdd-474c-b7cf-d30554338103"
 			}
 		},
 		"metadata": {
@@ -546,7 +546,7 @@
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-					"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+					"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds --current_timestamp --existing_REC_START_DT-1\n",
 					"    ,IMG_LST_UPD_DT=current_timestamp\n",
 					";\n",
 					"\"\"\"\n",
