@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "57f5a3d8-802f-453c-bd27-49e24a71cb01"
+				"spark.autotune.trackingId": "192d4f96-9111-424b-a05d-d0c216eabf10"
 			}
 		},
 		"metadata": {
@@ -276,10 +276,12 @@
 					"'Y' AS ACTIVE_IN_SOURCE_IND from SourceView src \r\n",
 					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
 					"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
-					"where OPP.OPPORTUNITY_NUM is null\r\n",
+					"where OPP.OPPORTUNITY_NUM is null ;\r\n",
+					"\r\n",
+					"\r\n",
 					""
 				],
-				"execution_count": 49
+				"execution_count": 52
 			},
 			{
 				"cell_type": "code",

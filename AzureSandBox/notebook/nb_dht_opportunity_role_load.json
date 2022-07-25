@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "686deddc-221f-4b17-89ac-1b20c971c806"
+				"spark.autotune.trackingId": "bb72bf62-092b-4e4f-a781-bf839554452f"
 			}
 		},
 		"metadata": {
@@ -150,6 +150,7 @@
 					"tablename=\"etlhubConfirmed.dht_opportunity_role\"\n",
 					"#natural_key=\"ROLE_CD\"\n",
 					"keycolumn=\"OPPORTUNITY_ROLE_KEY\"\n",
+					"stagingtable=\"DHTS_OPPORTUNITY_ROLE\"\n",
 					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 				],
 				"execution_count": 2
@@ -270,7 +271,7 @@
 					"  .mode(\"overwrite\") \\\n",
 					"  .option(\"overwriteSchema\", \"true\") \\\n",
 					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_OPPORTUNITY_ROLE\") \\\n",
-					"  .saveAsTable(\"DHTS_OPPORTUNITY_ROLE\")\n",
+					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
 				"execution_count": 20
