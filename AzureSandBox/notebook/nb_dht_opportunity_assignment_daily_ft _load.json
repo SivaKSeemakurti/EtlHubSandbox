@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "12da259b-37f1-4959-8a5a-ca2e5efd6968"
+				"spark.autotune.trackingId": "843b202b-4b6a-49a8-b0e5-3ab5f3dd184b"
 			}
 		},
 		"metadata": {
@@ -221,7 +221,7 @@
 					"left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\n",
 					"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq \n",
 					"from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 \n",
-					"where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y'\");\n",
+					"where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y';\n",
 					"\"\"\"\n",
 					"DIMOPPDataDF=spark.sql(qry_DIMOPPDataDF)\n",
 					"\n",
@@ -241,7 +241,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -333,7 +333,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 28
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -432,7 +432,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 30
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -498,7 +498,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 42
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -569,7 +569,7 @@
 					"\n",
 					"#d.show(10)"
 				],
-				"execution_count": 43
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -627,7 +627,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename))\n",
 					""
 				],
-				"execution_count": 26
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -676,7 +676,7 @@
 					"e=spark.sql(qry_ins_changed_rows)\n",
 					"#e.show(4)"
 				],
-				"execution_count": 32
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -709,7 +709,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 33
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
