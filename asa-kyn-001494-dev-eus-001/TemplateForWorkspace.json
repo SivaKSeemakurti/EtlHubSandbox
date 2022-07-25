@@ -23251,14 +23251,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c87f68eb-826d-4fab-9783-a3270ea3d9b2"
+						"spark.autotune.trackingId": "f2760f02-7429-42a7-a877-cf03a1464b11"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -23274,14 +23271,13 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -23319,7 +23315,6 @@
 							"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_OPPORTUNITY_ROLE'      \n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -23344,7 +23339,6 @@
 							"%%sql\n",
 							"DROP TABLE etlhubconfirmed.dht_opportunity_role"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 45
 					},
@@ -23369,7 +23363,6 @@
 							"%%sql\n",
 							"DELETE FROM etlhubconfirmed.dht_opportunity_role"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 9
 					}
@@ -23893,7 +23886,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "a6459e81-ff4f-4ebc-afff-bbee3bf435b5"
+						"spark.autotune.trackingId": "28dfa312-b646-4d45-93d5-b483afe6a4de"
 					}
 				},
 				"metadata": {
@@ -23918,7 +23911,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -38151,7 +38145,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "258a14c4-05e9-4845-9880-f4ce0c87fb11"
+						"spark.autotune.trackingId": "57e0568b-4560-485d-8ce3-3f5b8c917f66"
 					}
 				},
 				"metadata": {
@@ -38176,7 +38170,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -38683,7 +38678,7 @@
 							"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-							"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+							"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds --current_timestamp --existing_REC_START_DT-1\n",
 							"    ,IMG_LST_UPD_DT=current_timestamp\n",
 							";\n",
 							"\"\"\"\n",
@@ -38982,7 +38977,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c6918a30-95fc-4d98-b855-3e835bb80d40"
+						"spark.autotune.trackingId": "8123bd0b-d564-4668-9640-0fe6a750b981"
 					}
 				},
 				"metadata": {
@@ -39007,8 +39002,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -44755,7 +44749,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3d5ac496-3d41-4afd-900d-c514a478d6ab"
+						"spark.autotune.trackingId": "a80d54dc-faae-4a7d-9f54-2e2bf8af513c"
 					}
 				},
 				"metadata": {
@@ -44780,8 +44774,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -45767,7 +45760,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6344526c-8077-458f-bff8-b9de4a622e4c"
+						"spark.autotune.trackingId": "04ff77c7-f0a5-43a3-87b3-1db1bb143eab"
 					}
 				},
 				"metadata": {
@@ -45792,7 +45785,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -46537,7 +46531,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "86f6b3dd-555b-41b9-a044-02d22bce6624"
+						"spark.autotune.trackingId": "07a7b049-c0c4-4b42-88f3-5d8c75e31a0d"
 					}
 				},
 				"metadata": {
@@ -46562,7 +46556,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -48653,14 +48648,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e6d0537b-2597-4150-bd5d-5fe80645f130"
+						"spark.autotune.trackingId": "0dcaae1d-b917-4f96-8d8a-f17729cf9074"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -48676,14 +48668,13 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -48703,8 +48694,7 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_opportunity_role by sourceing data from ESA database.\n",
 							"Since ESA is not accessible from Azure, a datastage job src_ESA_opportunityRole_Azure is executed on datastage to push the ESA extract to adls.\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -48717,8 +48707,7 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -48749,7 +48738,6 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 1
 					},
@@ -48764,8 +48752,7 @@
 						},
 						"source": [
 							"Define Parameters"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -48793,7 +48780,6 @@
 							"keycolumn=\"OPPORTUNITY_ROLE_KEY\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -48808,8 +48794,7 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -48824,8 +48809,7 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_OPPORTUNITY_ROLE_DATA.csv"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -48875,7 +48859,6 @@
 							"#sell_cyclecolhashDF.show()\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 3
 					},
@@ -48920,7 +48903,6 @@
 							"  .saveAsTable(\"DHTS_OPPORTUNITY_ROLE\")\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 20
 					},
@@ -48945,7 +48927,6 @@
 							"%%sql\r\n",
 							"select * from DHTS_OPPORTUNITY_ROLE"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 22
 					},
@@ -48964,8 +48945,7 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -49024,7 +49004,6 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 23
 					},
@@ -49090,7 +49069,6 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 24
 					},
@@ -49159,7 +49137,6 @@
 							"\n",
 							"#d.show(10)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 25
 					},
@@ -49187,14 +49164,13 @@
 							"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-							"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+							"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds --current_timestamp --existing_REC_START_DT-1\n",
 							"    ,IMG_LST_UPD_DT=current_timestamp\n",
 							";\n",
 							"\"\"\"\n",
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 26
 					},
@@ -49245,7 +49221,6 @@
 							"e=spark.sql(qry_ins_changed_rows)\n",
 							"#e.show(4)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 32
 					},
@@ -49280,7 +49255,6 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 33
 					},
@@ -49334,7 +49308,6 @@
 							";\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 35
 					}
