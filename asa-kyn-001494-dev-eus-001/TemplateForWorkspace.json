@@ -46716,7 +46716,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f8411674-f9a5-48d8-81de-6bf50736186a"
+						"spark.autotune.trackingId": "cb6b8770-acd4-43ab-ac53-bf3342f6592a"
 					}
 				},
 				"metadata": {
@@ -46806,7 +46806,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 33
 					},
 					{
 						"cell_type": "markdown",
@@ -46848,7 +46848,7 @@
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 34
 					},
 					{
 						"cell_type": "markdown",
@@ -46941,7 +46941,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 35
 					},
 					{
 						"cell_type": "code",
@@ -46995,7 +46995,7 @@
 							"select src.*, max_role.max_oppy_role_key from SourceView src \r\n",
 							"LEFT OUTER JOIN etlhubconfirmed.dht_opportunity_role role ON src.OPP_ROLE=role.ROLE_CD\r\n",
 							"left outer join (select max(OPPORTUNITY_ROLE_KEY) as max_oppy_role_key from etlhubconfirmed.dht_opportunity_role ) as max_role ON 1=1 \r\n",
-							"where role.ROLE_CD is null) as role where coalesce(trim(crm_role_code),'') <> ''\r\n",
+							"where role.ROLE_CD is null) as role where coalesce(trim(OPP_ROLE),'') <> ''\r\n",
 							") as final ;\r\n",
 							"\r\n",
 							"\r\n",
@@ -47068,30 +47068,28 @@
 						"source": [
 							"%%sql\r\n",
 							"select \r\n",
-							"COALESCE(max_crm_role_key) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \r\n",
-							",final.CRM_ROLE_CODE as ROLE_CD ,'' as ROLE_DESC\r\n",
+							"COALESCE(max_oppy_role_key) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \r\n",
+							",final.OPP_ROLE as ROLE_CD ,'' as ROLE_DESC\r\n",
 							",'Y' AS CURRENT_IND\r\n",
 							",CURRENT_TIMESTAMP AS EXTRACT_DT\r\n",
 							",CURRENT_TIMESTAMP AS REC_START_DT\r\n",
 							",'9999-12-31 00:00:00.000' as REC_END_DT\r\n",
 							",'ESA' AS SOURCE_SYSTEM\r\n",
-							",'#'  as REC_CHECKSUM\r\n",
+							",'#' as REC_CHECKSUM\r\n",
 							",'I' as REC_STATUS\r\n",
 							",current_timestamp as IMG_LST_UPD_DT\r\n",
 							",CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
 							",'ED' AS DATA_IND\r\n",
-							",'Y' AS ACTIVE_IN_SOURCE_IND from ( \r\n",
-							"select distinct CRM_ROLE_CODE,max_crm_role_key from ( \r\n",
-							"select src.*,max_crm_role_key from (select  distinct crm_role_code from SourceView) src \r\n",
-							"LEFT OUTER JOIN etlhubconfirmed.dht_opportunity_role crm_role on trim(src.CRM_ROLE_CODE)=trim(crm_role.ROLE_CD) \r\n",
-							"left outer join (select max(OPPORTUNITY_ROLE_KEY) as max_crm_role_key from etlhubconfirmed.dht_opportunity_role ) as max_role ON 1=1 \r\n",
-							"where crm_role.ROLE_CD is null\r\n",
-							") as crm_role where coalesce(trim(crm_role_code),'') <> ''\r\n",
-							") as final ; \r\n",
-							" "
+							",'Y' AS ACTIVE_IN_SOURCE_IND from (\r\n",
+							"select distinct OPP_ROLE,max_oppy_role_key from (\r\n",
+							"select src.*, max_role.max_oppy_role_key from SourceView src \r\n",
+							"LEFT OUTER JOIN etlhubconfirmed.dht_opportunity_role role ON src.OPP_ROLE=role.ROLE_CD\r\n",
+							"left outer join (select max(OPPORTUNITY_ROLE_KEY) as max_oppy_role_key from etlhubconfirmed.dht_opportunity_role ) as max_role ON 1=1 \r\n",
+							"where role.ROLE_CD is null) as role where coalesce(trim(OPP_ROLE),'') <> ''\r\n",
+							") as final"
 						],
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 40
 					},
 					{
 						"cell_type": "code",
@@ -47112,12 +47110,12 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from etlhubConfirmed.dht_opportunity_role \r\n",
-							"--delete from  etlhubConfirmed.dht_opportunity_role \r\n",
+							"--select * from etlhubConfirmed.dht_opportunity_role \r\n",
+							"delete from  etlhubConfirmed.dht_opportunity_role \r\n",
 							"where date(REC_START_DT) = date('2022-07-26')"
 						],
 						"outputs": [],
-						"execution_count": 18
+						"execution_count": 39
 					},
 					{
 						"cell_type": "code",
