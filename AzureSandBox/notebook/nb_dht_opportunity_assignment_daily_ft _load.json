@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "368502b8-b7b3-4652-a4f6-a4de69ed3c90"
+				"spark.autotune.trackingId": "596b50d2-14e0-4ae6-b9f1-bdb5b17bd79c"
 			}
 		},
 		"metadata": {
@@ -336,10 +336,11 @@
 					",CURRENT_TIMESTAMP AS REC_START_DT\r\n",
 					",'9999-12-31 00:00:00.000' as REC_END_DT\r\n",
 					",'BMSIW' AS SOURCE_SYSTEM\r\n",
-					",column_hash as REC_CHECKSUM\r\n",
+					",'#' as REC_CHECKSUM\r\n",
 					",'I' as REC_STATUS\r\n",
 					",current_timestamp as IMG_LST_UPD_DT\r\n",
 					",CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
+					"\r\n",
 					"from SourceView src \r\n",
 					"left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
 					"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq \r\n",
