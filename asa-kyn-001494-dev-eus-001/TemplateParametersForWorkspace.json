@@ -17,7 +17,10 @@
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
-		"SftpTririga_password": {
+		"SftpTririga_privateKeyContent": {
+			"value": ""
+		},
+		"SftpTririga_passPhrase": {
 			"value": ""
 		},
 		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultSqlServer_connectionString": {
@@ -54,7 +57,7 @@
 			"value": "52.116.64.97"
 		},
 		"SftpTririga_properties_typeProperties_userName": {
-			"value": "sftpNewCoProd1"
+			"value": "sftpNewCoProd"
 		},
 		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"

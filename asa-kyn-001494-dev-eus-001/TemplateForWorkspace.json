@@ -23,9 +23,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
 		},
-		"SftpTririga_password": {
+		"SftpTririga_privateKeyContent": {
 			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'SftpTririga'"
+			"metadata": "Secure string for 'privateKeyContent' of 'SftpTririga'"
+		},
+		"SftpTririga_passPhrase": {
+			"type": "secureString",
+			"metadata": "Secure string for 'passPhrase' of 'SftpTririga'"
 		},
 		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
@@ -73,7 +77,7 @@
 		},
 		"SftpTririga_properties_typeProperties_userName": {
 			"type": "string",
-			"defaultValue": "sftpNewCoProd1"
+			"defaultValue": "sftpNewCoProd"
 		},
 		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
@@ -5491,11 +5495,15 @@
 					"host": "[parameters('SftpTririga_properties_typeProperties_host')]",
 					"port": "22222",
 					"skipHostKeyValidation": true,
-					"authenticationType": "Basic",
+					"authenticationType": "SshPublicKey",
 					"userName": "[parameters('SftpTririga_properties_typeProperties_userName')]",
-					"password": {
+					"privateKeyContent": {
 						"type": "SecureString",
-						"value": "[parameters('SftpTririga_password')]"
+						"value": "[parameters('SftpTririga_privateKeyContent')]"
+					},
+					"passPhrase": {
+						"type": "SecureString",
+						"value": "[parameters('SftpTririga_passPhrase')]"
 					}
 				},
 				"connectVia": {
@@ -24747,7 +24755,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "a2b94550-7856-4ebe-b530-6369f5184ee5"
+						"spark.autotune.trackingId": "07f6ffc6-b073-464f-a71e-9967eea9f2a5"
 					}
 				},
 				"metadata": {
