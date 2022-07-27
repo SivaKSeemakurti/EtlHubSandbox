@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3332a7af-db42-4325-8173-d46a22561462"
+				"spark.autotune.trackingId": "64f7eefa-002f-47d2-895f-7555742d7821"
 			}
 		},
 		"metadata": {
@@ -64,7 +64,7 @@
 					"%%sql\n",
 					"-- DBXDH.DHT_EMPLOYEE definition\n",
 					"\n",
-					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_EMPLOYEE  (\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_EXTRACT_CONTROL  (\n",
 					"\t\t  EMPLOYEE_KEY INTEGER NOT NULL , \n",
 					"\t\t  EMPLOYEE_VERSION INTEGER NOT NULL , \n",
 					"\t\t  EMPLOYEE_SERIAL_NUM VARCHAR(20)  , \n",
