@@ -19,42 +19,55 @@
 		},
 		"schema": [
 			{
+				"name": "LEASE_NUMBER",
 				"type": "String"
 			},
 			{
+				"name": "BLDG_ID",
 				"type": "String"
 			},
 			{
+				"name": "SUBTENANT",
 				"type": "String"
 			},
 			{
+				"name": "SUBLEASE_NUMBER",
 				"type": "String"
 			},
 			{
+				"name": "SUBLEASE_START_DATE",
 				"type": "String"
 			},
 			{
+				"name": "SUBLEASE_END_DATE",
 				"type": "String"
 			},
 			{
+				"name": "SUBLET_LOC_MEAS_QTY",
 				"type": "String"
 			},
 			{
+				"name": "SUBLET_RNTBL_SQ_FT",
 				"type": "String"
 			},
 			{
+				"name": "SUBLET_INCOME_USD_AMT",
 				"type": "String"
 			},
 			{
+				"name": "SUBLET_INCOME_LCL_AMT",
 				"type": "String"
 			},
 			{
+				"name": "LOCAL_CURRENCY",
 				"type": "String"
 			},
 			{
+				"name": "CAMPUS_ID",
 				"type": "String"
 			},
 			{
+				"name": "EFFECTIVE_DATE",
 				"type": "String"
 			}
 		]
