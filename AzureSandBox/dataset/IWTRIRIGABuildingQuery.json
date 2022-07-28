@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
+				"fileName": "IWTRIRIGABuildingQuery.csv",
 				"folderPath": "/GlobalDir/CustomerFiles/tririga"
 			},
 			"columnDelimiter": ",",
@@ -19,55 +20,67 @@
 		},
 		"schema": [
 			{
-				"name": "LEASE_NUMBER",
-				"type": "String"
-			},
-			{
-				"name": "BLDG_ID",
-				"type": "String"
-			},
-			{
-				"name": "SUBTENANT",
-				"type": "String"
-			},
-			{
-				"name": "SUBLEASE_NUMBER",
-				"type": "String"
-			},
-			{
-				"name": "SUBLEASE_START_DATE",
-				"type": "String"
-			},
-			{
-				"name": "SUBLEASE_END_DATE",
-				"type": "String"
-			},
-			{
-				"name": "SUBLET_LOC_MEAS_QTY",
-				"type": "String"
-			},
-			{
-				"name": "SUBLET_RNTBL_SQ_FT",
-				"type": "String"
-			},
-			{
-				"name": "SUBLET_INCOME_USD_AMT",
-				"type": "String"
-			},
-			{
-				"name": "SUBLET_INCOME_LCL_AMT",
-				"type": "String"
-			},
-			{
-				"name": "LOCAL_CURRENCY",
-				"type": "String"
-			},
-			{
 				"name": "CAMPUS_ID",
 				"type": "String"
 			},
 			{
-				"name": "EFFECTIVE_DATE",
+				"name": "BUILDING_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_STATUS",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_OWNERSHIP_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_OWNERSHIP_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_OWNERSHIP_DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_PRIMARY_USE_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_PRIMARY_USE_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_PRIMARY_USE_DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_SECONDARY_USE_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_SECONDARY_USE_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_SECONDARY_USE_DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "RENTABLE_AREA",
+				"type": "String"
+			},
+			{
+				"name": "ACTIVE_YEAR",
+				"type": "String"
+			},
+			{
+				"name": "ACTUAL_RETIREMENT_INACTIVATION",
 				"type": "String"
 			}
 		]
