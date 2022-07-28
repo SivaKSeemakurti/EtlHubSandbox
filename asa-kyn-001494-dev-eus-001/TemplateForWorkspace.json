@@ -19276,7 +19276,7 @@
 						"     validateSchema: false,",
 						"     umask: 0022,",
 						"     preCommands: [],",
-						"     postCommands: ['mv part-merged.csv part-merged.csv IWTRIRIGABuildingQuery.csv'],",
+						"     postCommands: ['mv /etlhubfilestorage/extract/Tririga/part-merged.csv /etlhubfilestorage/extract/Tririga/IWTRIRIGABuildingQuery.csv'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> sink1"
