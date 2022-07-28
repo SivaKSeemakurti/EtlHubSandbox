@@ -1,0 +1,17 @@
+{
+	"name": "df_SFTP_Pull_Tririga",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}
