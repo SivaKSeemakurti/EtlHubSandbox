@@ -19270,7 +19270,7 @@
 						"          Column_12 as string,",
 						"          Column_13 as string",
 						"     ),",
-						"     allowSchemaDrift: true,",
+						"     allowSchemaDrift: false,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> source1",
 						"source1 sink(allowSchemaDrift: true,",
@@ -40660,7 +40660,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "924f816b-1281-4481-afa9-4321a6489074"
+						"spark.autotune.trackingId": "a370d69b-4cc5-44bf-8b6f-4632ecb16ad5"
 					}
 				},
 				"metadata": {
@@ -40685,8 +40685,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
