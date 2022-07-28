@@ -1,0 +1,23 @@
+{
+	"name": "IWTRIRIGABuildingQueryCSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "IWTRIRIGABuildingQuery.csv",
+				"folderPath": "extract/Tririga",
+				"fileSystem": "etlhubfilestorage"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
