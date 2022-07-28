@@ -48,7 +48,7 @@
 				"     validateSchema: false,",
 				"     umask: 0022,",
 				"     preCommands: [],",
-				"     postCommands: [],",
+				"     postCommands: ['mv part-merged.csv part-merged.csv IWTRIRIGABuildingQuery.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
