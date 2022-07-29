@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3df77c16-d9fe-4d2a-aee7-25ad3d1fe259"
+				"spark.autotune.trackingId": "d4480520-059e-425c-b91c-51c1ab25b333"
 			}
 		},
 		"metadata": {
@@ -110,7 +110,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 104
+				"execution_count": 133
 			},
 			{
 				"cell_type": "markdown",
@@ -144,8 +144,8 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"#file_name='DS_MARKET_DATA.csv' \n",
-					"file_name='DS_MARKET_DATA_2022-07-22-02:19:52_PM.csv' \n",
+					"file_name='DS_MARKET_DATA.csv' \n",
+					"#file_name='DS_MARKET_DATA_2022-07-25-08:05:43_AM.csv' \n",
 					"natural_key=\"MARKET_BUSINESS_CD\"\n",
 					"tablename=\"etlhubConfirmed.dht_market\"\n",
 					"stagingtable=\"DHTS_MARKET\"\n",
@@ -153,7 +153,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": null
+				"execution_count": 134
 			},
 			{
 				"cell_type": "markdown",
@@ -231,7 +231,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": null
+				"execution_count": 135
 			},
 			{
 				"cell_type": "code",
@@ -277,7 +277,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 81
+				"execution_count": 136
 			},
 			{
 				"cell_type": "markdown",
@@ -353,7 +353,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 82
+				"execution_count": 137
 			},
 			{
 				"cell_type": "code",
@@ -417,7 +417,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 83
+				"execution_count": 138
 			},
 			{
 				"cell_type": "code",
@@ -444,7 +444,7 @@
 					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
 					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 				],
-				"execution_count": 86
+				"execution_count": 139
 			},
 			{
 				"cell_type": "code",
@@ -572,7 +572,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 87
+				"execution_count": 140
 			},
 			{
 				"cell_type": "code",
@@ -597,7 +597,7 @@
 					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
 					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 				],
-				"execution_count": 89
+				"execution_count": 141
 			},
 			{
 				"cell_type": "code",
@@ -622,7 +622,7 @@
 					"--and extract_dt like '2022-07-29-02:16%'\n",
 					"    --2022-07-29T14:17:38Z"
 				],
-				"execution_count": 90
+				"execution_count": 142
 			},
 			{
 				"cell_type": "code",
@@ -645,7 +645,7 @@
 					"%%sql\n",
 					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
 				],
-				"execution_count": 66
+				"execution_count": 143
 			},
 			{
 				"cell_type": "code",
@@ -678,7 +678,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 91
+				"execution_count": 144
 			},
 			{
 				"cell_type": "code",
@@ -703,7 +703,7 @@
 					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
 					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 				],
-				"execution_count": 92
+				"execution_count": 145
 			},
 			{
 				"cell_type": "code",
@@ -728,7 +728,7 @@
 					"--and extract_dt like '2022-07-29-02:16%'\n",
 					"    --2022-07-29T14:17:38Z"
 				],
-				"execution_count": 68
+				"execution_count": 146
 			},
 			{
 				"cell_type": "code",
@@ -776,7 +776,7 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
-				"execution_count": 93
+				"execution_count": 147
 			},
 			{
 				"cell_type": "code",
@@ -889,7 +889,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 94
+				"execution_count": 148
 			},
 			{
 				"cell_type": "code",
@@ -914,7 +914,7 @@
 					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
 					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 				],
-				"execution_count": 95
+				"execution_count": 149
 			},
 			{
 				"cell_type": "code",
@@ -939,7 +939,7 @@
 					"--and extract_dt like '2022-07-29-02:16%'\n",
 					"    --2022-07-29T14:17:38Z"
 				],
-				"execution_count": 96
+				"execution_count": 150
 			},
 			{
 				"cell_type": "code",
@@ -972,7 +972,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 97
+				"execution_count": 151
 			},
 			{
 				"cell_type": "code",
@@ -997,7 +997,7 @@
 					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
 					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 				],
-				"execution_count": 98
+				"execution_count": 152
 			},
 			{
 				"cell_type": "code",
@@ -1023,7 +1023,7 @@
 					"--and extract_dt like '2022-07-29-02:16%'\n",
 					"    --2022-07-29T14:17:38Z"
 				],
-				"execution_count": 99
+				"execution_count": 153
 			},
 			{
 				"cell_type": "code",
@@ -1076,7 +1076,7 @@
 					";\n",
 					""
 				],
-				"execution_count": 100
+				"execution_count": 154
 			},
 			{
 				"cell_type": "code",
@@ -1113,7 +1113,7 @@
 					"    and date(IMG_LST_UPD_DT)=current_date\n",
 					"    ;"
 				],
-				"execution_count": 101
+				"execution_count": 155
 			},
 			{
 				"cell_type": "code",
@@ -1138,7 +1138,7 @@
 					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
 					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 				],
-				"execution_count": 103
+				"execution_count": 156
 			},
 			{
 				"cell_type": "code",
@@ -1183,7 +1183,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 102
+				"execution_count": 157
 			},
 			{
 				"cell_type": "code",
@@ -1211,7 +1211,7 @@
 					"        --71590\n",
 					""
 				],
-				"execution_count": 77
+				"execution_count": 158
 			}
 		]
 	}
