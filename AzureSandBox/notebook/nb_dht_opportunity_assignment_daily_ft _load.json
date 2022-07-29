@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a80d69f0-ab49-47ce-816b-b8effb08f950"
+				"spark.autotune.trackingId": "e236e3f6-fe23-4a0f-90f2-42008df56832"
 			}
 		},
 		"metadata": {
@@ -264,129 +264,6 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select \r\n",
-					"COALESCE(emp_key_max,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \r\n",
-					",EMP_CNUM,'Y' AS CURRENT_IND,CURRENT_TIMESTAMP AS EXTRACT_DT,CURRENT_TIMESTAMP AS REC_START_DT\r\n",
-					",'9999-12-31 00:00:00.000' as REC_END_DT,'BMSIW' AS SOURCE_SYSTEM,'#' as REC_CHECKSUM\r\n",
-					",'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT,CURRENT_TIMESTAMP AS IMG_CREATED_DT \r\n",
-					"from (\r\n",
-					"select DISTINCT EMP_CNUM,emp_key_max \r\n",
-					"from (select EMP_CNUM from SourceView) as src \r\n",
-					"left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
-					"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq \r\n",
-					"from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 \r\n",
-					"where t2.seq = 1) emp ON trim(emp.CNUM_ID)=trim(src.EMP_CNUM)\r\n",
-					"left outer join (select max(EMPLOYEE_KEY) as emp_key_max from etlhubconfirmed.DHT_EMPLOYEE ) as max_emp ON 1=1 \r\n",
-					"where emp.CNUM_ID is null\r\n",
-					") as ins\r\n",
-					""
-				],
-				"execution_count": 39
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"delete from etlhubConfirmed.dht_opportunity where date(IMG_CREATED_DT) = date('2022-7-29')"
-				],
-				"execution_count": 32
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select DISTINCT OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from ( select DISTINCT src.OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from \r\n",
-					"(select distinct OPPORTUNITY_NUM from SourceView) as src \r\n",
-					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
-					"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
-					"where OPP.OPPORTUNITY_NUM is null ) as ins_opp \r\n",
-					"MINUS\r\n",
-					"select DISTINCT src.OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from --( select DISTINCT src.OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from \r\n",
-					"(select distinct OPPORTUNITY_NUM from SourceView) as src \r\n",
-					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
-					"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
-					"where OPP.OPPORTUNITY_NUM is null --) as ins_opp --) as full_ins;"
-				],
-				"execution_count": 34
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select OPPORTUNITY_NUM,count(*) from (\r\n",
-					"select DISTINCT src.OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from \r\n",
-					"(select distinct OPPORTUNITY_NUM from SourceView) as src \r\n",
-					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
-					"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
-					"where OPP.OPPORTUNITY_NUM is null\r\n",
-					") as ghjk group by OPPORTUNITY_NUM having count(*) > 1"
-				],
-				"execution_count": 36
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
 					"INSERT INTO etlhubConfirmed.dht_opportunity \r\n",
 					"select COALESCE(max_OPPORTUNITY_KEY + ROW_NUMBER () OVER (ORDER BY 1),0) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION, \r\n",
 					"OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
@@ -449,8 +326,6 @@
 					") as crm_role where coalesce(trim(crm_role_code),'') <> ''\r\n",
 					") as final ; \r\n",
 					"\r\n",
-					"\r\n",
-					"\r\n",
 					"INSERT INTO etlhubconfirmed.dht_employee (EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,CURRENT_IND,EXTRACT_DT, REC_START_DT\r\n",
 					", REC_END_DT,SOURCE_SYSTEM,REC_CHECKSUM, REC_STATUS, IMG_LST_UPD_DT,IMG_CREATED_DT)\r\n",
 					"select \r\n",
@@ -467,52 +342,10 @@
 					"where t2.seq = 1) emp ON trim(emp.CNUM_ID)=trim(src.EMP_CNUM)\r\n",
 					"left outer join (select max(EMPLOYEE_KEY) as emp_key_max from etlhubconfirmed.DHT_EMPLOYEE ) as max_emp ON 1=1 \r\n",
 					"where emp.CNUM_ID is null\r\n",
-					") as ins\r\n",
+					") as ins;\r\n",
 					""
 				],
 				"execution_count": 19
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select \r\n",
-					"COALESCE(max_oppy_role_key) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \r\n",
-					",final.OPP_ROLE as ROLE_CD ,'' as ROLE_DESC\r\n",
-					",'Y' AS CURRENT_IND\r\n",
-					",CURRENT_TIMESTAMP AS EXTRACT_DT\r\n",
-					",CURRENT_TIMESTAMP AS REC_START_DT\r\n",
-					",'9999-12-31 00:00:00.000' as REC_END_DT\r\n",
-					",'ESA' AS SOURCE_SYSTEM\r\n",
-					",'#' as REC_CHECKSUM\r\n",
-					",'I' as REC_STATUS\r\n",
-					",current_timestamp as IMG_LST_UPD_DT\r\n",
-					",CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
-					",'ED' AS DATA_IND\r\n",
-					",'Y' AS ACTIVE_IN_SOURCE_IND from (\r\n",
-					"select distinct OPP_ROLE,max_oppy_role_key from (\r\n",
-					"select src.*, max_role.max_oppy_role_key from SourceView src \r\n",
-					"LEFT OUTER JOIN etlhubconfirmed.dht_opportunity_role role ON src.OPP_ROLE=role.ROLE_CD\r\n",
-					"left outer join (select max(OPPORTUNITY_ROLE_KEY) as max_oppy_role_key from etlhubconfirmed.dht_opportunity_role ) as max_role ON 1=1 \r\n",
-					"where role.ROLE_CD is null) as role where coalesce(trim(OPP_ROLE),'') <> ''\r\n",
-					") as final"
-				],
-				"execution_count": 40
 			},
 			{
 				"cell_type": "code",
@@ -538,66 +371,6 @@
 					"where date(REC_START_DT) = date('2022-07-26')"
 				],
 				"execution_count": 39
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select COALESCE(max_key.max_OPPORTUNITY_KEY + ROW_NUMBER () OVER (ORDER BY 1),0) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION, \r\n",
-					"src.OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
-					"CURRENT_TIMESTAMP AS REC_START_DT, '9999-12-31 00:00:00.000' as REC_END_DT, 'ESA' AS SOURCE_SYSTEM, md5(src.OPPORTUNITY_NUM) as REC_CHECKSUM, \r\n",
-					"'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT, CURRENT_TIMESTAMP AS IMG_CREATED_DT,\r\n",
-					"'' as ISA_CODE,'' as ARCHIVE_REASON_CODE,'' as BUSINESS_TRANSACTION_TYPE,'' as CLIENT_REPRESENTATIVE_NAME,'' as COMPETITOR_LIST, \r\n",
-					"'' as IDENTIFIER_NAME,'' as OPPORTUNITY_NAME,'' as OPPORTUNITY_SOURCE_CODE,'' as SBS_SOL_VALID_IND, \r\n",
-					"'' as OPPORTUNITY_IDENTIFIER,'' as ROGUE_IND, '' as REASON_TO_ACT,''as SOLUTION_CATG,'' as BRAND_SPONSOR_LIST,'' as GBS_GEOGRAPHY_NAME, \r\n",
-					"'' as GBS_BUSINESS_UNIT_GROUP_NAME,'' as GBS_BUSINESS_UNIT_NAME,'' as TAG_LIST,'' as OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
-					"'Y' AS ACTIVE_IN_SOURCE_IND from SourceView src \r\n",
-					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
-					"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
-					"where OPP.OPPORTUNITY_NUM is null"
-				],
-				"execution_count": 45
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select distinct src.OPPORTUNITY_NUM ,opp.OPPORTUNITY_NUM \r\n",
-					"from SourceView src \r\n",
-					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
-					"where OPP.OPPORTUNITY_NUM is null"
-				],
-				"execution_count": 37
 			},
 			{
 				"cell_type": "code",
