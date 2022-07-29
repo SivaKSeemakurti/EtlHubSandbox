@@ -5,12 +5,21 @@
 			"referenceName": "SftpTririga",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"IWTRIRIGABuildingQuery": {
+				"type": "String",
+				"defaultValue": "IWTRIRIGABuildingQuery.csv"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
-				"fileName": "IWTRIRIGABuildingQuery.csv",
+				"fileName": {
+					"value": "@dataset().IWTRIRIGABuildingQuery",
+					"type": "Expression"
+				},
 				"folderPath": "/GlobalDir/CustomerFiles/tririga"
 			},
 			"columnDelimiter": ",",

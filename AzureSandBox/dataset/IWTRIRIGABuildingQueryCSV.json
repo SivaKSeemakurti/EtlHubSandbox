@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "IWTRIRIGABuildingQuery.csv",
 				"folderPath": "extract/Tririga/Building",
 				"fileSystem": "etlhubfilestorage"
 			},
