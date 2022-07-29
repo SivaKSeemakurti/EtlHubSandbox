@@ -47620,7 +47620,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e7a19801-b8d2-4972-8230-92fda7dac136"
+						"spark.autotune.trackingId": "5793375f-8f74-4634-9a6c-13c868ee84ac"
 					}
 				},
 				"metadata": {
@@ -47867,17 +47867,11 @@
 						"source": [
 							"%%sql\r\n",
 							"select \r\n",
-							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \r\n",
-							"src.EMP_CNUM\r\n",
-							"--,'Y' AS CURRENT_IND\r\n",
-							"--,CURRENT_TIMESTAMP AS EXTRACT_DT\r\n",
-							"--,CURRENT_TIMESTAMP AS REC_START_DT\r\n",
-							"--,'9999-12-31 00:00:00.000' as REC_END_DT\r\n",
-							"--,'BMSIW' AS SOURCE_SYSTEM\r\n",
-							"--,'#' as REC_CHECKSUM\r\n",
-							"--,'I' as REC_STATUS\r\n",
-							"--,current_timestamp as IMG_LST_UPD_DT\r\n",
-							"--,CURRENT_TIMESTAMP AS IMG_CREATED_DT */\r\n",
+							"COALESCE(emp_key_max,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \r\n",
+							",EMP_CNUM,'Y' AS CURRENT_IND,CURRENT_TIMESTAMP AS EXTRACT_DT,CURRENT_TIMESTAMP AS REC_START_DT\r\n",
+							",'9999-12-31 00:00:00.000' as REC_END_DT,'BMSIW' AS SOURCE_SYSTEM,'#' as REC_CHECKSUM\r\n",
+							",'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT,CURRENT_TIMESTAMP AS IMG_CREATED_DT \r\n",
+							"from (\r\n",
 							"select DISTINCT EMP_CNUM,emp_key_max \r\n",
 							"from (select EMP_CNUM from SourceView) as src \r\n",
 							"left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
@@ -47886,11 +47880,11 @@
 							"where t2.seq = 1) emp ON trim(emp.CNUM_ID)=trim(src.EMP_CNUM)\r\n",
 							"left outer join (select max(EMPLOYEE_KEY) as emp_key_max from etlhubconfirmed.DHT_EMPLOYEE ) as max_emp ON 1=1 \r\n",
 							"where emp.CNUM_ID is null\r\n",
-							"--) as ins\r\n",
+							") as ins\r\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 39
 					},
 					{
 						"cell_type": "code",
@@ -48066,24 +48060,21 @@
 							"INSERT INTO etlhubconfirmed.dht_employee (EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,CURRENT_IND,EXTRACT_DT, REC_START_DT\r\n",
 							", REC_END_DT,SOURCE_SYSTEM,REC_CHECKSUM, REC_STATUS, IMG_LST_UPD_DT,IMG_CREATED_DT)\r\n",
 							"select \r\n",
-							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \r\n",
-							"src.EMP_CNUM\r\n",
-							",'Y' AS CURRENT_IND\r\n",
-							",CURRENT_TIMESTAMP AS EXTRACT_DT\r\n",
-							",CURRENT_TIMESTAMP AS REC_START_DT\r\n",
-							",'9999-12-31 00:00:00.000' as REC_END_DT\r\n",
-							",'BMSIW' AS SOURCE_SYSTEM\r\n",
-							",'#' as REC_CHECKSUM\r\n",
-							",'I' as REC_STATUS\r\n",
-							",current_timestamp as IMG_LST_UPD_DT\r\n",
-							",CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
-							"\r\n",
-							"from SourceView src \r\n",
+							"COALESCE(emp_key_max,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \r\n",
+							",EMP_CNUM,'Y' AS CURRENT_IND,CURRENT_TIMESTAMP AS EXTRACT_DT,CURRENT_TIMESTAMP AS REC_START_DT\r\n",
+							",'9999-12-31 00:00:00.000' as REC_END_DT,'BMSIW' AS SOURCE_SYSTEM,'#' as REC_CHECKSUM\r\n",
+							",'I' as REC_STATUS,current_timestamp as IMG_LST_UPD_DT,CURRENT_TIMESTAMP AS IMG_CREATED_DT \r\n",
+							"from (\r\n",
+							"select DISTINCT EMP_CNUM,emp_key_max \r\n",
+							"from (select EMP_CNUM from SourceView) as src \r\n",
 							"left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
 							"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq \r\n",
 							"from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 \r\n",
-							"where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM \r\n",
-							"left outer join (select max(EMPLOYEE_KEY) as emp_key_max from etlhubconfirmed.DHT_EMPLOYEE ) as max_emp ON 1=1 "
+							"where t2.seq = 1) emp ON trim(emp.CNUM_ID)=trim(src.EMP_CNUM)\r\n",
+							"left outer join (select max(EMPLOYEE_KEY) as emp_key_max from etlhubconfirmed.DHT_EMPLOYEE ) as max_emp ON 1=1 \r\n",
+							"where emp.CNUM_ID is null\r\n",
+							") as ins\r\n",
+							""
 						],
 						"outputs": [],
 						"execution_count": 19
