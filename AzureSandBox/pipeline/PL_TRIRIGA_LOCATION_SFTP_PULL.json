@@ -1,5 +1,5 @@
 {
-	"name": "pl_Tririga_SFTP_Pull_Location",
+	"name": "PL_TRIRIGA_LOCATION_SFTP_PULL",
 	"properties": {
 		"activities": [
 			{
