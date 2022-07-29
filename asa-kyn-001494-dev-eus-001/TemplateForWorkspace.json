@@ -778,7 +778,9 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"TririgaRemoteServer": {},
+									"TririgaRemoteServer": {
+										"IWTRIRIGABuildingQuery": "IWTRIRIGABuildingQuery.csv"
+									},
 									"AzureDataLakeStorage": {}
 								}
 							},
@@ -40716,7 +40718,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "a370d69b-4cc5-44bf-8b6f-4632ecb16ad5"
+						"spark.autotune.trackingId": "8dd52a71-1593-4706-ab3c-063cacbe05a7"
 					}
 				},
 				"metadata": {
@@ -40741,7 +40743,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -40810,7 +40813,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 31
 					},
 					{
 						"cell_type": "markdown",
@@ -40837,14 +40840,12 @@
 									"deleting": false
 								}
 							},
-							"tags": [
-								"parameters"
-							]
+							"tags": []
 						},
 						"source": [
 							"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 							"container_name = 'etlhubfilestorage' # fill in your container name \n",
-							"relative_path = 'extract/Tririga/' # fill in your relative folder path \n",
+							"relative_path = 'extract/Tririga/building/' # fill in your relative folder path \n",
 							"relative_archive_path='archive/'\n",
 							"file_name='IWTRIRIGABuildingQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 							"natural_key1=\"CAMPUS_ID\"\n",
@@ -40858,10 +40859,11 @@
 							"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 							"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 							"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
-							"print(extract_dt)"
+							"print(extract_dt)\n",
+							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 32
 					},
 					{
 						"cell_type": "markdown",
@@ -40913,6 +40915,8 @@
 							"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
 							"print('Primary storage account path: ' + adls_path) \n",
 							"\n",
+							"print(natural_key)\n",
+							"\n",
 							"relative_archive_path\n",
 							"# Read a csv file \n",
 							"csv_path = adls_path + file_name\n",
@@ -40946,7 +40950,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 33
 					},
 					{
 						"cell_type": "code",
@@ -40972,7 +40976,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 34
 					},
 					{
 						"cell_type": "code",
@@ -40996,7 +41000,7 @@
 							"print (my_string)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 35
 					},
 					{
 						"cell_type": "code",
@@ -41043,7 +41047,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 36
 					},
 					{
 						"cell_type": "markdown",
@@ -41144,7 +41148,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 37
 					},
 					{
 						"cell_type": "code",
@@ -41209,7 +41213,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 38
 					},
 					{
 						"cell_type": "code",
@@ -41284,7 +41288,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 39
 					},
 					{
 						"cell_type": "code",
@@ -41329,7 +41333,7 @@
 							"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 40
 					},
 					{
 						"cell_type": "code",
@@ -41356,7 +41360,7 @@
 							"        "
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 41
 					},
 					{
 						"cell_type": "code",
@@ -41387,7 +41391,7 @@
 							"AND A.CURRENT_IND='Y' --AND A.REC_START_DT=b.existing_REC_START_DT"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 42
 					},
 					{
 						"cell_type": "code",
@@ -41421,7 +41425,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 43
 					},
 					{
 						"cell_type": "code",
@@ -41481,7 +41485,7 @@
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 44
 					},
 					{
 						"cell_type": "code",
@@ -41516,7 +41520,7 @@
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 45
 					},
 					{
 						"cell_type": "code",
@@ -41562,7 +41566,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 46
 					},
 					{
 						"cell_type": "code",
@@ -41614,7 +41618,7 @@
 							"    ;"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 47
 					},
 					{
 						"cell_type": "code",
@@ -41633,7 +41637,7 @@
 							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 48
 					},
 					{
 						"cell_type": "code",
@@ -41666,7 +41670,7 @@
 							"  ;"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 49
 					}
 				]
 			},
@@ -47617,7 +47621,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "281f1720-a765-4764-837e-fbabf0ded181"
+						"spark.autotune.trackingId": "763e8ad7-a8ff-44d8-9d3f-740ac7349907"
 					}
 				},
 				"metadata": {
@@ -47642,8 +47646,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
