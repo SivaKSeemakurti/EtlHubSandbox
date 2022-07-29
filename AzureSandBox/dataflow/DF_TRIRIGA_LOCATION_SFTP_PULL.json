@@ -12,7 +12,7 @@
 						"referenceName": "IWTRIRIGABuildingQuery",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "TririgaRemoteServer"
 				}
 			],
 			"sinks": [
@@ -21,7 +21,7 @@
 						"referenceName": "IWTRIRIGABuildingQueryCSV",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "AzureDataLakeStorage"
 				}
 			],
 			"transformations": [],
@@ -46,8 +46,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> TririgaRemoteServer",
+				"TririgaRemoteServer sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     umask: 0022,",
 				"     preCommands: [],",
@@ -72,7 +72,7 @@
 				"          ACTIVE_YEAR,",
 				"          ACTUAL_RETIREMENT_INACTIVATION",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
 			]
 		}
 	}
