@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "extract/Tririga/Building",
+				"folderPath": "extract/Tririga/building",
 				"fileSystem": "etlhubfilestorage"
 			},
 			"columnDelimiter": ",",
