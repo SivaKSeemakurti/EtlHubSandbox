@@ -4118,12 +4118,21 @@
 					"referenceName": "SftpTririga",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"IWTRIRIGABuildingQuery": {
+						"type": "String",
+						"defaultValue": "IWTRIRIGABuildingQuery.csv"
+					}
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "SftpLocation",
-						"fileName": "IWTRIRIGABuildingQuery.csv",
+						"fileName": {
+							"value": "@dataset().IWTRIRIGABuildingQuery",
+							"type": "Expression"
+						},
 						"folderPath": "/GlobalDir/CustomerFiles/tririga"
 					},
 					"columnDelimiter": ",",
@@ -4216,7 +4225,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "IWTRIRIGABuildingQuery.csv",
 						"folderPath": "extract/Tririga/Building",
 						"fileSystem": "etlhubfilestorage"
 					},
@@ -17208,8 +17216,8 @@
 						"TririgaRemoteServer sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: ['mv /extract/Tririga/part-merged.csv /extract/Tririga/IWTRIRIGABuildingQuery.csv'],",
+						"     preCommands: ['rm -r /extract/Tririga/Building/'],",
+						"     postCommands: ['mv /extract/Tririga/Building/*.csv /extract/Tririga/Building/IWTRIRIGABuildingQuery.csv'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
