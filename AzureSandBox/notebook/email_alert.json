@@ -1,0 +1,81 @@
+{
+	"name": "email_alert",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "0af6c85c-7df7-4252-b829-936a9d322065"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"import smtplib\n",
+					"from pathlib import Path\n",
+					"from email.mime.multipart import MIMEMultipart\n",
+					"from email.mime.base import MIMEBase\n",
+					"from email.mime.text import MIMEText\n",
+					"from email.utils import COMMASPACE, formatdate\n",
+					"from email import encoders\n",
+					"\n",
+					"\n",
+					"def send_mail(send_from = <from_email>, send_to = <to_email>, subject = \"Test\", message = \"Test\", files=[\"/mnt/<Mounted Point Directory>/\"],\n",
+					"              server=\"<SMTP Host>\", port=<SMTP Port>, username='<SMTP Username>', password='<SMTP Password>',\n",
+					"              use_tls=True):\n",
+					"\n",
+					"    msg = MIMEMultipart()\n",
+					"    msg['From'] = send_from\n",
+					"    msg['To'] = COMMASPACE.join(send_to)\n",
+					"    msg['Date'] = formatdate(localtime=True)\n",
+					"    msg['Subject'] = subject\n",
+					"\n",
+					"    msg.attach(MIMEText(message))\n",
+					"\n",
+					"    for path in files:\n",
+					"        part = MIMEBase('application', \"octet-stream\")\n",
+					"        with open(path, 'rb') as file:\n",
+					"            part.set_payload(file.read())\n",
+					"        encoders.encode_base64(part)\n",
+					"        part.add_header('Content-Disposition',\n",
+					"                        'attachment; filename=\"{}\"'.format(Path(path).name))\n",
+					"        msg.attach(part)\n",
+					"\n",
+					"    smtp = smtplib.SMTP(server, port)\n",
+					"    if use_tls:\n",
+					"        smtp.starttls()\n",
+					"    smtp.login(username, password)\n",
+					"    smtp.sendmail(send_from, send_to, msg.as_string())\n",
+					"    smtp.quit()\n",
+					"\n",
+					""
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
