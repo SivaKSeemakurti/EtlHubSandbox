@@ -778,8 +778,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"Tririga": {},
-									"Azure Data Lake Storage": {}
+									"TririgaRemoteServer": {},
+									"AzureDataLakeStorage": {}
 								}
 							},
 							"staging": {},
@@ -4217,7 +4217,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "IWTRIRIGABuildingQuery.csv",
-						"folderPath": "extract/Tririga",
+						"folderPath": "extract/Tririga/Building",
 						"fileSystem": "etlhubfilestorage"
 					},
 					"columnDelimiter": ",",
@@ -17170,7 +17170,7 @@
 								"referenceName": "IWTRIRIGABuildingQuery",
 								"type": "DatasetReference"
 							},
-							"name": "Tririga"
+							"name": "TririgaRemoteServer"
 						}
 					],
 					"sinks": [
@@ -17179,7 +17179,7 @@
 								"referenceName": "IWTRIRIGABuildingQueryCSV",
 								"type": "DatasetReference"
 							},
-							"name": "Azure Data Lake Storage"
+							"name": "AzureDataLakeStorage"
 						}
 					],
 					"transformations": [],
@@ -17204,8 +17204,8 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> Tririga",
-						"Tririga sink(allowSchemaDrift: true,",
+						"     ignoreNoFilesFound: false) ~> TririgaRemoteServer",
+						"TririgaRemoteServer sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     umask: 0022,",
 						"     preCommands: [],",
@@ -17230,7 +17230,7 @@
 						"          ACTIVE_YEAR,",
 						"          ACTUAL_RETIREMENT_INACTIVATION",
 						"     ),",
-						"     partitionBy('hash', 1)) ~> Azure Data Lake Storage"
+						"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
 					]
 				}
 			},
