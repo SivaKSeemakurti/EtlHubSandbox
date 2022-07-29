@@ -1,5 +1,5 @@
 {
-	"name": "df_SFTP_Pull_Tririga",
+	"name": "DF_TRIRIGA_LOCATION_SFTP_PULL",
 	"properties": {
 		"folder": {
 			"name": "ETLHub"

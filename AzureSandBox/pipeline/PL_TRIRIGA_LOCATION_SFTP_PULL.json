@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_SFTP_Pull_Tririga",
+						"referenceName": "DF_TRIRIGA_LOCATION_SFTP_PULL",
 						"type": "DataFlowReference"
 					},
 					"compute": {
