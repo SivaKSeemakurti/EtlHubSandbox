@@ -39007,6 +39007,92 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/email_alert')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "ETLHub"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "64ece5bb-370f-4834-af0a-d8be54e11eb4"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import smtplib\n",
+							"from pathlib import Path\n",
+							"from email.mime.multipart import MIMEMultipart\n",
+							"from email.mime.base import MIMEBase\n",
+							"from email.mime.text import MIMEText\n",
+							"from email.utils import COMMASPACE, formatdate\n",
+							"from email import encoders\n",
+							"\n",
+							"\n",
+							"def send_mail(send_from = <from_email>, send_to = <to_email>, subject = \"Test\", message = \"Test\", files=[\"/mnt/<Mounted Point Directory>/\"],\n",
+							"              server=\"<SMTP Host>\", port=<SMTP Port>, username='<SMTP Username>', password='<SMTP Password>',\n",
+							"              use_tls=True):\n",
+							"\n",
+							"    msg = MIMEMultipart()\n",
+							"    msg['From'] = send_from\n",
+							"    msg['To'] = COMMASPACE.join(send_to)\n",
+							"    msg['Date'] = formatdate(localtime=True)\n",
+							"    msg['Subject'] = subject\n",
+							"\n",
+							"    msg.attach(MIMEText(message))\n",
+							"\n",
+							"    for path in files:\n",
+							"        part = MIMEBase('application', \"octet-stream\")\n",
+							"        with open(path, 'rb') as file:\n",
+							"            part.set_payload(file.read())\n",
+							"        encoders.encode_base64(part)\n",
+							"        part.add_header('Content-Disposition',\n",
+							"                        'attachment; filename=\"{}\"'.format(Path(path).name))\n",
+							"        msg.attach(part)\n",
+							"\n",
+							"    smtp = smtplib.SMTP(server, port)\n",
+							"    if use_tls:\n",
+							"        smtp.starttls()\n",
+							"    smtp.login(username, password)\n",
+							"    smtp.sendmail(send_from, send_to, msg.as_string())\n",
+							"    smtp.quit()\n",
+							"\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/nb_dht_Sales_Stage_load')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -41700,7 +41786,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3c41571b-afa6-4d00-908c-8df41fd37674"
+						"spark.autotune.trackingId": "9e464ccf-70fe-4181-ba73-7781041b1fee"
 					}
 				},
 				"metadata": {
@@ -41725,8 +41811,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -47592,7 +47677,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "de8a60e1-3324-4cf4-8df3-ca6ab1dbaa97"
+						"spark.autotune.trackingId": "d4480520-059e-425c-b91c-51c1ab25b333"
 					}
 				},
 				"metadata": {
@@ -47617,8 +47702,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
