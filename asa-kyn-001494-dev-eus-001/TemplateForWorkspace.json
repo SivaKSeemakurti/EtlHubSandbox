@@ -774,12 +774,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "df_SFTP_Pull_Tririga",
+								"referenceName": "DF_TRIRIGA_LOCATION_SFTP_PULL",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
+									"Tririga": {},
+									"Azure Data Lake Storage": {}
 								}
 							},
 							"staging": {},
@@ -801,7 +801,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/df_SFTP_Pull_Tririga')]"
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_LOCATION_SFTP_PULL')]"
 			]
 		},
 		{
@@ -17155,6 +17155,91 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/DF_TRIRIGA_LOCATION_SFTP_PULL')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "ETLHub"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "IWTRIRIGABuildingQuery",
+								"type": "DatasetReference"
+							},
+							"name": "Tririga"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "IWTRIRIGABuildingQueryCSV",
+								"type": "DatasetReference"
+							},
+							"name": "Azure Data Lake Storage"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          CAMPUS_ID as string,",
+						"          BUILDING_ID as string,",
+						"          BUILDING_NAME as string,",
+						"          BUILDING_STATUS as string,",
+						"          BUILDING_OWNERSHIP_ID as string,",
+						"          BUILDING_OWNERSHIP_NAME as string,",
+						"          BUILDING_OWNERSHIP_DESCRIPTION as string,",
+						"          BUILDING_PRIMARY_USE_ID as string,",
+						"          BUILDING_PRIMARY_USE_NAME as string,",
+						"          BUILDING_PRIMARY_USE_DESCRIPTION as string,",
+						"          BUILDING_SECONDARY_USE_ID as string,",
+						"          BUILDING_SECONDARY_USE_NAME as string,",
+						"          BUILDING_SECONDARY_USE_DESCRIPTION as string,",
+						"          RENTABLE_AREA as string,",
+						"          ACTIVE_YEAR as string,",
+						"          ACTUAL_RETIREMENT_INACTIVATION as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Tririga",
+						"Tririga sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: ['mv /extract/Tririga/part-merged.csv /extract/Tririga/IWTRIRIGABuildingQuery.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          CAMPUS_ID,",
+						"          BUILDING_ID,",
+						"          BUILDING_NAME,",
+						"          BUILDING_STATUS,",
+						"          BUILDING_OWNERSHIP_ID,",
+						"          BUILDING_OWNERSHIP_NAME,",
+						"          BUILDING_OWNERSHIP_DESCRIPTION,",
+						"          BUILDING_PRIMARY_USE_ID,",
+						"          BUILDING_PRIMARY_USE_NAME,",
+						"          BUILDING_PRIMARY_USE_DESCRIPTION,",
+						"          BUILDING_SECONDARY_USE_ID,",
+						"          BUILDING_SECONDARY_USE_NAME,",
+						"          BUILDING_SECONDARY_USE_DESCRIPTION,",
+						"          RENTABLE_AREA,",
+						"          ACTIVE_YEAR,",
+						"          ACTUAL_RETIREMENT_INACTIVATION",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> Azure Data Lake Storage"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGABuildingQuery')]",
+				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGABuildingQueryCSV')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Dataflow')]",
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
@@ -19250,91 +19335,6 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/Dataset')]",
 				"[concat(variables('workspaceId'), '/datasets/DBXDH_DHTS_SELL_CYCLE')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/df_SFTP_Pull_Tririga')]",
-			"type": "Microsoft.Synapse/workspaces/dataflows",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"folder": {
-					"name": "ETLHub"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "IWTRIRIGABuildingQuery",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "IWTRIRIGABuildingQueryCSV",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [],
-					"scriptLines": [
-						"source(output(",
-						"          CAMPUS_ID as string,",
-						"          BUILDING_ID as string,",
-						"          BUILDING_NAME as string,",
-						"          BUILDING_STATUS as string,",
-						"          BUILDING_OWNERSHIP_ID as string,",
-						"          BUILDING_OWNERSHIP_NAME as string,",
-						"          BUILDING_OWNERSHIP_DESCRIPTION as string,",
-						"          BUILDING_PRIMARY_USE_ID as string,",
-						"          BUILDING_PRIMARY_USE_NAME as string,",
-						"          BUILDING_PRIMARY_USE_DESCRIPTION as string,",
-						"          BUILDING_SECONDARY_USE_ID as string,",
-						"          BUILDING_SECONDARY_USE_NAME as string,",
-						"          BUILDING_SECONDARY_USE_DESCRIPTION as string,",
-						"          RENTABLE_AREA as string,",
-						"          ACTIVE_YEAR as string,",
-						"          ACTUAL_RETIREMENT_INACTIVATION as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: ['mv /extract/Tririga/part-merged.csv /extract/Tririga/IWTRIRIGABuildingQuery.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          CAMPUS_ID,",
-						"          BUILDING_ID,",
-						"          BUILDING_NAME,",
-						"          BUILDING_STATUS,",
-						"          BUILDING_OWNERSHIP_ID,",
-						"          BUILDING_OWNERSHIP_NAME,",
-						"          BUILDING_OWNERSHIP_DESCRIPTION,",
-						"          BUILDING_PRIMARY_USE_ID,",
-						"          BUILDING_PRIMARY_USE_NAME,",
-						"          BUILDING_PRIMARY_USE_DESCRIPTION,",
-						"          BUILDING_SECONDARY_USE_ID,",
-						"          BUILDING_SECONDARY_USE_NAME,",
-						"          BUILDING_SECONDARY_USE_DESCRIPTION,",
-						"          RENTABLE_AREA,",
-						"          ACTIVE_YEAR,",
-						"          ACTUAL_RETIREMENT_INACTIVATION",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGABuildingQuery')]",
-				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGABuildingQueryCSV')]"
 			]
 		},
 		{
