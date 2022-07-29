@@ -41700,7 +41700,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "fb3f423d-93a3-4704-8207-22845600fa00"
+						"spark.autotune.trackingId": "3c41571b-afa6-4d00-908c-8df41fd37674"
 					}
 				},
 				"metadata": {
@@ -47592,7 +47592,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "34a7df69-4865-4603-a2ab-1659733d526a"
+						"spark.autotune.trackingId": "de8a60e1-3324-4cf4-8df3-ca6ab1dbaa97"
 					}
 				},
 				"metadata": {
@@ -47682,7 +47682,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 104
+						"execution_count": 133
 					},
 					{
 						"cell_type": "markdown",
@@ -47716,8 +47716,8 @@
 							"container_name = 'etlhubfilestorage' # fill in your container name \n",
 							"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 							"relative_archive_path='archive/'\n",
-							"#file_name='DS_MARKET_DATA.csv' \n",
-							"file_name='DS_MARKET_DATA_2022-07-22-02:19:52_PM.csv' \n",
+							"file_name='DS_MARKET_DATA.csv' \n",
+							"#file_name='DS_MARKET_DATA_2022-07-25-08:05:43_AM.csv' \n",
 							"natural_key=\"MARKET_BUSINESS_CD\"\n",
 							"tablename=\"etlhubConfirmed.dht_market\"\n",
 							"stagingtable=\"DHTS_MARKET\"\n",
@@ -47726,7 +47726,7 @@
 							"print(date)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 134
 					},
 					{
 						"cell_type": "markdown",
@@ -47805,7 +47805,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 135
 					},
 					{
 						"cell_type": "code",
@@ -47852,7 +47852,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 81
+						"execution_count": 136
 					},
 					{
 						"cell_type": "markdown",
@@ -47929,7 +47929,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 82
+						"execution_count": 137
 					},
 					{
 						"cell_type": "code",
@@ -47994,7 +47994,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 83
+						"execution_count": 138
 					},
 					{
 						"cell_type": "code",
@@ -48022,7 +48022,7 @@
 							"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 						],
 						"outputs": [],
-						"execution_count": 86
+						"execution_count": 139
 					},
 					{
 						"cell_type": "code",
@@ -48151,7 +48151,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 87
+						"execution_count": 140
 					},
 					{
 						"cell_type": "code",
@@ -48177,7 +48177,7 @@
 							"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 						],
 						"outputs": [],
-						"execution_count": 89
+						"execution_count": 141
 					},
 					{
 						"cell_type": "code",
@@ -48203,7 +48203,7 @@
 							"    --2022-07-29T14:17:38Z"
 						],
 						"outputs": [],
-						"execution_count": 90
+						"execution_count": 142
 					},
 					{
 						"cell_type": "code",
@@ -48227,7 +48227,7 @@
 							"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
 						],
 						"outputs": [],
-						"execution_count": 66
+						"execution_count": 143
 					},
 					{
 						"cell_type": "code",
@@ -48261,7 +48261,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 91
+						"execution_count": 144
 					},
 					{
 						"cell_type": "code",
@@ -48287,7 +48287,7 @@
 							"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 						],
 						"outputs": [],
-						"execution_count": 92
+						"execution_count": 145
 					},
 					{
 						"cell_type": "code",
@@ -48313,7 +48313,7 @@
 							"    --2022-07-29T14:17:38Z"
 						],
 						"outputs": [],
-						"execution_count": 68
+						"execution_count": 146
 					},
 					{
 						"cell_type": "code",
@@ -48362,7 +48362,7 @@
 							";"
 						],
 						"outputs": [],
-						"execution_count": 93
+						"execution_count": 147
 					},
 					{
 						"cell_type": "code",
@@ -48476,7 +48476,7 @@
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 94
+						"execution_count": 148
 					},
 					{
 						"cell_type": "code",
@@ -48502,7 +48502,7 @@
 							"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 						],
 						"outputs": [],
-						"execution_count": 95
+						"execution_count": 149
 					},
 					{
 						"cell_type": "code",
@@ -48528,7 +48528,7 @@
 							"    --2022-07-29T14:17:38Z"
 						],
 						"outputs": [],
-						"execution_count": 96
+						"execution_count": 150
 					},
 					{
 						"cell_type": "code",
@@ -48562,7 +48562,7 @@
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 97
+						"execution_count": 151
 					},
 					{
 						"cell_type": "code",
@@ -48588,7 +48588,7 @@
 							"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 						],
 						"outputs": [],
-						"execution_count": 98
+						"execution_count": 152
 					},
 					{
 						"cell_type": "code",
@@ -48615,7 +48615,7 @@
 							"    --2022-07-29T14:17:38Z"
 						],
 						"outputs": [],
-						"execution_count": 99
+						"execution_count": 153
 					},
 					{
 						"cell_type": "code",
@@ -48669,7 +48669,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 100
+						"execution_count": 154
 					},
 					{
 						"cell_type": "code",
@@ -48707,7 +48707,7 @@
 							"    ;"
 						],
 						"outputs": [],
-						"execution_count": 101
+						"execution_count": 155
 					},
 					{
 						"cell_type": "code",
@@ -48733,7 +48733,7 @@
 							"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 						],
 						"outputs": [],
-						"execution_count": 103
+						"execution_count": 156
 					},
 					{
 						"cell_type": "code",
@@ -48779,7 +48779,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 102
+						"execution_count": 157
 					},
 					{
 						"cell_type": "code",
@@ -48808,7 +48808,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 77
+						"execution_count": 158
 					}
 				]
 			},
