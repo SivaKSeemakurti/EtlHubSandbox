@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "28501078-7c65-4ada-a0e6-be09099628bd"
+				"spark.autotune.trackingId": "9d779efa-f2a7-4ecf-a465-be673a266d83"
 			}
 		},
 		"metadata": {
@@ -264,9 +264,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"--select \r\n",
-					"--COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \r\n",
-					"--src.EMP_CNUM\r\n",
+					"select \r\n",
+					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS EMPLOYEE_KEY,1 as VERSION  \r\n",
+					"src.EMP_CNUM\r\n",
 					"--,'Y' AS CURRENT_IND\r\n",
 					"--,CURRENT_TIMESTAMP AS EXTRACT_DT\r\n",
 					"--,CURRENT_TIMESTAMP AS REC_START_DT\r\n",
@@ -281,8 +281,9 @@
 					"left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\r\n",
 					"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq \r\n",
 					"from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 \r\n",
-					"where t2.seq = 1) emp ON trim(emp.CNUM_ID)=src.EMP_CNUM \r\n",
+					"where t2.seq = 1) emp ON trim(emp.CNUM_ID)=trim(src.EMP_CNUM)\r\n",
 					"left outer join (select max(EMPLOYEE_KEY) as emp_key_max from etlhubconfirmed.DHT_EMPLOYEE ) as max_emp ON 1=1 \r\n",
+					"where emp.CNUM_ID is null\r\n",
 					"--) as ins\r\n",
 					""
 				],
@@ -363,6 +364,35 @@
 				},
 				"source": [
 					"%%sql\r\n",
+					"select OPPORTUNITY_NUM,count(*) from (\r\n",
+					"select DISTINCT src.OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from \r\n",
+					"(select distinct OPPORTUNITY_NUM from SourceView) as src \r\n",
+					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
+					"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
+					"where OPP.OPPORTUNITY_NUM is null\r\n",
+					") as ghjk group by OPPORTUNITY_NUM having count(*) > 1"
+				],
+				"execution_count": 36
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
 					"INSERT INTO etlhubConfirmed.dht_opportunity \r\n",
 					"select COALESCE(max_OPPORTUNITY_KEY + ROW_NUMBER () OVER (ORDER BY 1),0) AS OPPORTUNITY_KEY,1 as OPPORTUNITY_VERSION, \r\n",
 					"OPPORTUNITY_NUM,'Y' AS CURRENT_IND, CURRENT_TIMESTAMP AS EXTRACT_DT, \r\n",
@@ -373,11 +403,11 @@
 					"'' as OPPORTUNITY_IDENTIFIER,'' as ROGUE_IND, '' as REASON_TO_ACT,''as SOLUTION_CATG,'' as BRAND_SPONSOR_LIST,'' as GBS_GEOGRAPHY_NAME, \r\n",
 					"'' as GBS_BUSINESS_UNIT_GROUP_NAME,'' as GBS_BUSINESS_UNIT_NAME,'' as TAG_LIST,'' as OPPORTUNITY_LEGACY_NO,'LG' AS DATA_IND, \r\n",
 					"'Y' AS ACTIVE_IN_SOURCE_IND from \r\n",
-					"(select DISTINCT OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from ( select DISTINCT src.OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from \r\n",
+					" ( select DISTINCT src.OPPORTUNITY_NUM,max_OPPORTUNITY_KEY from \r\n",
 					"(select distinct OPPORTUNITY_NUM from SourceView) as src \r\n",
 					"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM) = trim(OPP.OPPORTUNITY_NUM)\r\n",
 					"left outer join (select max(OPPORTUNITY_KEY) as max_OPPORTUNITY_KEY from etlhubConfirmed.dht_opportunity) max_key ON 1=1\r\n",
-					"where OPP.OPPORTUNITY_NUM is null ) as ins_opp ) as full_ins;\r\n",
+					"where OPP.OPPORTUNITY_NUM is null ) as ins_opp ;\r\n",
 					"\r\n",
 					"INSERT INTO etlhubconfirmed.dht_opportunity_role\r\n",
 					"select \r\n",
