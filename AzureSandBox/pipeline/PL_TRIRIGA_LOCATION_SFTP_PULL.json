@@ -17,7 +17,12 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_TRIRIGA_LOCATION_SFTP_PULL",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TririgaRemoteServer": {
+								"IWTRIRIGABuildingQuery": "IWTRIRIGABuildingQuery.csv"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,

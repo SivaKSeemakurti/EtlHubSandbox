@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a370d69b-4cc5-44bf-8b6f-4632ecb16ad5"
+				"spark.autotune.trackingId": "9808a229-7a67-4d69-ac75-8bb5a336cb43"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 1
+				"execution_count": 31
 			},
 			{
 				"cell_type": "markdown",
@@ -142,14 +142,12 @@
 							"deleting": false
 						}
 					},
-					"tags": [
-						"parameters"
-					]
+					"tags": []
 				},
 				"source": [
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
-					"relative_path = 'extract/Tririga/' # fill in your relative folder path \n",
+					"relative_path = 'extract/Tririga/building/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='IWTRIRIGABuildingQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key1=\"CAMPUS_ID\"\n",
@@ -163,9 +161,10 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
-					"print(extract_dt)"
+					"print(extract_dt)\n",
+					"print(natural_key)"
 				],
-				"execution_count": 2
+				"execution_count": 32
 			},
 			{
 				"cell_type": "markdown",
@@ -217,6 +216,8 @@
 					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
 					"print('Primary storage account path: ' + adls_path) \n",
 					"\n",
+					"print(natural_key)\n",
+					"\n",
 					"relative_archive_path\n",
 					"# Read a csv file \n",
 					"csv_path = adls_path + file_name\n",
@@ -249,7 +250,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 3
+				"execution_count": 33
 			},
 			{
 				"cell_type": "code",
@@ -274,7 +275,7 @@
 					"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001')\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 34
 			},
 			{
 				"cell_type": "code",
@@ -297,7 +298,7 @@
 					"my_string = ','.join(dim_col_list)\n",
 					"print (my_string)"
 				],
-				"execution_count": null
+				"execution_count": 35
 			},
 			{
 				"cell_type": "code",
@@ -343,7 +344,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": null
+				"execution_count": 36
 			},
 			{
 				"cell_type": "markdown",
@@ -443,7 +444,7 @@
 					"\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 37
 			},
 			{
 				"cell_type": "code",
@@ -507,7 +508,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": null
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
@@ -581,7 +582,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 39
 			},
 			{
 				"cell_type": "code",
@@ -625,7 +626,7 @@
 					"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 				],
-				"execution_count": null
+				"execution_count": 40
 			},
 			{
 				"cell_type": "code",
@@ -651,7 +652,7 @@
 					"    --like 'RTPMAIN%' --and BUILDING_ID='404'\n",
 					"        "
 				],
-				"execution_count": null
+				"execution_count": 41
 			},
 			{
 				"cell_type": "code",
@@ -681,7 +682,7 @@
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 					"AND A.CURRENT_IND='Y' --AND A.REC_START_DT=b.existing_REC_START_DT"
 				],
-				"execution_count": null
+				"execution_count": 42
 			},
 			{
 				"cell_type": "code",
@@ -714,7 +715,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 43
 			},
 			{
 				"cell_type": "code",
@@ -773,7 +774,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": null
+				"execution_count": 44
 			},
 			{
 				"cell_type": "code",
@@ -807,7 +808,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 				],
-				"execution_count": null
+				"execution_count": 45
 			},
 			{
 				"cell_type": "code",
@@ -852,7 +853,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 46
 			},
 			{
 				"cell_type": "code",
@@ -903,7 +904,7 @@
 					"ORDER BY BUSINESS_ID, REC_START_DT\n",
 					"    ;"
 				],
-				"execution_count": null
+				"execution_count": 47
 			},
 			{
 				"cell_type": "code",
@@ -921,7 +922,7 @@
 				"source": [
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')"
 				],
-				"execution_count": null
+				"execution_count": 48
 			},
 			{
 				"cell_type": "code",
@@ -953,7 +954,7 @@
 					"    and BUSINESS_ID NOT IN (SELECT BUSINESS_ID FROM etlhubconfirmed.dht_building A WHERE CURRENT_IND='Y')\n",
 					"  ;"
 				],
-				"execution_count": null
+				"execution_count": 49
 			}
 		]
 	}
