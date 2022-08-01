@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "49ce962a-a4be-495a-95f4-764d1dae2de6"
+				"spark.autotune.trackingId": "be1a5b94-587e-4671-9609-b0ff8ec68f50"
 			}
 		},
 		"metadata": {
@@ -109,7 +109,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 17
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -148,7 +148,7 @@
 					"stagingtable=\"dhtsr_country\"\n",
 					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 				],
-				"execution_count": 18
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -218,7 +218,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 19
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -269,9 +269,16 @@
 					"\n",
 					"INSERT INTO {}\n",
 					"select \n",
-					"FLOOR_ID,\n",
-					"FLOOR_DESCR,\n",
-					"USAGE_NOTES\n",
+					"CODE,\n",
+					"LONGDESCRIPTION,\n",
+					"MEDIUMDESCRIPTION,\n",
+					"SHORTDESCRIPTION,\n",
+					"COMMENTS,\n",
+					"RECORDSTATUS,\n",
+					"ROWCREATETS,\n",
+					"ROWUPDATETS,\n",
+					"COUNTRY_ALPHA3_COMPLIANCE_CD,\n",
+					"COUNTRY_NUM3_COMPLIANCE_CD\n",
 					"from {}\n",
 					";\n",
 					"\"\"\"\n",
@@ -279,7 +286,7 @@
 					"\n",
 					"#d.show(10)"
 				],
-				"execution_count": 21
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -300,9 +307,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from etlhubconfirmed.dhtr_country"
+					"select count(*) from etlhubconfirmed.dhtr_country"
 				],
-				"execution_count": null
+				"execution_count": 10
 			}
 		]
 	}
