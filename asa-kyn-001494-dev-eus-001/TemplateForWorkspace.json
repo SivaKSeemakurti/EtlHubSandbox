@@ -52786,7 +52786,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3451dd53-9b67-48f2-9c23-b811f76dc911"
+						"spark.autotune.trackingId": "74066c30-8f78-413b-85e3-81f37634a7fc"
 					}
 				},
 				"metadata": {
@@ -53045,7 +53045,6 @@
 							"from {}\n",
 							";\n",
 							"\"\"\"\n",
-							"\n",
 							"d=spark.sql(qry_ins_new_rows.format(tablename,stagingtable))\n",
 							"\n",
 							"#d.show(10)"
