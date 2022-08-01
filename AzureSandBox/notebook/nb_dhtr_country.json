@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "be1a5b94-587e-4671-9609-b0ff8ec68f50"
+				"spark.autotune.trackingId": "e7a2bc0a-bc15-4586-8ce9-27b016bd51ec"
 			}
 		},
 		"metadata": {
@@ -109,7 +109,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 2
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -148,7 +148,7 @@
 					"stagingtable=\"dhtsr_country\"\n",
 					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 				],
-				"execution_count": 3
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -218,7 +218,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 4
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -241,7 +241,7 @@
 					"%%sql\r\n",
 					"select count(*) from dhtsr_country"
 				],
-				"execution_count": null
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -286,7 +286,7 @@
 					"\n",
 					"#d.show(10)"
 				],
-				"execution_count": 8
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -309,7 +309,7 @@
 					"%%sql\r\n",
 					"select count(*) from etlhubconfirmed.dhtr_country"
 				],
-				"execution_count": 10
+				"execution_count": null
 			}
 		]
 	}
