@@ -1,5 +1,5 @@
 {
-	"name": "nb_dhtr_space_floor_level_Copy1",
+	"name": "nb_dhtr_country",
 	"properties": {
 		"folder": {
 			"name": "ETLHub/Dimensions&Facts"
@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2c6fb011-2ae9-4553-be39-8442c81ff994"
+				"spark.autotune.trackingId": "49ce962a-a4be-495a-95f4-764d1dae2de6"
 			}
 		},
 		"metadata": {
@@ -62,9 +62,9 @@
 					}
 				},
 				"source": [
-					"**Space Floor Level Reference Data**\n",
+					"**Country Reference Data**\n",
 					"\n",
-					"This notebook loads data to deltalake table etlhubconfirmed.dhtr_space_floor_level by sourceing data from GREIW database."
+					"This notebook loads data to deltalake table etlhubconfirmed.dhtr_country by sourceing data from GREIW database."
 				]
 			},
 			{
@@ -143,9 +143,9 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/reference/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='DS_space_floor_level.csv' \n",
-					"tablename=\"etlhubconfirmed.dhtr_space_floor_level\"\n",
-					"stagingtable=\"dhtsr_space_floor_level\"\n",
+					"file_name='Country(kyndryl).csv' \n",
+					"tablename=\"etlhubconfirmed.dhtr_country\"\n",
+					"stagingtable=\"dhtsr_country\"\n",
 					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 				],
 				"execution_count": 18
@@ -175,7 +175,7 @@
 				"source": [
 					"\n",
 					"#Read data from adls csv file extracted from source at \n",
-					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/reference/DS_space_floor_level.csv"
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/reference/Country(kyndryl).csv"
 				]
 			},
 			{
@@ -239,7 +239,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select count(*) from dhtsr_space_floor_level"
+					"select count(*) from dhtsr_country"
 				],
 				"execution_count": null
 			},
@@ -300,7 +300,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from etlhubconfirmed.dhtr_space_floor_level"
+					"select * from etlhubconfirmed.dhtr_country"
 				],
 				"execution_count": null
 			}
