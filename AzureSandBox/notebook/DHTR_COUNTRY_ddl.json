@@ -1,5 +1,5 @@
 {
-	"name": "DHTR_SPACE_FLOOR_LEVEL_ddl",
+	"name": "DHTR_COUNTRY_ddl",
 	"properties": {
 		"folder": {
 			"name": "ETLHub/CreateTableScripts"
@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a995b56f-c3ff-4acf-934c-fe0f66ed49c9"
+				"spark.autotune.trackingId": "cffa5728-1156-4d6e-96ba-0249013befac"
 			}
 		},
 		"metadata": {
@@ -46,7 +46,8 @@
 				"sparkVersion": "3.2",
 				"nodeCount": 10,
 				"cores": 80,
-				"memory": 472
+				"memory": 472,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -61,16 +62,24 @@
 				},
 				"source": [
 					"%%sql\n",
-					"--DHTR_SPACE_FLOOR_LEVEL DEFINITION\n",
 					"\n",
-					"CREATE TABLE IF NOT EXISTS etlhubconfirmed.DHTR_SPACE_FLOOR_LEVEL  (\n",
-					"FLOOR_ID VARCHAR(9),\n",
-					"FLOOR_DESCR VARCHAR(150),\n",
-					"USAGE_NOTES VARCHAR(150) )\n",
+					"--DHTR_COUNTRY\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS etlhubconfirmed.dhtr_country  (\n",
+					"CODE VARCHAR(10),\n",
+					"LONGDESCRIPTION VARCHAR(250),\n",
+					"MEDIUMDESCRIPTION VARCHAR(250),\n",
+					"SHORTDESCRIPTION VARCHAR(50),\n",
+					"COMMENTS VARCHAR(250),\n",
+					"RECORDSTATUS VARCHAR(10),\n",
+					"ROWCREATETS TIMESTAMP,\n",
+					"ROWUPDATETS TIMESTAMP,\n",
+					"COUNTRY_ALPHA3_COMPLIANCE_CD VARCHAR(10),\n",
+					"COUNTRY_NUM3_COMPLIANCE_CD VARCHAR(10)\n",
+					")\n",
 					"\n",
 					"USING DELTA\n",
-					"\n",
-					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/reference/DHTR_SPACE_FLOOR_LEVEL'"
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/reference/DHTR_country'"
 				],
 				"execution_count": 3
 			},
