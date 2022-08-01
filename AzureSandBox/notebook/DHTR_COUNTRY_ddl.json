@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cffa5728-1156-4d6e-96ba-0249013befac"
+				"spark.autotune.trackingId": "9fcc05d5-ce44-4c38-b081-2c7526923a90"
 			}
 		},
 		"metadata": {
@@ -81,7 +81,7 @@
 					"USING DELTA\n",
 					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/reference/DHTR_country'"
 				],
-				"execution_count": 3
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -97,13 +97,14 @@
 					},
 					"microsoft": {
 						"language": "sparksql"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from etlhubconfirmed.DHTR_SPACE_FLOOR_LEVEL"
+					"select * from etlhubconfirmed.dhtr_country"
 				],
-				"execution_count": null
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -124,7 +125,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"DROP TABLE etlhubconfirmed.DHTR_SPACE_FLOOR_LEVEL"
+					"DROP TABLE etlhubconfirmed.dhtr_country"
 				],
 				"execution_count": 4
 			},
@@ -147,7 +148,7 @@
 				},
 				"source": [
 					"%%sql\n",
-					"DELETE FROM etlhubconfirmed.DHTR_SPACE_FLOOR_LEVEL"
+					"DELETE FROM etlhubconfirmed.dhtr_country"
 				],
 				"execution_count": 2
 			}
