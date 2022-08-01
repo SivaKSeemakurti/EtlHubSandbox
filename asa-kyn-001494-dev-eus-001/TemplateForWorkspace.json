@@ -24044,14 +24044,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c87f68eb-826d-4fab-9783-a3270ea3d9b2"
+						"spark.autotune.trackingId": "9f212310-ffac-4c32-8c3e-92060490d5df"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -24067,14 +24064,13 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -24109,10 +24105,9 @@
 							"USING DELTA\n",
 							"PARTITIONED BY (CURRENT_IND)\n",
 							"-- specify data lake folder location\n",
-							"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_OPPORTUNITY_ROLE'      \n",
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OPPORTUNITY_ROLE'      \n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -24137,7 +24132,6 @@
 							"%%sql\n",
 							"DROP TABLE etlhubconfirmed.dht_opportunity_role"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 45
 					},
@@ -24162,7 +24156,6 @@
 							"%%sql\n",
 							"DELETE FROM etlhubconfirmed.dht_opportunity_role"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 9
 					}
@@ -39026,7 +39019,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "64ece5bb-370f-4834-af0a-d8be54e11eb4"
+						"spark.autotune.trackingId": "0af6c85c-7df7-4252-b829-936a9d322065"
 					}
 				},
 				"metadata": {
@@ -39044,7 +39037,6 @@
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import smtplib\n",
 							"from pathlib import Path\n",
