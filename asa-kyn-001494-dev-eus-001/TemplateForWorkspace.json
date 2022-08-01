@@ -52786,7 +52786,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "ff47dc3c-4b9a-4fec-932c-aa5c839e8036"
+						"spark.autotune.trackingId": "17d759c6-2da9-4f3f-aafb-e5785cc6507e"
 					}
 				},
 				"metadata": {
@@ -52875,7 +52875,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 2
 					},
 					{
 						"cell_type": "markdown",
@@ -52916,7 +52916,7 @@
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": 4
 					},
 					{
 						"cell_type": "markdown",
@@ -52976,60 +52976,18 @@
 							"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\",\", header=\"true\")\n",
 							"\n",
 							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+							"#incrementalData_DF.show()\n",
 							"\n",
-							"#incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
-							"#incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
-							"\n",
-							"#sell_cyclecolhashDF.show()\n",
-							"#incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
-							"incrementalData_DF.show()"
-						],
-						"outputs": [],
-						"execution_count": 7
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"\n",
-							"#Create a dataframe with target deltalake table data with necessary columns\n",
-							"\n",
-							"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
-							"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.dht_opportunity_role tgt WHERE CURRENT_IND='Y'\")\n",
-							"\n",
-							"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
-							"\n",
-							"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
-							"\n",
-							"existingDataDF1 = existingDataDF.select([F.col(c).alias('existing_'+c) for c in existingDataDF.columns])\n",
-							"\n",
-							"existingDataDF1.createOrReplaceTempView('existingDataDF1')\n",
-							"\n",
-							"fullJoin1=incrementalData_DF2.join(existingDataDF1,trim(incrementalData_DF2.ROLE_CD) == trim(existingDataDF1.existing_ROLE_CD), \"fullouter\") \n",
-							"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
-							"\n",
-							"fullJoin2.createOrReplaceTempView('fullJoin')\n",
-							"\n",
-							"fullJoin2.write \\\n",
+							"incrementalData_DF.write \\\n",
 							"  .format(\"delta\") \\\n",
 							"  .mode(\"overwrite\") \\\n",
 							"  .option(\"overwriteSchema\", \"true\") \\\n",
-							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/DHTS_OPPORTUNITY_ROLE\") \\\n",
+							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/{}\".format(stagingtable)) \\\n",
 							"  .saveAsTable(stagingtable)\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 20
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -53050,27 +53008,10 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from DHTS_OPPORTUNITY_ROLE"
+							"select count(*) from dhtsr_space_floor_level"
 						],
 						"outputs": [],
-						"execution_count": 22
-					},
-					{
-						"cell_type": "markdown",
-						"metadata": {
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"Data Validation Checks :\n",
-							"\n",
-							"- Check for duplicates in Source data based on natural key\n",
-							"- Check for duplicates in target delta lake table based on natural key\n",
-							""
-						]
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -53086,113 +53027,37 @@
 							}
 						},
 						"source": [
-							"qry3=\"\"\"\n",
-							"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
-							";\n",
+							"qry_4_delete=\"\"\"\n",
+							"\n",
+							"DELETE FROM {} \n",
+							"\n",
 							"\"\"\"\n",
+							"df_4_delete=spark.sql(qry_4_delete.format(tablename))\n",
+							"print('Existing records are deleted') \n",
+							"df_4_delete.show()\n",
 							"\n",
-							"qry4=\"\"\"\n",
-							"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
-							";\n",
-							"\"\"\"\n",
+							"qry_ins_new_rows=\"\"\"\n",
 							"\n",
-							"df3=spark.sql(qry3.format(natural_key,natural_key))\n",
-							"cnt1=df3.count()\n",
-							"\n",
-							"print (cnt1)\n",
-							"if cnt1 == 0:\n",
-							"    print(\"No Duplicates in source data\")\n",
-							"    status = 'success'\n",
-							"else:\n",
-							"    print(\"Below are the duplicates in source:\")\n",
-							"    df3.show()\n",
-							"    status = 'fail'\n",
-							"    #os.abort() this will take the spark cluster also down\n",
-							"    sys.exit(1)\n",
-							"    print(\"This will not be printed\")\n",
-							"\n",
-							"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
-							"cnt2=df4.count()\n",
-							"\n",
-							"print (cnt2)\n",
-							"if cnt2 == 0:\n",
-							"    print(\"no duplicates in target delta lake table\")\n",
-							"    status = 'success'\n",
-							"else:\n",
-							"    print(\"Below are the duplicates in target delta lake table:\")\n",
-							"    df4.show()\n",
-							"    status = 'fail'\n",
-							"    #os.abort() this will take the spark cluster also down\n",
-							"    sys.exit(2)\n",
-							"    print(\"This will not be printed\")\n",
-							"\n",
-							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 23
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"qry_4_recon1=\"\"\"\n",
-							"\n",
-							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
+							"INSERT INTO {}\n",
+							"select \n",
+							"FLOOR_ID,\n",
+							"FLOOR_DESCR,\n",
+							"USAGE_NOTES\n",
+							"from DHTS_OPPORTUNITY_ROLE A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
-							"(SELECT 1 FROM {} B\n",
+							"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
 							"WHERE A.ROLE_CD=B.ROLE_CD\n",
 							"and b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM)\n",
 							"\n",
-							"\"\"\"\n",
-							"df_4_recon1=spark.sql(qry_4_recon1.format(tablename))\n",
-							"print('New records or Inserts are:') \n",
-							"df_4_recon1.show()\n",
-							"\n",
-							"qry_4_recon2=\"\"\"\n",
-							"\n",
-							"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
-							"WHERE LOWER(ROLE_CD) = LOWER(existing_ROLE_CD) \n",
-							"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
-							"AND NOT EXISTS\n",
-							"(SELECT 1 FROM {} B\n",
-							"WHERE TRIM(LOWER(A.ROLE_CD))=TRIM(LOWER(B.ROLE_CD))\n",
-							"and b.CURRENT_IND='Y'\n",
-							"AND A.column_hash=B.REC_CHECKSUM\n",
-							")\n",
+							"--limit 10\n",
 							";\n",
-							"\n",
-							"\"\"\"\n",
-							"df_4_recon2=spark.sql(qry_4_recon2.format(tablename))\n",
-							"print('Changed records or Updates are:') \n",
-							"df_4_recon2.show()\n",
-							"\n",
-							"qry_4_recon3=\"\"\"\n",
-							"SELECT COUNT(*) from \n",
-							"etlhubconfirmed.DHT_OPPORTUNITY_ROLE A\n",
-							"join fullJoin B\n",
-							"ON A.{} = B.existing_{}\n",
-							"AND B.{} is NULL\n",
-							"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
-							"AND A.REC_START_DT=b.existing_REC_START_DT\n",
-							"\n",
 							"\"\"\"\n",
 							"\n",
-							"df_4_recon3=spark.sql(qry_4_recon3.format(natural_key,natural_key,natural_key))\n",
-							"print('Soft Deletes are:') \n",
-							"df_4_recon3.show()"
+							"d=spark.sql(qry_ins_new_rows)\n",
+							"\n",
+							"#d.show(10)"
 						],
 						"outputs": [],
 						"execution_count": 24
