@@ -22017,7 +22017,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "cffa5728-1156-4d6e-96ba-0249013befac"
+						"spark.autotune.trackingId": "5fe0ffc4-cb11-4365-ae96-ddda8129171b"
 					}
 				},
 				"metadata": {
@@ -22042,7 +22042,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -22077,7 +22078,7 @@
 							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/reference/DHTR_country'"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -22093,14 +22094,15 @@
 							},
 							"microsoft": {
 								"language": "sparksql"
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from etlhubconfirmed.DHTR_SPACE_FLOOR_LEVEL"
+							"select * from etlhubconfirmed.dhtr_country"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -22121,7 +22123,7 @@
 						},
 						"source": [
 							"%%sql\n",
-							"DROP TABLE etlhubconfirmed.DHTR_SPACE_FLOOR_LEVEL"
+							"DROP TABLE etlhubconfirmed.dhtr_country"
 						],
 						"outputs": [],
 						"execution_count": 4
@@ -22145,7 +22147,7 @@
 						},
 						"source": [
 							"%%sql\n",
-							"DELETE FROM etlhubconfirmed.DHTR_SPACE_FLOOR_LEVEL"
+							"DELETE FROM etlhubconfirmed.dhtr_country"
 						],
 						"outputs": [],
 						"execution_count": 2
@@ -53155,7 +53157,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "de724a18-3e66-4185-b081-03a48a97a46b"
+						"spark.autotune.trackingId": "88ea5f61-3af3-4022-8cb3-0321f1f9e21a"
 					}
 				},
 				"metadata": {
@@ -53180,7 +53182,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -53243,7 +53246,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 11
 					},
 					{
 						"cell_type": "markdown",
