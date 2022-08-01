@@ -646,7 +646,7 @@
 										},
 										"method": "POST",
 										"headers": {
-											"Content-Type": "application/json"
+											"Content-Type": "'application/json'"
 										},
 										"body": {
 											"value": "{\"ErrorMessage\":\"\",\n\"JobStatus\":\"Success\",\n\"dataFactoryName\":\"\",\n\"pipelineName\":@{pipeline().Pipeline},\n\"message\":\"\",\n\"receiver\":\"siva.seemakurtikyndryl.com\",\n\"filepath\":@{variables('filefullpath')}}",
@@ -53192,7 +53192,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "787f9ef6-050c-4679-a650-bbb951ae3066"
+						"spark.autotune.trackingId": "e7a2bc0a-bc15-4586-8ce9-27b016bd51ec"
 					}
 				},
 				"metadata": {
@@ -53217,8 +53217,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
