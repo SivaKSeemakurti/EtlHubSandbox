@@ -614,7 +614,42 @@
 									"typeProperties": {
 										"variableName": "filefullpath",
 										"value": {
-											"value": "@concat('/etohubfilestorage/reject',item().name)",
+											"value": "@concat('/etohubfilestorage/reject/',item().name)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Web1",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "Set variable1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": "https://lpemailalert.azurewebsites.net:443/api/send_email_with_attachment/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SWwWEWRpypmYVUCe-PR8VCygIAacKtzfPP_FcQV0gZk",
+										"connectVia": {
+											"referenceName": "AutoResolveIntegrationRuntime",
+											"type": "IntegrationRuntimeReference"
+										},
+										"method": "POST",
+										"headers": {
+											"Content-Type": "application/json"
+										},
+										"body": {
+											"value": "{\"ErrorMessage\":\"\",\n\"JobStatus\":\"Success\",\n\"dataFactoryName\":\"\",\n\"pipelineName\":@{pipeline().Pipeline},\n\"message\":\"\",\n\"receiver\":\"siva.seemakurtikyndryl.com\",\n\"filepath\":@{variables('filefullpath')}}",
 											"type": "Expression"
 										}
 									}
@@ -638,7 +673,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/Attachment2')]"
+				"[concat(variables('workspaceId'), '/datasets/Attachment2')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -53132,7 +53168,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/nb_dhtr_space_floor_level')]",
+			"name": "[concat(parameters('workspaceName'), '/nb_dhtr_country')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -53156,7 +53192,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "85556ea1-7c17-4136-822f-4df19f646683"
+						"spark.autotune.trackingId": "49ce962a-a4be-495a-95f4-764d1dae2de6"
 					}
 				},
 				"metadata": {
@@ -53181,8 +53217,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -53197,9 +53232,9 @@
 							}
 						},
 						"source": [
-							"**Space Floor Level Reference Data**\n",
+							"**Country Reference Data**\n",
 							"\n",
-							"This notebook loads data to deltalake table etlhubconfirmed.dhtr_space_floor_level by sourceing data from GREIW database."
+							"This notebook loads data to deltalake table etlhubconfirmed.dhtr_country by sourceing data from GREIW database."
 						]
 					},
 					{
@@ -53279,9 +53314,9 @@
 							"container_name = 'etlhubfilestorage' # fill in your container name \n",
 							"relative_path = 'extract/reference/' # fill in your relative folder path \n",
 							"relative_archive_path='archive/'\n",
-							"file_name='DS_space_floor_level.csv' \n",
-							"tablename=\"etlhubconfirmed.dhtr_space_floor_level\"\n",
-							"stagingtable=\"dhtsr_space_floor_level\"\n",
+							"file_name='Country(kyndryl).csv' \n",
+							"tablename=\"etlhubconfirmed.dhtr_country\"\n",
+							"stagingtable=\"dhtsr_country\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
 						"outputs": [],
@@ -53312,7 +53347,7 @@
 						"source": [
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
-							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/reference/DS_space_floor_level.csv"
+							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/reference/Country(kyndryl).csv"
 						]
 					},
 					{
@@ -53377,7 +53412,7 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select count(*) from dhtsr_space_floor_level"
+							"select count(*) from dhtsr_country"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -53440,7 +53475,7 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from etlhubconfirmed.dhtr_space_floor_level"
+							"select * from etlhubconfirmed.dhtr_country"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -53450,7 +53485,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/nb_dhtr_space_floor_level_Copy1')]",
+			"name": "[concat(parameters('workspaceName'), '/nb_dhtr_space_floor_level')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -53474,7 +53509,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "2c6fb011-2ae9-4553-be39-8442c81ff994"
+						"spark.autotune.trackingId": "c5efae21-5157-43a5-9187-385a9ec2873f"
 					}
 				},
 				"metadata": {
