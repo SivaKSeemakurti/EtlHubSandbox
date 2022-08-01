@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3dc0681b-9a2c-4357-ad4b-e7219b827117"
+				"spark.autotune.trackingId": "f8ee9f58-a3a6-4c86-9eca-76458f062a83"
 			}
 		},
 		"metadata": {
@@ -265,7 +265,6 @@
 					"\"\"\"\n",
 					"df_4_delete=spark.sql(qry_4_delete.format(tablename))\n",
 					"print('Existing records are deleted') \n",
-					"df_4_delete.show()\n",
 					"\n",
 					"qry_ins_new_rows=\"\"\"\n",
 					"\n",
@@ -274,205 +273,15 @@
 					"FLOOR_ID,\n",
 					"FLOOR_DESCR,\n",
 					"USAGE_NOTES\n",
-					"from DHTS_OPPORTUNITY_ROLE A \n",
-					"WHERE existing_REC_CHECKSUM is null\n",
-					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
-					"WHERE A.ROLE_CD=B.ROLE_CD\n",
-					"and b.CURRENT_IND='Y'\n",
-					"AND A.column_hash=B.REC_CHECKSUM)\n",
-					"\n",
-					"--limit 10\n",
+					"from {}\n",
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"d=spark.sql(qry_ins_new_rows)\n",
+					"d=spark.sql(qry_ins_new_rows.format(tablename,stagingtable))\n",
 					"\n",
 					"#d.show(10)"
 				],
-				"execution_count": 24
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"\n",
-					"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
-					"#delete FROM etlhubconfirmed.dht_opportunity_role;\n",
-					"\n",
-					"qry_4_recon1=\"\"\"\n",
-					"SELECT COUNT(*) from DHTS_OPPORTUNITY_ROLE A \n",
-					"WHERE existing_REC_CHECKSUM is null\n",
-					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM {} B\n",
-					"WHERE A.ROLE_CD=B.ROLE_CD\n",
-					"and b.CURRENT_IND='Y'\n",
-					"AND A.column_hash=B.REC_CHECKSUM)\n",
-					"\n",
-					"\"\"\"\n",
-					"df_4_recon1=spark.sql(qry_4_recon1.format(tablename))\n",
-					"\n",
-					"qry_ins_new_rows=\"\"\"\n",
-					"\n",
-					"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
-					"select \n",
-					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS OPPORTUNITY_ROLE_KEY,1 as OPPORTUNITY_ROLE_VERSION \n",
-					",ROLE_CD\n",
-					",ROLE_DESC\n",
-					",'Y' AS CURRENT_IND\n",
-					",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
-					",CURRENT_TIMESTAMP AS REC_START_DT\n",
-					",'9999-12-31 00:00:00.000' as REC_END_DT\n",
-					",'ESA' AS SOURCE_SYSTEM\n",
-					",column_hash as REC_CHECKSUM\n",
-					",'I' as REC_STATUS\n",
-					",current_timestamp as IMG_LST_UPD_DT\n",
-					",CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-					",'ED' AS DATA_IND\n",
-					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-					"from DHTS_OPPORTUNITY_ROLE A \n",
-					"WHERE existing_REC_CHECKSUM is null\n",
-					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
-					"WHERE A.ROLE_CD=B.ROLE_CD\n",
-					"and b.CURRENT_IND='Y'\n",
-					"AND A.column_hash=B.REC_CHECKSUM)\n",
-					"\n",
-					"--limit 10\n",
-					";\n",
-					"\"\"\"\n",
-					"\n",
-					"d=spark.sql(qry_ins_new_rows)\n",
-					"\n",
-					"#d.show(10)"
-				],
-				"execution_count": 25
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"#Update or expire the rows with existing instance of the changed rows:\n",
-					"qry_4_upd_changes_rows=\"\"\"\n",
-					"\n",
-					"MERGE INTO {} A\n",
-					"USING DHTS_OPPORTUNITY_ROLE B\n",
-					"ON A.{} = B.{}\n",
-					"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
-					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
-					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-					"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds --current_timestamp --existing_REC_START_DT-1\n",
-					"    ,IMG_LST_UPD_DT=current_timestamp\n",
-					";\n",
-					"\"\"\"\n",
-					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
-					""
-				],
-				"execution_count": 26
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"#Insert for changed rows which are missing in target and present in source based on Natural Key.\n",
-					"qry_ins_changed_rows=\"\"\"\n",
-					"INSERT INTO etlhubconfirmed.dht_opportunity_role\n",
-					"select A.existing_OPPORTUNITY_ROLE_KEY\n",
-					",1 + existing_OPPORTUNITY_ROLE_VERSION as OPPORTUNITY_ROLE_VERSION\n",
-					",ROLE_CD\n",
-					",ROLE_DESC\n",
-					",'Y' AS CURRENT_IND\n",
-					",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
-					",CURRENT_TIMESTAMP AS REC_START_DT\n",
-					",'9999-12-31 00:00:00.000' as REC_END_DT\n",
-					",'ESA' AS SOURCE_SYSTEM\n",
-					",column_hash as REC_CHECKSUM\n",
-					",'U' as REC_STATUS\n",
-					", CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
-					",A.existing_IMG_CREATED_DT AS IMG_CREATED_DT\n",
-					",'LG' AS DATA_IND\n",
-					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
-					"from DHTS_OPPORTUNITY_ROLE A \n",
-					"WHERE TRIM(LOWER(ROLE_CD)) = TRIM(LOWER(existing_ROLE_CD)) \n",
-					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
-					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM etlhubConfirmed.dht_opportunity_role B\n",
-					"WHERE TRIM(LOWER(A.ROLE_CD))=TRIM(LOWER(B.ROLE_CD))\n",
-					"and b.CURRENT_IND='Y'\n",
-					"AND A.column_hash=B.REC_CHECKSUM\n",
-					")\n",
-					";\n",
-					"\"\"\"\n",
-					"e=spark.sql(qry_ins_changed_rows)\n",
-					"#e.show(4)"
-				],
-				"execution_count": 32
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"#Soft Deletes - Update Active_Ind for the rows no longer active in source:\n",
-					"\n",
-					"qry_4_upd_deleted_rows=\"\"\"\n",
-					"\n",
-					"MERGE INTO {} A\n",
-					"USING DHTS_OPPORTUNITY_ROLE B\n",
-					"ON A.{} = B.existing_{}\n",
-					"AND B.{} is NULL\n",
-					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
-					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
-					"WHEN MATCHED THEN UPDATE SET ACTIVE_IN_SOURCE_IND='N'\n",
-					"    ,IMG_LST_UPD_DT=current_timestamp\n",
-					"\n",
-					";\n",
-					"\"\"\"\n",
-					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
-				],
-				"execution_count": 33
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -492,39 +301,10 @@
 					"collapsed": false
 				},
 				"source": [
-					"%%sql\n",
-					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
-					";\n",
-					"\n",
-					"select 'Duplicate Rows based on surrogate key' as Title,OPPORTUNITY_ROLE_KEY,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
-					"    group by OPPORTUNITY_ROLE_KEY\n",
-					"    having count(*)>1\n",
-					";\n",
-					"\n",
-					"select 'Duplicate Rows based on natural key' as Title,ROLE_CD,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
-					"    group by ROLE_CD\n",
-					"    having count(*)>1\n",
-					";\n",
-					"\n",
-					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)=CURRENT_DATE and rec_status='I'\n",
-					";\n",
-					"\n",
-					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
-					"    and date(extract_dt)=current_date and rec_status='U'\n",
-					";\n",
-					"\n",
-					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='N'\n",
-					"    and date(REC_END_DT)=CURRENT_DATE --and rec_status='I'\n",
-					";\n",
-					"\n",
-					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_opportunity_role where CURRENT_IND='Y'\n",
-					"    AND \n",
-					"     date(REC_END_DT)=current_date --and rec_status='I'\n",
-					";\n",
-					""
+					"%%sql\r\n",
+					"select count(*) from etlhubconfirmed.dhtr_space_floor_level"
 				],
-				"execution_count": 35
+				"execution_count": null
 			}
 		]
 	}
