@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "Country(kyndryl).csv",
 				"folderPath": "reject",
 				"container": "etlhubfilestorage"
 			},
