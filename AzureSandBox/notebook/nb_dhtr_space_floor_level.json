@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "72ddca7b-b834-457c-b161-0ec3defd5b91"
+				"spark.autotune.trackingId": "b53103b0-13d1-44e3-9220-212a5e4dc6d0"
 			}
 		},
 		"metadata": {
@@ -109,7 +109,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 11
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
@@ -144,12 +144,11 @@
 					"relative_path = 'extract/reference/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='DS_space_floor_level.csv' \n",
-					"natural_key=\"FLOOR_ID\"\n",
 					"tablename=\"etlhubconfirmed.dhtr_space_floor_level\"\n",
 					"stagingtable=\"dhtsr_space_floor_level\"\n",
 					"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 				],
-				"execution_count": 4
+				"execution_count": 18
 			},
 			{
 				"cell_type": "markdown",
@@ -197,7 +196,7 @@
 					"print('Primary storage account path: ' + adls_path) \n",
 					"\n",
 					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
-					"print('Primary storage account path: ' + adls_path) \n",
+					"print('Archive account path: ' + adls_arch_path) \n",
 					"\n",
 					"relative_archive_path\n",
 					"# Read a csv file \n",
@@ -219,7 +218,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": null
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -280,7 +279,7 @@
 					"\n",
 					"#d.show(10)"
 				],
-				"execution_count": null
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -301,7 +300,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select count(*) from etlhubconfirmed.dhtr_space_floor_level"
+					"select * from etlhubconfirmed.dhtr_space_floor_level"
 				],
 				"execution_count": null
 			}
