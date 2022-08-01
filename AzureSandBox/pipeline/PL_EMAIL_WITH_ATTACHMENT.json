@@ -24,6 +24,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -57,7 +58,42 @@
 							"typeProperties": {
 								"variableName": "filefullpath",
 								"value": {
-									"value": "@concat('/etohubfilestorage/reject',item().name)",
+									"value": "@concat('/etohubfilestorage/reject/',item().name)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Web1",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "Set variable1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": "https://lpemailalert.azurewebsites.net:443/api/send_email_with_attachment/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SWwWEWRpypmYVUCe-PR8VCygIAacKtzfPP_FcQV0gZk",
+								"connectVia": {
+									"referenceName": "AutoResolveIntegrationRuntime",
+									"type": "IntegrationRuntimeReference"
+								},
+								"method": "POST",
+								"headers": {
+									"Content-Type": "application/json"
+								},
+								"body": {
+									"value": "{\"ErrorMessage\":\"\",\n\"JobStatus\":\"Success\",\n\"dataFactoryName\":\"\",\n\"pipelineName\":@{pipeline().Pipeline},\n\"message\":\"\",\n\"receiver\":\"siva.seemakurtikyndryl.com\",\n\"filepath\":@{variables('filefullpath')}}",
 									"type": "Expression"
 								}
 							}
