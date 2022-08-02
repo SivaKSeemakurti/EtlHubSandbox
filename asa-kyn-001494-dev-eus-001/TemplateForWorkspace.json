@@ -57190,6 +57190,486 @@
 				]
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/nb_dhtr_space_class')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "ETLHub/Dimensions&Facts"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sPoolKyn001494",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "244311a3-633d-472d-996a-75d928771fe5"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+						"name": "sPoolKyn001494",
+						"type": "Spark",
+						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 8,
+						"memory": 56,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"**SPACE CLASS Reference Data**\n",
+							"\n",
+							"This notebook loads data to deltalake table etlhubconfirmed.dhtr_space_class by sourceing data from GREIW database."
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Import all the necessary libraries"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from azure.storage.blob import BlobClient\n",
+							"import pandas as pd\n",
+							"from io import StringIO\n",
+							"from pyspark.sql.functions import md5, concat_ws,trim\n",
+							"from sqlite3 import connect\n",
+							"from pyspark.sql import functions as F\n",
+							"#conn = connect(':memory:')\n",
+							"from pyspark.sql.functions import col\n",
+							"from pyspark.sql import SparkSession \n",
+							"from pyspark.sql.types import * \n",
+							"from delta.tables import *\n",
+							"import os\n",
+							"import sys\n",
+							"from datetime import datetime"
+						],
+						"outputs": [],
+						"execution_count": 12
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Define Parameters"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"tags": []
+						},
+						"source": [
+							"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
+							"container_name = 'etlhubfilestorage' # fill in your container name \n",
+							"relative_path = 'extract/reference/' # fill in your relative folder path \n",
+							"relative_archive_path='archive/'\n",
+							"file_name='space_class.csv' \n",
+							"tablename=\"etlhubconfirmed.dhtr_space_class\"\n",
+							"stagingtable=\"dhtsr_space_class\"\n",
+							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
+						],
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Copy source CSV file to archive folder including timestamp in file name"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"\n",
+							"#Read data from adls csv file extracted from source at \n",
+							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/reference/space_class.csv"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
+							"print('Primary storage account path: ' + adls_path) \n",
+							"\n",
+							"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
+							"print('Archive account path: ' + adls_arch_path) \n",
+							"\n",
+							"relative_archive_path\n",
+							"# Read a csv file \n",
+							"csv_path = adls_path + file_name\n",
+							"arch_fil_name=file_name.rsplit(\".\")\n",
+							"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
+							"print (csv_archive_path)\n",
+							"\n",
+							"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\",\", header=\"true\")\n",
+							"\n",
+							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+							"#incrementalData_DF.show()\n",
+							"\n",
+							"incrementalData_DF.write \\\n",
+							"  .format(\"delta\") \\\n",
+							"  .mode(\"overwrite\") \\\n",
+							"  .option(\"overwriteSchema\", \"true\") \\\n",
+							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/{}\".format(stagingtable)) \\\n",
+							"  .saveAsTable(stagingtable)\n",
+							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
+						],
+						"outputs": [],
+						"execution_count": 14
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from dhtsr_space_class"
+						],
+						"outputs": [],
+						"execution_count": 16
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"qry_4_delete=\"\"\"\n",
+							"\n",
+							"DELETE FROM {} \n",
+							"\n",
+							"\"\"\"\n",
+							"df_4_delete=spark.sql(qry_4_delete.format(tablename))\n",
+							"print('Existing records are deleted') \n",
+							"\n",
+							"qry_ins_new_rows=\"\"\"\n",
+							"\n",
+							"INSERT INTO {}\n",
+							"select \n",
+							"trim(GROUP) ,\n",
+							"trim(OCCUPANCY_TYPE),\n",
+							"trim(SPACE_CLASS_CODE1),\n",
+							"trim(SPACE_CLASS_CODE2),\n",
+							"trim(SPACE_CLASS),\n",
+							"trim(SPACE_CLASS_DESCR)\n",
+							"from {}\n",
+							";\n",
+							"\"\"\"\n",
+							"d=spark.sql(qry_ins_new_rows.format(tablename,stagingtable))\n",
+							"\n",
+							"#d.show(10)"
+						],
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select count(*) from etlhubconfirmed.dhtr_space_class"
+						],
+						"outputs": [],
+						"execution_count": 21
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DHTR_SPACE_CLASS_ddl')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "ETLHub/CreateTableScripts"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sPool001494New",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "472g",
+					"driverCores": 80,
+					"executorMemory": "472g",
+					"executorCores": 80,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "ba4ef7a8-2400-4a2f-832a-f030cf569dfd"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+						"name": "sPool001494New",
+						"type": "Spark",
+						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.2",
+						"nodeCount": 10,
+						"cores": 80,
+						"memory": 472,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"--DHTR_SPACE_CLASS\n",
+							"\n",
+							"CREATE TABLE IF NOT EXISTS etlhubconfirmed.dhtr_space_class  (\n",
+							"GROUP VARCHAR(10),\n",
+							"OCCUPANCY_TYPE VARCHAR(20),\n",
+							"SPACE_CLASS_CODE1 VARCHAR(20),\n",
+							"SPACE_CLASS_CODE2 VARCHAR(50),\n",
+							"SPACE_CLASS VARCHAR(50),\n",
+							"SPACE_CLASS_DESCR VARCHAR(100)\n",
+							")\n",
+							"\n",
+							"USING DELTA\n",
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/reference/DHTR_SPACE_CLASS'"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from etlhubconfirmed.dhtr_space_class"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"DROP TABLE etlhubconfirmed.dhtr_space_class"
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"DELETE FROM etlhubconfirmed.dhtr_country"
+						],
+						"outputs": [],
+						"execution_count": 2
+					}
+				]
+			},
+			"dependsOn": []
 		}
 	]
 }
