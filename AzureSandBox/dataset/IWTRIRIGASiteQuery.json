@@ -1,0 +1,44 @@
+{
+	"name": "IWTRIRIGASiteQuery",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SftpTririga",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": "IWTRIRIGASiteQuery.csv",
+				"folderPath": "/GlobalDir/CustomerFiles/tririga"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}

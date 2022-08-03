@@ -1,0 +1,70 @@
+{
+	"name": "DF_TRIRIGA_CAMPUS_SFTP_PULL",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGASiteQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TririgaRemoteServerCampus"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGABuildingQueryCSV",
+						"type": "DatasetReference"
+					},
+					"name": "AzureDataLakeStorage"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Column_1 as string,",
+				"          Column_2 as string,",
+				"          Column_3 as string,",
+				"          Column_4 as string,",
+				"          Column_5 as string,",
+				"          Column_6 as string,",
+				"          Column_7 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TririgaRemoteServerCampus",
+				"TririgaRemoteServerCampus sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: ['rm -r /extract/Tririga/building/'],",
+				"     postCommands: ['mv /extract/Tririga/building/*.csv /extract/Tririga/building/IWTRIRIGABuildingQuery.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          CAMPUS_ID,",
+				"          BUILDING_ID,",
+				"          BUILDING_NAME,",
+				"          BUILDING_STATUS,",
+				"          BUILDING_OWNERSHIP_ID,",
+				"          BUILDING_OWNERSHIP_NAME,",
+				"          BUILDING_OWNERSHIP_DESCRIPTION,",
+				"          BUILDING_PRIMARY_USE_ID,",
+				"          BUILDING_PRIMARY_USE_NAME,",
+				"          BUILDING_PRIMARY_USE_DESCRIPTION,",
+				"          BUILDING_SECONDARY_USE_ID,",
+				"          BUILDING_SECONDARY_USE_NAME,",
+				"          BUILDING_SECONDARY_USE_DESCRIPTION,",
+				"          RENTABLE_AREA,",
+				"          ACTIVE_YEAR,",
+				"          ACTUAL_RETIREMENT_INACTIVATION",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
+			]
+		}
+	}
+}
