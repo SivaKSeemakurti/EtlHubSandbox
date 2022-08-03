@@ -1,0 +1,83 @@
+{
+	"name": "DF_TRIRIGA_CAMPUS_SFTP_PULL",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGACampusQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TririgaRemoteServerSite"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGASiteQueryCSV",
+						"type": "DatasetReference"
+					},
+					"name": "AzureDataLakeStorage"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Column_1 as string,",
+				"          Column_2 as string,",
+				"          Column_3 as string,",
+				"          Column_4 as string,",
+				"          Column_5 as string,",
+				"          Column_6 as string,",
+				"          Column_7 as string,",
+				"          Column_8 as string,",
+				"          Column_9 as string,",
+				"          Column_10 as string,",
+				"          Column_11 as string,",
+				"          Column_12 as string,",
+				"          Column_13 as string,",
+				"          Column_14 as string,",
+				"          Column_15 as string,",
+				"          Column_16 as string,",
+				"          Column_17 as string,",
+				"          Column_18 as string,",
+				"          Column_19 as string,",
+				"          Column_20 as string,",
+				"          Column_21 as string,",
+				"          Column_22 as string,",
+				"          Column_23 as string,",
+				"          Column_24 as string,",
+				"          Column_25 as string,",
+				"          Column_26 as string,",
+				"          Column_27 as string,",
+				"          Column_28 as string,",
+				"          Column_29 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TririgaRemoteServerSite",
+				"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0777,",
+				"     preCommands: ['rm -r /extract/Tririga/campus/'],",
+				"     postCommands: ['mv /extract/Tririga/campus/*.csv /extract/Tririga/campus/IWTRIRIGASiteQuery.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          SITE_ID,",
+				"          SITE_NAME,",
+				"          SITE_STATUS,",
+				"          GEOGRAPHY_ID,",
+				"          GEOGRAPHY_NAME,",
+				"          REGION_ID,",
+				"          REGION_NAME",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
+			]
+		}
+	}
+}
