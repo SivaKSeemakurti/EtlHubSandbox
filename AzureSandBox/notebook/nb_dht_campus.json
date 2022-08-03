@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2c6b8823-ce39-4b29-9ce7-cf955abfa652"
+				"spark.autotune.trackingId": "77569dd0-8f4e-4d07-886e-34f0374d9752"
 			}
 		},
 		"metadata": {
@@ -273,10 +273,16 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select B.GEOGRAPHY_ID,B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAMEB.SITE_ID, from ParentTable A\r\n",
+					"select B.GEOGRAPHY_ID,B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAMEB.SITE_ID,\r\n",
+					"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE \r\n",
+					"A.COUNTRY_NAME,A.CAMPUS_ID,A.CAMPUS_NAME,A.CAMPUS_STATUS,A.WORK_LOCATION_CODE, A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID,\r\n",
+					"A.STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,A.ICU_TIME_ZONE,A.PEOPLE_HOUSED_FLAG,\r\n",
+					"A.REMOTE_SUPPORT_FLAG,A.PRIMARY_CAMPUS_USE_NAME,A.PRIMARY_CAMPUS_USE_DESCR,A.CAMPUS_OWNERSHIP,A.CAMPUS_ACTIVATION_YEAR,\r\n",
+					"A.CAMPUS_INACTIVATION_YEAR\r\n",
+					"from ParentTable A\r\n",
 					"left outer join ChildTable B ON A.SITE_ID=B.SITE_ID"
 				],
-				"execution_count": 37
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
