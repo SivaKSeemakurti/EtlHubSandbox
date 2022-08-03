@@ -25874,85 +25874,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Notebook 10')]",
-			"type": "Microsoft.Synapse/workspaces/notebooks",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"nbformat": 4,
-				"nbformat_minor": 2,
-				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
-					"numExecutors": 2,
-					"conf": {
-						"spark.dynamicAllocation.enabled": "false",
-						"spark.dynamicAllocation.minExecutors": "2",
-						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e15b2956-d491-4f90-90aa-095ac7d646bd"
-					}
-				},
-				"metadata": {
-					"saveOutput": true,
-					"enableDebugMode": false,
-					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "python"
-					},
-					"language_info": {
-						"name": "python"
-					},
-					"sessionKeepAliveTimeout": 30
-				},
-				"cells": [
-					{
-						"cell_type": "code",
-						"source": [
-							"import pysftp\n",
-							"\n",
-							"    private_key = \"\"\"\n",
-							"-----BEGIN RSA PRIVATE KEY-----\n",
-							"MIIEowIBAAKCAQEAoCI0n54qAD4MwkO2tKfvFZCGQsYpEbagYtk1VohvFPfNgOTV\n",
-							"L9gmX6DvOM+CSrQvhlK0znRFPOJRm0egDtN4+Ev8gcpaWweEB41/z70uRJFQxFLr\n",
-							"bEHHWtPg5ftvY6fArbL81yJlVidcxLLJAGiX7suwdOvvboVQb+1ux8AX66NveIyK\n",
-							"0yaSE6w6B0GZfUuBfMad9yibbxXhH0BU9yVOMf5KJipxyJg/qDlXmV7nJ8whe2SP\n",
-							"Gir5a0lCGTPjrFmc5uTfF69XdzmoKhRJJFMKWof7M3e5NySLv/BtyJllXGpt0XoO\n",
-							"uTJSY8grLELLRVXwfsxE4pefnnX/gv1qKaNlAwIDAQABAoIBACQhc6QsKKfjWDeg\n",
-							"1aGPXpeMA28fjPatMST8g1dh80ZU3y5c82kXKRlck31K/MfkPfDdymPmwhSJsAYM\n",
-							"NCYEOwAzDOcwBBET8gtONu9lbQIVk5aoauwDL3rj4ZOilrBykjve7cOQxDKbMQhE\n",
-							"mquX7ef4V3kaHuzd8Zc/iEZTplIJM+es3ysT5g/kSboOWe3fQY8+OHN3tODyh6mm\n",
-							"7bAzZ0hBNi0YxVrt75gA0uB7dew+tMwOvke13vuL/KSTbQfrmtPb1BKgmfHabEnm\n",
-							"ORC9XTqx4L6ea9iQR0JnmaYzmcSHgKXzDvAMH62B/g6pBUi3QC8b6fy7o+LEdVsH\n",
-							"Tt72VRECgYEAzCohpXG6lbNFThl22zoZy+wClWFjCuhs4KPoVxkMWZo6U5IbkJoN\n",
-							"nlVFugjMS1gwEEtXIu7BOWGvjLXFTy5Lp7dIR/h1ujHCaOcDeZbHTEhG1M1Rb5ir\n",
-							"cbiUr1peICaLt4sKynsZOxYK5Hh9ArIalFyuVSn1T8+RPi0r2gBO2xsCgYEAyMo9\n",
-							"jqnAlvI8jBS1iSBkkN8krV7wt/hK2I5XtXJ2zFRyJ3apk4pYPeHOo1eBPLfuu854\n",
-							"RPvIpTIllx3MxFIjld9kONSG+VlD05cFv6kicsc4YdvfKOYO4A390pX1mvltZgqJ\n",
-							"191NgDBvXDFs5u2yoKHzZd4sipgprJYfgXnLlDkCgYBa9/bP8dGyPBOITf5Qhh3S\n",
-							"Z9Fq396ykIdavI2cqVOAZSDR9csEbi/dOZ982ci1VZDs4bTsordDqwv+RUuqETWy\n",
-							"gA7bypAiK2O1PCGnPpCEo7uzu9wqPjs9y4GsdDZ2WtZsLK7dM2Y1loe57xm8ZsFD\n",
-							"E9y1o6FjM1hC/PuKAhMguwKBgGqc596OR9JeQMPoYxOyfXNm6GSd2pb0YVlnCy8u\n",
-							"3eFUnWBS42uRs5T4Bu44EkkZKMvTr4yBXGJKpCb/DbDYJEj52o9KWXigayE4OTcx\n",
-							"KTdkjI15X56puRBCnZlpQoXNFsdtpQ9XVEVScm6zV62uXIBqPYDDXUch0E7xTz1C\n",
-							"XFQRAoGBAKvs5DfiR31qHRPEPN64p3w/VZFXJ9+ykD5nBgR8lLzZ5akpjDA7bFlj\n",
-							"3lu4jRmy0Fe6Wv8qUee4udPBrMWV+DRI/pmMuTm6MPYDGQKh88aOM+rUlfXlvfep\n",
-							"noBrnsraJW13roBpLc2vAkyo1Jed5L9KM+ar9BOHe8t0l2H7/U0q\n",
-							"-----END RSA PRIVATE KEY-----\n",
-							"\"\"\"  # can use password keyword in Connection instead\n",
-							"    srv = pysftp.Connection(host=\"your-host\", username=\"user-name\", private_key=private_key)\n",
-							"    srv.chdir('/var/web/public_files/media/uploads')  # change directory on remote server\n",
-							"    srv.put(file_path)  # To download a file, replace put with get\n",
-							"    srv.close()  # Close connection"
-						],
-						"outputs": [],
-						"execution_count": null
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/Notebook 3')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -54954,6 +54875,104 @@
 						],
 						"outputs": [],
 						"execution_count": 3
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/nb_send_email')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "f8f68e99-f5bb-4c3f-9e04-393db3f2b814"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import smtplib\n",
+							"from pathlib import Path\n",
+							"from email.mime.multipart import MIMEMultipart\n",
+							"from email.mime.base import MIMEBase\n",
+							"from email.mime.text import MIMEText\n",
+							"from email.utils import COMMASPACE, formatdate\n",
+							"from email import encoders"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"\n",
+							"def send_mail(send_from = \"siva.seemakurti@\", send_to = <to_email>, subject = \"Test\", message = \"Test\", files=[\"/mnt/<Mounted Point Directory>/\"],\n",
+							"              server=\"<SMTP Host>\", port=<SMTP Port>, username='<SMTP Username>', password='<SMTP Password>',\n",
+							"              use_tls=True):\n",
+							"\n",
+							"    msg = MIMEMultipart()\n",
+							"    msg['From'] = send_from\n",
+							"    msg['To'] = COMMASPACE.join(send_to)\n",
+							"    msg['Date'] = formatdate(localtime=True)\n",
+							"    msg['Subject'] = subject\n",
+							"\n",
+							"    msg.attach(MIMEText(message))\n",
+							"\n",
+							"    for path in files:\n",
+							"        part = MIMEBase('application', \"octet-stream\")\n",
+							"        with open(path, 'rb') as file:\n",
+							"            part.set_payload(file.read())\n",
+							"        encoders.encode_base64(part)\n",
+							"        part.add_header('Content-Disposition',\n",
+							"                        'attachment; filename=\"{}\"'.format(Path(path).name))\n",
+							"        msg.attach(part)\n",
+							"\n",
+							"    smtp = smtplib.SMTP(server, port)\n",
+							"    if use_tls:\n",
+							"        smtp.starttls()\n",
+							"    smtp.login(username, password)\n",
+							"    smtp.sendmail(send_from, send_to, msg.as_string())\n",
+							"    smtp.quit()"
+						],
+						"outputs": [],
+						"execution_count": null
 					}
 				]
 			},
