@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "37441e08-5599-42fc-860c-f7235c113012"
+				"spark.autotune.trackingId": "86b8bbb8-30b1-4359-a688-7efad9fa37af"
 			}
 		},
 		"metadata": {
@@ -63,9 +63,9 @@
 				"source": [
 					"%%sql\r\n",
 					"-- DBXDH.DHT_CAMPUS definition\r\n",
-					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_CAMPUS  (\t\r\n",
-					"CAMPUS_KEY INT NOT NULL,\r\n",
-					"VERSION INT NOT NULL ,\r\n",
+					"CREATE TABLE etlhubConfirmed.dht_campus (\t\r\n",
+					"CAMPUS_KEY INTEGER NOT NULL,\r\n",
+					"VERSION INTEGER NOT NULL ,\r\n",
 					"GEOGRAPHY_ID VARCHAR(5),\r\n",
 					"GEOGRAPHY_NAME VARCHAR(64),\r\n",
 					"REGION_ID VARCHAR(8),\r\n",
@@ -102,16 +102,40 @@
 					"EXTRACT_DT TIMESTAMP, -- Load Cycle date, contains same value for all the records inserted in a single batch\r\n",
 					"REC_START_DT TIMESTAMP, --SCD TYpe 2 start date\r\n",
 					"REC_END_DT TIMESTAMP, -- SCD Type 2 End date, will have high date (9999-12-31) for active dimensional row\r\n",
-					"SOURCE_SYSTEM STRING, -- Name of the source system\r\n",
-					"REC_CHECKSUM STRING, -- Hash value of all dimensional columns. Used to identify changed records \r\n",
-					"IMG_LST_UPD_DT TIMESTAMP, --Timestamp of when the record got updated in table\r\n",
-					"IMG_CREATED_DT TIMESTAMP --Timestamp of when the record got inserted in table\r\n",
+					"SOURCE_SYSTEM VARCHAR(10), \r\n",
+					"REC_CHECKSUM VARCHAR(32), \r\n",
+					"IMG_LST_UPD_DT TIMESTAMP, \r\n",
+					"IMG_CREATED_DT TIMESTAMP \r\n",
 					")\r\n",
 					"USING DELTA\r\n",
 					"PARTITIONED BY (CURRENT_IND)\r\n",
-					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS'"
+					"-- specify data lake folder location\r\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS' "
 				],
-				"execution_count": 5
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from etlhubConfirmed.dht_campus"
+				],
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -134,7 +158,7 @@
 					"%%sql\n",
 					"DROP TABLE etlhubConfirmed.DHT_CAMPUS"
 				],
-				"execution_count": 4
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
