@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "586d0ee6-d03e-4d1a-b73b-5a8014ec911e"
+				"spark.autotune.trackingId": "eed56ffd-ceba-4141-b2c1-921f03a3d90e"
 			}
 		},
 		"metadata": {
@@ -262,7 +262,7 @@
 					"RejStteProvDataDF.createOrReplaceTempView('RejStteProvDataView')\n",
 					"\n",
 					"qry_IncrementalDataDF=\"\"\"\n",
-					"select distinct B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,B.SITE_NAME\n",
+					"select distinct B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,B.SITE_NAME,\n",
 					"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE ,\n",
 					"cast(C.mediumDescription AS VARCHAR(64)) as COUNTRY_NAME,A.CAMPUS_ID,A.CAMPUS_NAME,A.CAMPUS_STATUS,A.WORK_LOCATION_CODE, \n",
 					"A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID, \n",
@@ -291,7 +291,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 37
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
@@ -337,7 +337,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 33
+				"execution_count": 39
 			},
 			{
 				"cell_type": "markdown",
@@ -465,7 +465,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 26
+				"execution_count": 40
 			},
 			{
 				"cell_type": "code",
@@ -529,7 +529,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 27
+				"execution_count": 41
 			},
 			{
 				"cell_type": "code",
@@ -618,78 +618,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 36
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select \r\n",
-					"--COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \r\n",
-					"1 AS VERSION\r\n",
-					",GEOGRAPHY_ID\r\n",
-					",GEOGRAPHY_NAME\r\n",
-					",REGION_ID\r\n",
-					",REGION_NAME\r\n",
-					",SITE_ID\r\n",
-					",WORLD_REGION_CODE\r\n",
-					",WORLD_REGION_NAME\r\n",
-					",MARKET_TEAM_REGION_CODE\r\n",
-					",MARKET_TEAM_REGION_NAME\r\n",
-					",COUNTRY_CODE\r\n",
-					",COUNTRY_NAME\r\n",
-					",CAMPUS_ID\r\n",
-					",CAMPUS_NAME\r\n",
-					",CAMPUS_STATUS\r\n",
-					",WORK_LOCATION_CODE\r\n",
-					",ADDRESS, CITY\r\n",
-					",STATE_PROVINCE_ID\r\n",
-					",STATE_PROVINCE_NAME\r\n",
-					",POSTAL_CODE\r\n",
-					",LATITUDE\r\n",
-					",LONGITUDE\r\n",
-					",UTC_OFFSET\r\n",
-					",ICU_TIME_ZONE\r\n",
-					",PEOPLE_HOUSED_FLAG\r\n",
-					",REMOTE_SUPPORT_FLAG\r\n",
-					",PRIMARY_CAMPUS_USE_NAME\r\n",
-					",PRIMARY_CAMPUS_USE_DESCR\r\n",
-					",CAMPUS_OWNERSHIP\r\n",
-					",CAMPUS_ACTIVATION_YEAR\r\n",
-					",CAMPUS_INACTIVATION_YEAR\r\n",
-					",   'Y' AS CURRENT_IND\r\n",
-					",   '{}' AS EXTRACT_DT\r\n",
-					",   '{}' AS REC_START_DT\r\n",
-					",   '9999-12-31 00:00:00' as REC_END_DT\r\n",
-					",   'Tririga' AS SOURCE_SYSTEM\r\n",
-					",    column_hash as REC_CHECKSUM\r\n",
-					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\r\n",
-					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
-					"    from DHTS_CAMPUS A \r\n",
-					"WHERE existing_REC_CHECKSUM is null\r\n",
-					"AND NOT EXISTS\r\n",
-					"(SELECT 1 FROM etlhubConfirmed.dht_campus B\r\n",
-					"WHERE A.CAMPUS_ID=B.CAMPUS_ID\r\n",
-					"and b.CURRENT_IND='Y'\r\n",
-					"AND A.column_hash=B.REC_CHECKSUM) \r\n",
-					""
-				],
-				"execution_count": 35
+				"execution_count": 42
 			},
 			{
 				"cell_type": "code",
@@ -733,7 +662,7 @@
 					"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 				],
-				"execution_count": 40
+				"execution_count": 43
 			},
 			{
 				"cell_type": "code",
@@ -766,7 +695,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
 					""
 				],
-				"execution_count": 43
+				"execution_count": 44
 			},
 			{
 				"cell_type": "code",
@@ -794,6 +723,7 @@
 					",REGION_ID\n",
 					",REGION_NAME\n",
 					",SITE_ID\n",
+					",SITE_NAME\n",
 					",WORLD_REGION_CODE\n",
 					",WORLD_REGION_NAME\n",
 					",MARKET_TEAM_REGION_CODE\n",
@@ -841,7 +771,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 44
+				"execution_count": 45
 			},
 			{
 				"cell_type": "code",
@@ -875,7 +805,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 				],
-				"execution_count": 45
+				"execution_count": 46
 			},
 			{
 				"cell_type": "code",
@@ -920,7 +850,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 46
+				"execution_count": 47
 			}
 		]
 	}
