@@ -1,5 +1,5 @@
 {
-	"name": "PL_TRIRIGA_CAMPUS_SFTP_PULL",
+	"name": "PL_TRIRIGA_SITE_SFTP_PULL",
 	"properties": {
 		"activities": [
 			{
