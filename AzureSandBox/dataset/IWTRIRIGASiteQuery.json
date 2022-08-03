@@ -15,28 +15,36 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": [
 			{
+				"name": "SITE_ID",
 				"type": "String"
 			},
 			{
+				"name": "SITE_NAME",
 				"type": "String"
 			},
 			{
+				"name": "SITE_STATUS",
 				"type": "String"
 			},
 			{
+				"name": "GEOGRAPHY_ID",
 				"type": "String"
 			},
 			{
+				"name": "GEOGRAPHY_NAME",
 				"type": "String"
 			},
 			{
+				"name": "REGION_ID",
 				"type": "String"
 			},
 			{
+				"name": "REGION_NAME",
 				"type": "String"
 			}
 		]
