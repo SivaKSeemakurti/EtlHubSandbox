@@ -42,7 +42,7 @@
 				"     validateSchema: false,",
 				"     umask: 0777,",
 				"     preCommands: ['rm -r /extract/Tririga/campus/'],",
-				"     postCommands: ['mv /extract/Tririga/campus/*.csv /extract/Tririga/building/IWTRIRIGASiteQuery.csv'],",
+				"     postCommands: ['mv /extract/Tririga/campus/*.csv /extract/Tririga/campus/IWTRIRIGASiteQuery.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
