@@ -45,6 +45,15 @@
 				"     postCommands: ['mv /extract/Tririga/building/*.csv /extract/Tririga/building/IWTRIRIGABuildingQuery.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          SITE_ID,",
+				"          SITE_NAME,",
+				"          SITE_STATUS,",
+				"          GEOGRAPHY_ID,",
+				"          GEOGRAPHY_NAME,",
+				"          REGION_ID,",
+				"          REGION_NAME",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
 			]
 		}
