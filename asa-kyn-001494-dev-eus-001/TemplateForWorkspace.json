@@ -605,6 +605,7 @@
 								"value": "@activity('Get Metadata1').output.childItems",
 								"type": "Expression"
 							},
+							"isSequential": true,
 							"activities": [
 								{
 									"name": "Set variable1",
@@ -54468,7 +54469,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "d8f2c19d-30b2-456d-a350-afa125559c36"
+						"spark.autotune.trackingId": "fb64267b-8011-4725-902f-ac62178cc1dd"
 					}
 				},
 				"metadata": {
@@ -54493,8 +54494,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
