@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "58edce91-8498-4792-b2e2-13d97317ecd1"
+				"spark.autotune.trackingId": "aca94294-6f19-4c5f-9f46-2466324760d3"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 20
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -162,7 +162,7 @@
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"execution_count": 21
+				"execution_count": 27
 			},
 			{
 				"cell_type": "markdown",
@@ -230,17 +230,24 @@
 					"print (csv_path)\n",
 					"print (csv_path1)\n",
 					"\n",
-					"\n",
 					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 					"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
 					"\n",
 					"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
 					"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
 					"\n",
+					"qry_RefIntegrityFailDF=\"\"\"\n",
+					"select distinct A.SITE_ID,B.SITE_ID\n",
+					"from ChildTable A\n",
+					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
+					"where A.SITE_ID IS NULL;\n",
+					"\"\"\"\n",
+					"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
+					"RejDataDF.createOrReplaceTempView('RejDataView')\n",
 					"\n",
 					""
 				],
-				"execution_count": 22
+				"execution_count": 34
 			},
 			{
 				"cell_type": "code",
@@ -261,15 +268,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"--qry_RefIntegrityFailDF=\"\"\"\r\n",
-					"select distinct A.SITE_ID,B.SITE_ID\r\n",
-					"from ChildTable A\r\n",
-					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \r\n",
-					"--where A.SITE_ID IS NULL  --);\r\n",
-					"--\"\"\"\r\n",
-					"--DIMOPPDataDF=spark.sql(qry_DIMOPPDataDF)"
+					"select * from RejDataView"
 				],
-				"execution_count": 24
+				"execution_count": 35
 			},
 			{
 				"cell_type": "code",
