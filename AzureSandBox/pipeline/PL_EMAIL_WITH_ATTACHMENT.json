@@ -84,7 +84,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"url": "https://lpemailalert.azurewebsites.net:443/api/send_email_with_attachment/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SWwWEWRpypmYVUCe-PR8VCygIAacKtzfPP_FcQV0gZk",
+								"url": "https://prod-37.westus.logic.azure.com:443/workflows/8d8c446f15cc420fb463e0b9770fe094/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=M-j7XM7xGl5O0cddQucoPzYyvzC40Dx6-Qr0_Dr1VaE",
 								"connectVia": {
 									"referenceName": "AutoResolveIntegrationRuntime",
 									"type": "IntegrationRuntimeReference"
