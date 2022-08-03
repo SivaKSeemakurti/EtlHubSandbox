@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "IWTRIRIGASiteQueryCSV",
+						"referenceName": "IWTRIRIGACampusQueryCSV",
 						"type": "DatasetReference"
 					},
 					"name": "AzureDataLakeStorage"
@@ -59,9 +59,19 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> TririgaRemoteServerSite",
 				"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          SITE_ID as string,",
+				"          SITE_NAME as string,",
+				"          SITE_STATUS as string,",
+				"          GEOGRAPHY_ID as string,",
+				"          GEOGRAPHY_NAME as string,",
+				"          REGION_ID as string,",
+				"          REGION_NAME as string",
+				"     ),",
 				"     umask: 0777,",
 				"     preCommands: ['rm -r /extract/Tririga/campus/'],",
 				"     postCommands: ['mv /extract/Tririga/campus/*.csv /extract/Tririga/campus/IWTRIRIGASiteQuery.csv'],",
