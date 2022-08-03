@@ -25348,7 +25348,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e451a732-3f41-44b1-9d9f-daa1e5d01228"
+						"spark.autotune.trackingId": "345fe979-bc31-409c-a763-977a8e552ae8"
 					}
 				},
 				"metadata": {
@@ -50682,7 +50682,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "91db32fa-d3be-4ba4-9983-451d6ed9b9c5"
+						"spark.autotune.trackingId": "41322d51-8f40-4f09-94c9-4c5482095fb0"
 					}
 				},
 				"metadata": {
@@ -50707,7 +50707,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -59336,7 +59337,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "1f53ef3f-ada8-4b54-b729-8e3b1dec0d19"
+						"spark.autotune.trackingId": "8f403a08-8525-4d3d-96c8-3c2e347a0b43"
 					}
 				},
 				"metadata": {
@@ -59431,7 +59432,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 12
 					},
 					{
 						"cell_type": "markdown",
@@ -59478,7 +59479,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 7
+						"execution_count": 13
 					},
 					{
 						"cell_type": "markdown",
@@ -59528,44 +59529,46 @@
 							"print('Primary storage account path: ' + adls_path) \n",
 							"\n",
 							"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
-							"print('Primary storage account path: ' + adls_path) \n",
+							"print('Primary archive path: ' + adls_arch_path) \n",
 							"\n",
 							"print(natural_key)\n",
 							"\n",
 							"relative_archive_path\n",
 							"# Read a csv file \n",
 							"csv_path = adls_path + file_name\n",
+							"csv_path1= adls_path + 'IWTRIRIGASiteQuery.csv'\n",
 							"arch_fil_name=file_name.rsplit(\".\")\n",
+							"arch_fil_name1='IWTRIRIGASiteQuery.csv'.rsplit(\".\")\n",
 							"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
+							"csv_archive_path1 = adls_arch_path + arch_fil_name1[0] + '_' + date + '.' + arch_fil_name1[1]\n",
 							"print (csv_archive_path)\n",
+							"print (csv_archive_path1)\n",
+							"print (csv_path)\n",
+							"print (csv_path1)\n",
+							"\n",
 							"\n",
 							"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
+							"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
 							"\n",
-							"#incrementalData_DF = incrementalData_DF1.withColumn('BUILDING_BUSINESS_ID', concat_ws(\"CAMPUS_ID\", \"BUILDING_ID\"))\n",
+							"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
+							"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
 							"\n",
-							"#incrementalData_DF = incrementalData_DF1.withColumn(natural_key, concat_ws(\"~\", natural_key1, natural_key2))\n",
 							"\n",
-							"#incrementalData_DF.write.csv(csv_archive_path, header = 'true') : Write file into archive directory\n",
-							"\n",
-							"# Get column list for creating Rec_Checksum\n",
-							"\n",
-							"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\n",
-							"# 2. Dups in target already\n",
-							"\n",
-							"col_list=[]\n",
-							"for i in incrementalData_DF.columns:\n",
-							"    col_list.append(i)\n",
-							"\n",
-							"# Add a checsum column to help identify the changed rows\n",
-							"\n",
-							"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
-							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
-							"\n",
-							"#sell_cyclecolhashDF.show()\n",
-							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
+							"qry_RefIntegrityFailDF=\"\"\"\n",
+							"select distinct OPP.OPPORTUNITY_KEY,role.OPPORTUNITY_ROLE_KEY,crm_role.OPPORTUNITY_ROLE_KEY as CRM_ROLE_KEY,emp.EMPLOYEE_KEY \n",
+							"from SourceView src \n",
+							"left outer join etlhubConfirmed.dht_opportunity OPP on trim(src.OPPORTUNITY_NUM)=trim(OPP.OPPORTUNITY_NUM) \n",
+							"left outer join etlhubConfirmed.dht_opportunity_role role on src.OPP_ROLE=role.ROLE_CD \n",
+							"left outer join etlhubConfirmed.dht_opportunity_role crm_role on src.CRM_ROLE_CODE=crm_role.ROLE_CD \n",
+							"left outer join (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID\n",
+							"from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq \n",
+							"from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 \n",
+							"where t2.seq = 1) emp ON emp.CNUM_ID=src.EMP_CNUM where OPP.current_ind = 'Y' and role.current_ind = 'Y' and crm_role.current_ind = 'Y';\n",
+							"\"\"\"\n",
+							"DIMOPPDataDF=spark.sql(qry_DIMOPPDataDF)"
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -59579,18 +59582,25 @@
 									"deleting": false
 								}
 							},
-							"microsoft": {
-								"language": "sparksql"
-							},
+							"microsoft": {},
 							"collapsed": false
 						},
 						"source": [
-							"%%sql\n",
-							"select * from incrementalData_DF2\n",
+							"col_list=[]\n",
+							"for i in incrementalData_DF.columns:\n",
+							"    col_list.append(i)\n",
+							"\n",
+							"# Add a checsum column to help identify the changed rows\n",
+							"\n",
+							"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
+							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+							"\n",
+							"#sell_cyclecolhashDF.show()\n",
+							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 15
 					},
 					{
 						"cell_type": "code",
