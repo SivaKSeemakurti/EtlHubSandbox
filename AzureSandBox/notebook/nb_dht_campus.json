@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3f96355e-2eb8-48ce-9c7d-2f3c0cc1e208"
+				"spark.autotune.trackingId": "895c6404-f6e2-4216-aaa4-7f23e6030c52"
 			}
 		},
 		"metadata": {
@@ -253,11 +253,11 @@
 					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\n",
 					"where B.SITE_ID is not null \n",
 					"\"\"\"\n",
-					"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
+					"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\n",
 					"\n",
 					""
 				],
-				"execution_count": 41
+				"execution_count": 62
 			},
 			{
 				"cell_type": "code",
@@ -285,9 +285,10 @@
 					"A.REMOTE_SUPPORT_FLAG,A.PRIMARY_CAMPUS_USE_NAME,A.PRIMARY_CAMPUS_USE_DESCRIPTION as PRIMARY_CAMPUS_USE_DESCR,\r\n",
 					"A.CAMPUS_OWNERSHIP,A.CAMPUS_ACTIVATION_YEAR,A.CAMPUS_INACTIVATION_YEAR \r\n",
 					"from ChildTable   A\r\n",
-					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)"
+					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\r\n",
+					"where B.SITE_ID is not null"
 				],
-				"execution_count": 60
+				"execution_count": 61
 			},
 			{
 				"cell_type": "code",
