@@ -615,7 +615,7 @@
 									"typeProperties": {
 										"variableName": "filefullpath",
 										"value": {
-											"value": "@concat('/etohubfilestorage/reject/',item().name)",
+											"value": "@concat('/etlhubfilestorage/reject/',item().name)",
 											"type": "Expression"
 										}
 									}
@@ -647,10 +647,10 @@
 										},
 										"method": "POST",
 										"headers": {
-											"Content-Type": "'JSON'"
+											"Content-Type": "'application/json'"
 										},
 										"body": {
-											"value": "{\"ErrorMessage\":\"\",\n\"JobStatus\":\"Success\",\n\"dataFactoryName\":\"\",\n\"pipelineName\":@{pipeline().Pipeline},\n\"message\":\"\",\n\"receiver\":\"siva.seemakurtikyndryl.com\",\n\"filepath\":@{variables('filefullpath')}}",
+											"value": "{'ErrorMessage':'',\n'JobStatus':'Success',\n'dataFactoryName':'',\n'pipelineName':@{pipeline().Pipeline},\n'message':'',\n'receiver':'siva.seemakurtikyndryl.com',\n'filepath':@{variables('filefullpath')}}",
 											"type": "Expression"
 										}
 									}
