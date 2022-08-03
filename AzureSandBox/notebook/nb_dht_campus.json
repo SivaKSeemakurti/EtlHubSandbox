@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8745ff65-52d7-4b04-b3ae-c6c55d3ce376"
+				"spark.autotune.trackingId": "6488f855-8ba0-40e9-9ba1-ea8df6b3e23f"
 			}
 		},
 		"metadata": {
@@ -242,23 +242,23 @@
 					"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
 					"RejDataDF.createOrReplaceTempView('RejDataView')\n",
 					"\n",
-					"qry_RefIntegrityFailCntryDF1=\"\"\"\n",
+					"qry_RefIntegrityFailCntryDF=\"\"\"\n",
 					"select A.*\n",
 					"from ChildTable A\n",
 					"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\n",
 					"where C.CODE IS NULL;\n",
 					"\"\"\"\n",
-					"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF1)\n",
+					"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF)\n",
 					"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')\n",
 					"\n",
 					"\n",
-					"qry_RefIntegrityFailStteProvDF1=\"\"\"\n",
+					"qry_RefIntegrityFailStteProvDF=\"\"\"\n",
 					"select A.*\n",
 					"from ChildTable A\n",
 					"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD)\n",
 					"where d.STTE_PROV_CD IS NULL;\n",
 					"\"\"\"\n",
-					"RejStteProvDataDF=spark.sql(qry_RefIntegrityFailStteProvDF1)\n",
+					"RejStteProvDataDF=spark.sql(qry_RefIntegrityFailStteProvDF)\n",
 					"RejStteProvDataDF.createOrReplaceTempView('RejStteProvDataView')\n",
 					"\n",
 					"qry_IncrementalDataDF=\"\"\"\n",
@@ -273,7 +273,7 @@
 					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\n",
 					"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\n",
 					"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD)\n",
-					"where B.SITE_ID is not null\n",
+					"where B.SITE_ID is not null AND C.CODE IS NOT NULL AND d.STTE_PROV_CD IS NOT NULL\n",
 					"\"\"\"\n",
 					"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\n",
 					"\n",
@@ -291,7 +291,30 @@
 					"\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from incrementalData_DF2"
+				],
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
