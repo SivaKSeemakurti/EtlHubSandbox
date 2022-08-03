@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "28194957-1319-4f69-8f6b-56808c3159a7"
+				"spark.autotune.trackingId": "e3132fef-f4ea-47fe-ad25-ae86f4be35a9"
 			}
 		},
 		"metadata": {
@@ -147,17 +147,14 @@
 				"source": [
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
-					"relative_path = 'extract/Tririga/building/' # fill in your relative folder path \n",
+					"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='IWTRIRIGABuildingQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
+					"file_name='IWTRIRIGACampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key1=\"CAMPUS_ID\"\n",
-					"natural_key2=\"BUILDING_ID\"\n",
-					"natural_key=\"BUSINESS_ID\"\n",
-					"MinimumTririgaBuildingCount=750\n",
 					"MinimumTririgaCampusCount=450\n",
-					"tablename=\"etlhubConfirmed.dht_building\"\n",
-					"stagingtable=\"DHTS_BUILDING\"\n",
-					"keycolumn=\"BUILDING_KEY\"\n",
+					"tablename=\"etlhubConfirmed.dht_campus\"\n",
+					"stagingtable=\"DHTS_CAMPUS\"\n",
+					"keycolumn=\"CAMPUS_KEY\"\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
