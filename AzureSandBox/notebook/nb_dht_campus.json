@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6488f855-8ba0-40e9-9ba1-ea8df6b3e23f"
+				"spark.autotune.trackingId": "ac87f9d1-dffe-42de-8cb3-479efea16430"
 			}
 		},
 		"metadata": {
@@ -304,29 +304,6 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select * from incrementalData_DF2"
-				],
-				"execution_count": 7
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
 					}
 				},
 				"source": [
@@ -360,7 +337,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 36
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
@@ -380,6 +357,29 @@
 					"- Referential Integrity checks\n",
 					""
 				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT * FROM incrementalData_DF2 where CAMPUS_ID = 'KJP51456'"
+				],
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -460,7 +460,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 37
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
