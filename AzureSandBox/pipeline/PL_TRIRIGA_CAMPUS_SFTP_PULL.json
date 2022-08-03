@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_TRIRIGA_CAMPUS_SFTP_PULL",
+						"referenceName": "DF_TRIRIGA_SITE_SFTP_PULL",
 						"type": "DataFlowReference"
 					},
 					"compute": {
