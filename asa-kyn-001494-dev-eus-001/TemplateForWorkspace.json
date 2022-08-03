@@ -4562,6 +4562,7 @@
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
+					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": []
@@ -17537,9 +17538,9 @@
 						"     ignoreNoFilesFound: false) ~> TririgaRemoteServerCampus",
 						"TririgaRemoteServerCampus sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     umask: 0222,",
-						"     preCommands: ['rm -r /extract/Tririga/building/'],",
-						"     postCommands: ['mv /extract/Tririga/building/*.csv /extract/Tririga/building/IWTRIRIGABuildingQuery.csv'],",
+						"     umask: 0777,",
+						"     preCommands: ['rm -r /extract/Tririga/campus/'],",
+						"     postCommands: ['mv /extract/Tririga/campus/*.csv /extract/Tririga/building/IWTRIRIGASiteQuery.csv'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
