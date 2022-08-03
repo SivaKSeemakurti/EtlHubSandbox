@@ -4486,6 +4486,91 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/IWTRIRIGASiteQuery')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SftpTririga",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"fileName": "IWTRIRIGASiteQuery.csv",
+						"folderPath": "/GlobalDir/CustomerFiles/tririga"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SITE_ID",
+						"type": "String"
+					},
+					{
+						"name": "SITE_NAME",
+						"type": "String"
+					},
+					{
+						"name": "SITE_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "GEOGRAPHY_ID",
+						"type": "String"
+					},
+					{
+						"name": "GEOGRAPHY_NAME",
+						"type": "String"
+					},
+					{
+						"name": "REGION_ID",
+						"type": "String"
+					},
+					{
+						"name": "REGION_NAME",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/SftpTririga')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/IWTRIRIGASiteQueryCSV')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "IWTRIRIGASiteQueryCSV",
+						"folderPath": "extract/Tririga/building",
+						"fileSystem": "etlhubfilestorage"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureDataLakeStorage2')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/P_ACCTRPTS_DIM')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -17406,6 +17491,73 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/ln_rfs_pgmp')]",
 				"[concat(variables('workspaceId'), '/datasets/dl_tgt_geo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DF_TRIRIGA_CAMPUS_SFTP_PULL')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "ETLHub"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "IWTRIRIGASiteQuery",
+								"type": "DatasetReference"
+							},
+							"name": "TririgaRemoteServerCampus"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "IWTRIRIGASiteQueryCSV",
+								"type": "DatasetReference"
+							},
+							"name": "AzureDataLakeStorage"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          SITE_ID as string,",
+						"          SITE_NAME as string,",
+						"          SITE_STATUS as string,",
+						"          GEOGRAPHY_ID as string,",
+						"          GEOGRAPHY_NAME as string,",
+						"          REGION_ID as string,",
+						"          REGION_NAME as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> TririgaRemoteServerCampus",
+						"TririgaRemoteServerCampus sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0222,",
+						"     preCommands: ['rm -r /extract/Tririga/building/'],",
+						"     postCommands: ['mv /extract/Tririga/building/*.csv /extract/Tririga/building/IWTRIRIGABuildingQuery.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          SITE_ID,",
+						"          SITE_NAME,",
+						"          SITE_STATUS,",
+						"          GEOGRAPHY_ID,",
+						"          GEOGRAPHY_NAME,",
+						"          REGION_ID,",
+						"          REGION_NAME",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGASiteQuery')]",
+				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGASiteQueryCSV')]"
 			]
 		},
 		{
@@ -45948,11 +46100,14 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b7b1fbc0-e35e-4a79-ab7a-ca132e8d7bc1"
+						"spark.autotune.trackingId": "180bc052-304e-4cd8-92cb-86c06c1aeff9"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -45968,13 +46123,14 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"automaticScaleJobs": false
+						"extraHeader": null
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -45994,7 +46150,8 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_employee by sourceing data from BMSIW's EMF datamart.\n",
 							"Since BMSIW is not accessible from Azure, a datastage job src_BMSIW_Employee_Azure is executed on datastage to push the BMSIW extract to adls.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -46007,7 +46164,8 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -46038,6 +46196,7 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 51
 					},
@@ -46052,7 +46211,8 @@
 						},
 						"source": [
 							"Define Parameters"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -46080,6 +46240,7 @@
 							"keycolumn=\"EMPLOYEE_KEY\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 52
 					},
@@ -46094,7 +46255,8 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -46109,7 +46271,8 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/BMSIW/DS_EMPLOYEE_DATA.csv"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -46159,6 +46322,7 @@
 							"#sell_cyclecolhashDF.show()\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 53
 					},
@@ -46205,6 +46369,7 @@
 							"  .saveAsTable(\"DHTS_EMPLOYEE\")\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 54
 					},
@@ -46229,6 +46394,7 @@
 							"%%sql\n",
 							"select * from existingDataDF1 where EXISTING_employee_serial_num='001518' and EXISTING_employee_country_code='661'"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 55
 					},
@@ -46247,7 +46413,8 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -46306,6 +46473,7 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 56
 					},
@@ -46331,6 +46499,7 @@
 							"select * from etlhubconfirmed.dht_employee where EMPLOYEE_BUSINESS_CD='ZZ03FP~693~NEWIS'\n",
 							"    --AND CURRENT_IND='Y'"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 43
 					},
@@ -46396,6 +46565,7 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 66
 					},
@@ -46523,6 +46693,7 @@
 							"\n",
 							"#d.show(10)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 58
 					},
@@ -46557,6 +46728,7 @@
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 60
 					},
@@ -46615,6 +46787,7 @@
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							";"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 61
 					},
@@ -46726,6 +46899,7 @@
 							"e=spark.sql(qry_ins_changed_rows)\n",
 							"#e.show(4)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 62
 					},
@@ -46760,6 +46934,7 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 63
 					},
@@ -46814,6 +46989,7 @@
 							";\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 64
 					},
@@ -46860,6 +47036,7 @@
 							"    and date(img_lst_upd_dt)='2022-06-30'\n",
 							"        ;  "
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 65
 					}
@@ -55202,7 +55379,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "1dd798be-fc2a-4bf5-81f0-8a2533994450"
+						"spark.autotune.trackingId": "7e3b456a-b860-4747-9a2e-d058dbde383c"
 					}
 				},
 				"metadata": {
@@ -55227,15 +55404,13 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from azure.storage.blob import BlobClient\n",
 							"import pandas as pd\n",
