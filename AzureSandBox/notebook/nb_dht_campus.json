@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f7f2be8d-b676-438d-b53a-ca05047b1219"
+				"spark.autotune.trackingId": "87478808-5aed-4409-8b0a-440829b5df92"
 			}
 		},
 		"metadata": {
@@ -149,7 +149,7 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
-					"file_name='IWTRIRIGACampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
+					"file_name='IWTRIRIGASCampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key=\"CAMPUS_ID\"\n",
 					"MinimumTririgaCampusCount=450\n",
 					"tablename=\"etlhubConfirmed.dht_campus\"\n",
@@ -161,7 +161,7 @@
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"execution_count": 5
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -247,7 +247,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 33
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -271,7 +271,7 @@
 					"select * from incrementalData_DF2\n",
 					""
 				],
-				"execution_count": 34
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
