@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "dd375c1c-c254-4027-b081-e4ecdde066a0"
+				"spark.autotune.trackingId": "28194957-1319-4f69-8f6b-56808c3159a7"
 			}
 		},
 		"metadata": {
@@ -62,16 +62,16 @@
 					}
 				},
 				"source": [
-					"**Building Dimension load**\n",
+					"**Campus load**\n",
 					"\n",
-					"This notebook loads data to deltalake table etlhubConfirmed.DHT_BUILDING by sourcing data from Tririga system.\n",
+					"This notebook loads data to deltalake table etlhubConfirmed.DHT_CMAPUS by sourcing data from Tririga system.\n",
 					"The file is pulled to datastage server using SFTP protocol.\n",
 					"\n",
-					"The CSV formatted file is uploaded to adls for loading to BUILDING deltalake table created.\n",
+					"The CSV formatted file is uploaded to adls for loading to CAMPUS deltalake table created.\n",
 					"\n",
 					"The script used for file transfer is /home/resodba/trrgprocget.sh\n",
 					"\n",
-					"File Name: IWTRIRIGABuildingQuery.csv from /GlobalDir/CustomerFiles/tririga"
+					"File Name: IWTRIRIGACampusQuery.csv from /GlobalDir/CustomerFiles/tririga"
 				]
 			},
 			{
