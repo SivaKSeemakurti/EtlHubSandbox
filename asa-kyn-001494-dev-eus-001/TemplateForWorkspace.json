@@ -552,6 +552,59 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/PL_EMAIL_ATTACHMENT_TEST')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Web1",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-37.westus.logic.azure.com:443/workflows/8d8c446f15cc420fb463e0b9770fe094/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=M-j7XM7xGl5O0cddQucoPzYyvzC40Dx6-Qr0_Dr1VaE",
+							"connectVia": {
+								"referenceName": "AutoResolveIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"ErrorMessage": "",
+								"JobStatus": "Success",
+								"dataFactoryName": "",
+								"pipelineName": "pl_Country_Load",
+								"message": "",
+								"receiver": "siva.seemakurti@kyndryl.com",
+								"filepath": "/etlhubfilestorage/reject/Country(kyndryl).csv"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETLHub"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/PL_EMAIL_WITH_ATTACHMENT')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
