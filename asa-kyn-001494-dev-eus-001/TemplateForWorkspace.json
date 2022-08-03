@@ -25348,7 +25348,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6721a881-c3df-4ba4-ac85-236c062ff2be"
+						"spark.autotune.trackingId": "31a7f274-aa05-4892-924c-4c0823c714da"
 					}
 				},
 				"metadata": {
@@ -50682,7 +50682,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3fb65067-591e-4a4c-846d-93be0c5655f7"
+						"spark.autotune.trackingId": "ead3ef7f-207f-4725-841b-3266baca3257"
 					}
 				},
 				"metadata": {
@@ -59337,7 +59337,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "186d94f7-2753-4503-a308-ef3e028e573e"
+						"spark.autotune.trackingId": "716259aa-8ccf-4e84-accd-ff9dcf3ff4f4"
 					}
 				},
 				"metadata": {
@@ -59432,7 +59432,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 20
+						"execution_count": 26
 					},
 					{
 						"cell_type": "markdown",
@@ -59480,7 +59480,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 21
+						"execution_count": 27
 					},
 					{
 						"cell_type": "markdown",
@@ -59543,11 +59543,6 @@
 							"arch_fil_name1='IWTRIRIGASiteQuery.csv'.rsplit(\".\")\n",
 							"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 							"csv_archive_path1 = adls_arch_path + arch_fil_name1[0] + '_' + date + '.' + arch_fil_name1[1]\n",
-							"print (csv_archive_path)\n",
-							"print (csv_archive_path1)\n",
-							"print (csv_path)\n",
-							"print (csv_path1)\n",
-							"\n",
 							"\n",
 							"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 							"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
@@ -59555,11 +59550,28 @@
 							"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
 							"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
 							"\n",
+							"# To get the \n",
+							"qry_RefIntegrityFailDF=\"\"\"\n",
+							"select distinct A.SITE_ID,B.SITE_ID\n",
+							"from ChildTable A\n",
+							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
+							"where A.SITE_ID IS NULL;\n",
+							"\"\"\"\n",
+							"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
+							"RejDataDF.createOrReplaceTempView('RejDataView')\n",
+							"\n",
+							"qry_IncrementalDataDF=\"\"\"\n",
+							"select distinct A.SITE_ID,B.SITE_ID\n",
+							"from ChildTable A\n",
+							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
+							"where A.SITE_ID IS NULL;\n",
+							"\"\"\"\n",
+							"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
 							"\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 22
+						"execution_count": 34
 					},
 					{
 						"cell_type": "code",
@@ -59580,16 +59592,11 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"--qry_RefIntegrityFailDF=\"\"\"\r\n",
-							"select distinct A.SITE_ID,B.SITE_ID\r\n",
-							"from ChildTable A\r\n",
-							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \r\n",
-							"--where A.SITE_ID IS NULL  --);\r\n",
-							"--\"\"\"\r\n",
-							"--DIMOPPDataDF=spark.sql(qry_DIMOPPDataDF)"
+							"select B.GEOGRAPHY_ID,B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAMEB.SITE_ID, from ParentTable A\r\n",
+							"left outer join ChildTable B ON A.SITE_ID=B.SITE_ID"
 						],
 						"outputs": [],
-						"execution_count": 24
+						"execution_count": 37
 					},
 					{
 						"cell_type": "code",
