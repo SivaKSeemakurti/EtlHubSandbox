@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b857a41e-d81f-4495-a269-e6875ecee208"
+				"spark.autotune.trackingId": "520e79e2-ea8e-445d-8c89-430624786f33"
 			}
 		},
 		"metadata": {
@@ -265,15 +265,15 @@
 					"select distinct B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,\n",
 					"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE ,\n",
 					"cast(C.mediumDescription AS VARCHAR(64)) as COUNTRY_NAME,A.CAMPUS_ID,A.CAMPUS_NAME,A.CAMPUS_STATUS,A.WORK_LOCATION_CODE, \n",
-					"A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID, STTE_PROV_DESC as STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,\n",
+					"A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID, \n",
+					"'' as STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,\n",
 					"A.ICU_TIME_ZONE,A.PEOPLE_HOUSED_FLAG,A.REMOTE_SUPPORT_FLAG,A.PRIMARY_CAMPUS_USE_NAME,\n",
 					"A.PRIMARY_CAMPUS_USE_DESCRIPTION as PRIMARY_CAMPUS_USE_DESCR,\n",
 					"A.CAMPUS_OWNERSHIP,A.CAMPUS_ACTIVATION_YEAR,A.CAMPUS_INACTIVATION_YEAR \n",
 					"from ChildTable   A\n",
 					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\n",
 					"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\n",
-					"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD)\n",
-					"where B.SITE_ID is not null AND C.CODE IS NOT NULL AND d.STTE_PROV_CD IS NOT NULL\n",
+					"where B.SITE_ID is not null  \n",
 					"\"\"\"\n",
 					"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\n",
 					"\n",
@@ -291,7 +291,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 5
+				"execution_count": 32
 			},
 			{
 				"cell_type": "code",
@@ -337,7 +337,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 8
+				"execution_count": 33
 			},
 			{
 				"cell_type": "markdown",
@@ -449,7 +449,7 @@
 					"df5=spark.sql(qry5)\n",
 					"cnt3=df5.count()\n",
 					"\n",
-					"if cnt3 >= MinimumTririgaBuildingCount:\n",
+					"if cnt3 >= MinimumTririgaCampusCount:\n",
 					"    print(\"The number of rows in source data is more than the threshold, data can be processed\")\n",
 					"    status = 'success'\n",
 					"else:\n",
@@ -465,7 +465,7 @@
 					"\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -529,7 +529,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 23
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -562,11 +562,10 @@
 					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))\n",
 					"\n",
 					"qry_ins_new_rows=\"\"\"\n",
-					"\n",
 					"INSERT INTO {}\n",
-					"\tselect \n",
-					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
-					",\t1 AS VERSION\n",
+					"select \n",
+					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
+					",1 AS VERSION\n",
 					",GEOGRAPHY_ID\n",
 					",GEOGRAPHY_NAME\n",
 					",REGION_ID\n",
@@ -618,7 +617,78 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 39
+				"execution_count": 36
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select \r\n",
+					"--COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \r\n",
+					"1 AS VERSION\r\n",
+					",GEOGRAPHY_ID\r\n",
+					",GEOGRAPHY_NAME\r\n",
+					",REGION_ID\r\n",
+					",REGION_NAME\r\n",
+					",SITE_ID\r\n",
+					",WORLD_REGION_CODE\r\n",
+					",WORLD_REGION_NAME\r\n",
+					",MARKET_TEAM_REGION_CODE\r\n",
+					",MARKET_TEAM_REGION_NAME\r\n",
+					",COUNTRY_CODE\r\n",
+					",COUNTRY_NAME\r\n",
+					",CAMPUS_ID\r\n",
+					",CAMPUS_NAME\r\n",
+					",CAMPUS_STATUS\r\n",
+					",WORK_LOCATION_CODE\r\n",
+					",ADDRESS, CITY\r\n",
+					",STATE_PROVINCE_ID\r\n",
+					",STATE_PROVINCE_NAME\r\n",
+					",POSTAL_CODE\r\n",
+					",LATITUDE\r\n",
+					",LONGITUDE\r\n",
+					",UTC_OFFSET\r\n",
+					",ICU_TIME_ZONE\r\n",
+					",PEOPLE_HOUSED_FLAG\r\n",
+					",REMOTE_SUPPORT_FLAG\r\n",
+					",PRIMARY_CAMPUS_USE_NAME\r\n",
+					",PRIMARY_CAMPUS_USE_DESCR\r\n",
+					",CAMPUS_OWNERSHIP\r\n",
+					",CAMPUS_ACTIVATION_YEAR\r\n",
+					",CAMPUS_INACTIVATION_YEAR\r\n",
+					",   'Y' AS CURRENT_IND\r\n",
+					",   '{}' AS EXTRACT_DT\r\n",
+					",   '{}' AS REC_START_DT\r\n",
+					",   '9999-12-31 00:00:00' as REC_END_DT\r\n",
+					",   'Tririga' AS SOURCE_SYSTEM\r\n",
+					",    column_hash as REC_CHECKSUM\r\n",
+					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\r\n",
+					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
+					"    from DHTS_CAMPUS A \r\n",
+					"WHERE existing_REC_CHECKSUM is null\r\n",
+					"AND NOT EXISTS\r\n",
+					"(SELECT 1 FROM etlhubConfirmed.dht_campus B\r\n",
+					"WHERE A.CAMPUS_ID=B.CAMPUS_ID\r\n",
+					"and b.CURRENT_IND='Y'\r\n",
+					"AND A.column_hash=B.REC_CHECKSUM) \r\n",
+					""
+				],
+				"execution_count": 35
 			},
 			{
 				"cell_type": "code",
