@@ -1,0 +1,64 @@
+{
+	"name": "nb_onedrive_integration",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "e4eb73f0-d791-412a-9756-8889f00e3821"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from msdrive import OneDrive\n",
+					"\n",
+					"drive = OneDrive(\"access_token_here\")\n",
+					"\n",
+					"# List files and folders in root directory:\n",
+					"drive.list_items()\n",
+					"\n",
+					"# List files and folders in sub-directory:\n",
+					"drive.list_items(folder_path=\"/Documents\")\n",
+					"\n",
+					"# Get file or folder metadata:\n",
+					"drive.get_item_data(item_path=\"/Documents/my-data.csv\")\n",
+					"drive.get_item_data(item_id=\"01...\") # if you know the item ID\n",
+					"\n",
+					"# Download an existing file\n",
+					"drive.download_item(item_path=\"/Documents/my-data.csv\", file_path=\"my-data.csv\")\n",
+					"drive.download_item(item_id=\"01...\", file_path=\"my-data.csv\") # if you know the item ID\n",
+					"\n",
+					"# Upload a new or existing file\n",
+					"drive.upload_item(item_path=\"/Documents/new-or-existing-file.csv\", file_path=\"new-or-existing-file.csv\")\n",
+					"drive.upload_item(item_id=\"01...\", file_path=\"existing-file.csv\") # if you know the item ID"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
