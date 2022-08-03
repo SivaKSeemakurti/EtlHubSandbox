@@ -25348,7 +25348,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6cab663f-e8a8-4a36-b04d-3c2f24e425bf"
+						"spark.autotune.trackingId": "e451a732-3f41-44b1-9d9f-daa1e5d01228"
 					}
 				},
 				"metadata": {
@@ -59336,7 +59336,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3da5025d-f335-452d-ae70-7e34111ce9dd"
+						"spark.autotune.trackingId": "1f53ef3f-ada8-4b54-b729-8e3b1dec0d19"
 					}
 				},
 				"metadata": {
@@ -59419,7 +59419,7 @@
 							"from azure.storage.blob import BlobClient\n",
 							"import pandas as pd\n",
 							"from io import StringIO\n",
-							"from pyspark.sql.functions import md5, concat_ws\n",
+							"from pyspark.sql.functions import md5, concat_ws,trim\n",
 							"from sqlite3 import connect\n",
 							"from pyspark.sql import functions as F\n",
 							"from pyspark.sql.functions import col\n",
@@ -59431,7 +59431,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 3
 					},
 					{
 						"cell_type": "markdown",
@@ -59465,8 +59465,8 @@
 							"container_name = 'etlhubfilestorage' # fill in your container name \n",
 							"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 							"relative_archive_path='archive/'\n",
-							"file_name='IWTRIRIGACampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
-							"natural_key1=\"CAMPUS_ID\"\n",
+							"file_name='IWTRIRIGASCampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
+							"natural_key=\"CAMPUS_ID\"\n",
 							"MinimumTririgaCampusCount=450\n",
 							"tablename=\"etlhubConfirmed.dht_campus\"\n",
 							"stagingtable=\"DHTS_CAMPUS\"\n",
@@ -59478,7 +59478,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 32
+						"execution_count": 7
 					},
 					{
 						"cell_type": "markdown",
@@ -59565,7 +59565,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 33
+						"execution_count": 8
 					},
 					{
 						"cell_type": "code",
@@ -59590,7 +59590,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 34
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
