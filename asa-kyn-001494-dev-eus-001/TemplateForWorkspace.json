@@ -25348,7 +25348,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "31a7f274-aa05-4892-924c-4c0823c714da"
+						"spark.autotune.trackingId": "766b6689-b315-420c-b1f2-28db5de330c8"
 					}
 				},
 				"metadata": {
@@ -50682,7 +50682,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "ead3ef7f-207f-4725-841b-3266baca3257"
+						"spark.autotune.trackingId": "8300cf4a-b452-43c1-8cff-9593700a2bc4"
 					}
 				},
 				"metadata": {
@@ -59337,7 +59337,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "716259aa-8ccf-4e84-accd-ff9dcf3ff4f4"
+						"spark.autotune.trackingId": "0c09b98e-7351-44b3-ba2b-6a8483c2ba9a"
 					}
 				},
 				"metadata": {
@@ -59432,7 +59432,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 26
+						"execution_count": 39
 					},
 					{
 						"cell_type": "markdown",
@@ -59480,7 +59480,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 27
+						"execution_count": 40
 					},
 					{
 						"cell_type": "markdown",
@@ -59552,7 +59552,7 @@
 							"\n",
 							"# To get the \n",
 							"qry_RefIntegrityFailDF=\"\"\"\n",
-							"select distinct A.SITE_ID,B.SITE_ID\n",
+							"select A.*\n",
 							"from ChildTable A\n",
 							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
 							"where A.SITE_ID IS NULL;\n",
@@ -59561,17 +59561,22 @@
 							"RejDataDF.createOrReplaceTempView('RejDataView')\n",
 							"\n",
 							"qry_IncrementalDataDF=\"\"\"\n",
-							"select distinct A.SITE_ID,B.SITE_ID\n",
-							"from ChildTable A\n",
-							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
-							"where A.SITE_ID IS NULL;\n",
+							"select B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,\n",
+							"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE ,\n",
+							"' ' as COUNTRY_NAME,A.CAMPUS_ID,A.CAMPUS_NAME,A.CAMPUS_STATUS,A.WORK_LOCATION_CODE, A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID,\n",
+							"' ' as STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,A.ICU_TIME_ZONE,A.PEOPLE_HOUSED_FLAG,\n",
+							"A.REMOTE_SUPPORT_FLAG,A.PRIMARY_CAMPUS_USE_NAME,A.PRIMARY_CAMPUS_USE_DESCRIPTION as PRIMARY_CAMPUS_USE_DESCR,\n",
+							"A.CAMPUS_OWNERSHIP,A.CAMPUS_ACTIVATION_YEAR,A.CAMPUS_INACTIVATION_YEAR \n",
+							"from ChildTable   A\n",
+							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\n",
+							"where B.SITE_ID is not null \n",
 							"\"\"\"\n",
-							"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
+							"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\n",
 							"\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 34
+						"execution_count": 62
 					},
 					{
 						"cell_type": "code",
@@ -59592,11 +59597,18 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select B.GEOGRAPHY_ID,B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAMEB.SITE_ID, from ParentTable A\r\n",
-							"left outer join ChildTable B ON A.SITE_ID=B.SITE_ID"
+							"select B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,\r\n",
+							"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE ,\r\n",
+							"' ' as COUNTRY_NAME,A.CAMPUS_ID,A.CAMPUS_NAME,A.CAMPUS_STATUS,A.WORK_LOCATION_CODE, A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID,\r\n",
+							"' ' as STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,A.ICU_TIME_ZONE,A.PEOPLE_HOUSED_FLAG,\r\n",
+							"A.REMOTE_SUPPORT_FLAG,A.PRIMARY_CAMPUS_USE_NAME,A.PRIMARY_CAMPUS_USE_DESCRIPTION as PRIMARY_CAMPUS_USE_DESCR,\r\n",
+							"A.CAMPUS_OWNERSHIP,A.CAMPUS_ACTIVATION_YEAR,A.CAMPUS_INACTIVATION_YEAR \r\n",
+							"from ChildTable   A\r\n",
+							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\r\n",
+							"where B.SITE_ID is not null"
 						],
 						"outputs": [],
-						"execution_count": 37
+						"execution_count": 61
 					},
 					{
 						"cell_type": "code",
