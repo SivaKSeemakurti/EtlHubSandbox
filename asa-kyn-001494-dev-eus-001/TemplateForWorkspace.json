@@ -647,7 +647,7 @@
 										},
 										"method": "POST",
 										"headers": {
-											"Content-Type": "'application/json'"
+											"Content-Type": "'JSON'"
 										},
 										"body": {
 											"value": "{\"ErrorMessage\":\"\",\n\"JobStatus\":\"Success\",\n\"dataFactoryName\":\"\",\n\"pipelineName\":@{pipeline().Pipeline},\n\"message\":\"\",\n\"receiver\":\"siva.seemakurtikyndryl.com\",\n\"filepath\":@{variables('filefullpath')}}",
