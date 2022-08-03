@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "dc8b0cd6-bff0-493e-8441-02fedff1f29d"
+				"spark.autotune.trackingId": "f7f2be8d-b676-438d-b53a-ca05047b1219"
 			}
 		},
 		"metadata": {
@@ -104,7 +104,7 @@
 					"from azure.storage.blob import BlobClient\n",
 					"import pandas as pd\n",
 					"from io import StringIO\n",
-					"from pyspark.sql.functions import md5, concat_ws\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
 					"from sqlite3 import connect\n",
 					"from pyspark.sql import functions as F\n",
 					"from pyspark.sql.functions import col\n",
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 31
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -150,7 +150,7 @@
 					"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='IWTRIRIGACampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
-					"natural_key1=\"CAMPUS_ID\"\n",
+					"natural_key=\"CAMPUS_ID\"\n",
 					"MinimumTririgaCampusCount=450\n",
 					"tablename=\"etlhubConfirmed.dht_campus\"\n",
 					"stagingtable=\"DHTS_CAMPUS\"\n",
@@ -161,7 +161,7 @@
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"execution_count": 32
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
