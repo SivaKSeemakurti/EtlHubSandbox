@@ -882,7 +882,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_CAMPUS_SFTP_PULL')]",
+			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_SITE_SFTP_PULL')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -55718,7 +55718,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "2dd781cc-dd85-4940-9c2b-31d72b328d65"
+						"spark.autotune.trackingId": "e4eb73f0-d791-412a-9756-8889f00e3821"
 					}
 				},
 				"metadata": {
@@ -55736,7 +55736,6 @@
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from msdrive import OneDrive\n",
 							"\n",
@@ -59158,6 +59157,57 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_CAMPUS_SFTP_PULL')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_TRIRIGA_CAMPUS_SFTP_PULL",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TririgaRemoteServerSite": {},
+									"AzureDataLakeStorage": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETLHub"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_CAMPUS_SFTP_PULL')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
 		}
 	]
 }
