@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "IWTRIRIGASiteQueryCSV",
-				"folderPath": "extract/Tririga/campus",
+				"folderPath": "extract/Tririga/Site",
 				"fileSystem": "etlhubfilestorage"
 			},
 			"columnDelimiter": ",",
