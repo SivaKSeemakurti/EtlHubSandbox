@@ -640,7 +640,7 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"url": "https://lpemailalert.azurewebsites.net:443/api/send_email_with_attachment/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SWwWEWRpypmYVUCe-PR8VCygIAacKtzfPP_FcQV0gZk",
+										"url": "https://prod-37.westus.logic.azure.com:443/workflows/8d8c446f15cc420fb463e0b9770fe094/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=M-j7XM7xGl5O0cddQucoPzYyvzC40Dx6-Qr0_Dr1VaE",
 										"connectVia": {
 											"referenceName": "AutoResolveIntegrationRuntime",
 											"type": "IntegrationRuntimeReference"
@@ -882,7 +882,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_SITE_SFTP_PULL')]",
+			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_CAMPUS_SFTP_PULL')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -901,7 +901,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DF_TRIRIGA_SITE_SFTP_PULL",
+								"referenceName": "DF_TRIRIGA_CAMPUS_SFTP_PULL",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -928,8 +928,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_SITE_SFTP_PULL')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_CAMPUS_SFTP_PULL')]"
 			]
 		},
 		{
@@ -982,6 +981,56 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_LOCATION_SFTP_PULL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_SITE_SFTP_PULL')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_TRIRIGA_SITE_SFTP_PULL",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TririgaRemoteServerSite": {},
+									"AzureDataLakeStorage": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETLHub"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_SITE_SFTP_PULL')]"
 			]
 		},
 		{
@@ -23400,7 +23449,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "90cff3a6-b1ba-4182-8728-e113153e1d59"
+						"spark.autotune.trackingId": "37441e08-5599-42fc-860c-f7235c113012"
 					}
 				},
 				"metadata": {
@@ -23425,8 +23474,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -59159,57 +59207,6 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_CAMPUS_SFTP_PULL')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_TRIRIGA_CAMPUS_SFTP_PULL",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"TririgaRemoteServerSite": {},
-									"AzureDataLakeStorage": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "ETLHub"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_CAMPUS_SFTP_PULL')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
 		}
 	]
 }
