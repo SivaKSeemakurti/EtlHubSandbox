@@ -1,5 +1,5 @@
 {
-	"name": "DHT_CAMPUS",
+	"name": "bkp_DHT_CAMPUS",
 	"properties": {
 		"folder": {
 			"name": "ETLHub/CreateTableScripts"
@@ -46,8 +46,7 @@
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
-				"memory": 56,
-				"automaticScaleJobs": false
+				"memory": 56
 			},
 			"sessionKeepAliveTimeout": 30
 		},
