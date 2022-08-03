@@ -24935,7 +24935,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c36a2165-313e-4bc1-92aa-6957332dcb78"
+						"spark.autotune.trackingId": "29c2013a-c0b4-4b90-9e6d-b04bc5d3d289"
 					}
 				},
 				"metadata": {
@@ -24960,8 +24960,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -55214,17 +55213,21 @@
 			"properties": {
 				"nbformat": 4,
 				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sPoolKyn001494",
+					"type": "BigDataPoolReference"
+				},
 				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
 					"numExecutors": 2,
 					"conf": {
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c7e6d599-c325-4cad-9fcd-e8e1ed47e8f5"
+						"spark.autotune.trackingId": "2f5b31c9-5c78-4b16-aacc-1f24da5ebc7b"
 					}
 				},
 				"metadata": {
@@ -55232,17 +55235,45 @@
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
-						"display_name": "python"
+						"display_name": "Synapse PySpark"
 					},
 					"language_info": {
 						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+						"name": "sPoolKyn001494",
+						"type": "Spark",
+						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 8,
+						"memory": 56,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
+							"from azure.storage.blob import BlobClient\n",
+							"import pandas as pd\n",
+							"from io import StringIO\n",
+							"from pyspark.sql.functions import md5, concat_ws\n",
+							"from sqlite3 import connect\n",
+							"from pyspark.sql import functions as F\n",
+							"from pyspark.sql import SparkSession \n",
+							"from pyspark.sql.types import * \n",
+							"from delta.tables import *\n",
+							"import os\n",
+							"import sys\n",
+							"from datetime import datetime\n",
 							"import smtplib\n",
 							"from pathlib import Path\n",
 							"from email.mime.multipart import MIMEMultipart\n",
@@ -55250,6 +55281,85 @@
 							"from email.mime.text import MIMEText\n",
 							"from email.utils import COMMASPACE, formatdate\n",
 							"from email import encoders"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
+							"container_name = 'etlhubfilestorage' # fill in your container name \n",
+							"relative_path = 'extract/BMSIW/' # fill in your relative folder path \n",
+							"relative_archive_path='archive/'\n",
+							"file_name='DS_EMPLOYEE_DATA.csv' \n",
+							"natural_key=\"EMPLOYEE_BUSINESS_CD\"\n",
+							"tablename=\"etlhubConfirmed.dht_employee\"\n",
+							"#natural_key=\"BUSINESS_PARTNER_ID\"\n",
+							"keycolumn=\"EMPLOYEE_KEY\"\n",
+							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
+							"print('Primary storage account path: ' + adls_path) \n",
+							"\n",
+							"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
+							"print('Primary storage account path: ' + adls_path) \n",
+							"\n",
+							"relative_archive_path\n",
+							"# Read a csv file \n",
+							"csv_path = adls_path + file_name\n",
+							"arch_fil_name=file_name.rsplit(\".\")\n",
+							"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
+							"print (csv_archive_path)\n",
+							"\n",
+							"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
+							"\n",
+							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+							"\n",
+							"# Get column list for creating Rec_Checksum\n",
+							"\n",
+							"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\n",
+							"# 2. Dups in target already\n",
+							"\n",
+							"col_list=[]\n",
+							"for i in incrementalData_DF.columns:\n",
+							"    col_list.append(i)\n",
+							"\n",
+							"# Add a checsum column to help identify the changed rows\n",
+							"\n",
+							"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
+							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+							"\n",
+							"#sell_cyclecolhashDF.show()\n",
+							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -55269,8 +55379,8 @@
 						},
 						"source": [
 							"\n",
-							"def send_mail(send_from = <from_email>, send_to = <to_email>, subject = \"Test\", message = \"Test\", files=[\"/mnt/<Mounted Point Directory>/\"],\n",
-							"              server=\"<SMTP Host>\", port=<SMTP Port>, username='<SMTP Username>', password='<SMTP Password>',\n",
+							"def send_mail(send_from = \"siva.seemakurti@kyndryl.com\", send_to = \"siva.seemakurti@kyndryl.com\", subject = \"Mail from ASA using pyspark notebook\", message = \"Testing Mail body\", files=[\"/mnt/<Mounted Point Directory>/\"],\n",
+							"              server=\"<SMTP Host>\", port=\"<SMTP Port>\", username='<SMTP Username>', password='<SMTP Password>',\n",
 							"              use_tls=True):\n",
 							"\n",
 							"    msg = MIMEMultipart()\n",
