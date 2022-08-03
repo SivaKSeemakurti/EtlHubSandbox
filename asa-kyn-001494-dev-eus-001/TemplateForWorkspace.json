@@ -4557,7 +4557,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "IWTRIRIGASiteQueryCSV",
-						"folderPath": "extract/Tririga/campus",
+						"folderPath": "extract/Tririga/Site",
 						"fileSystem": "etlhubfilestorage"
 					},
 					"columnDelimiter": ",",
@@ -58815,7 +58815,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "IWTRIRIGASiteQuery",
+								"referenceName": "IWTRIRIGACampusQuery",
 								"type": "DatasetReference"
 							},
 							"name": "TririgaRemoteServerSite"
@@ -58824,25 +58824,52 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "IWTRIRIGASiteQueryCSV",
+								"referenceName": "IWTRIRIGACampusQueryCSV",
 								"type": "DatasetReference"
 							},
-							"name": "AzureDataLakeStorage"
+							"name": "AzureDataLakeStorage",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureDataLakeStorage2",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [],
 					"scriptLines": [
 						"source(output(",
+						"          CAMPUS_ID as string,",
+						"          CAMPUS_NAME as string,",
+						"          CAMPUS_STATUS as string,",
+						"          CAMPUS_GROUP as string,",
 						"          SITE_ID as string,",
-						"          SITE_NAME as string,",
-						"          SITE_STATUS as string,",
-						"          GEOGRAPHY_ID as string,",
-						"          GEOGRAPHY_NAME as string,",
-						"          REGION_ID as string,",
-						"          REGION_NAME as string",
+						"          PHYSICAL_GEO as string,",
+						"          WORLD_REGION_CODE as string,",
+						"          WORLD_REGION_NAME as string,",
+						"          MARKET_TEAM_REGION_CODE as string,",
+						"          MARKET_TEAM_REGION_NAME as string,",
+						"          WORK_LOCATION_CODE as string,",
+						"          ADDRESS as string,",
+						"          CITY as string,",
+						"          STATE_PROVINCE_ID as string,",
+						"          POSTAL_CODE as string,",
+						"          COUNTRY_CODE as string,",
+						"          LATITUDE as string,",
+						"          LONGITUDE as string,",
+						"          UTC_OFFSET as string,",
+						"          ICU_TIME_ZONE as string,",
+						"          PEOPLE_HOUSED_FLAG as string,",
+						"          REMOTE_SUPPORT_FLAG as string,",
+						"          PRIMARY_CAMPUS_USE_ID as string,",
+						"          PRIMARY_CAMPUS_USE_NAME as string,",
+						"          PRIMARY_CAMPUS_USE_DESCRIPTION as string,",
+						"          CAMPUS_OWNERSHIP as string,",
+						"          CAMPUS_ACTIVATION_YEAR as string,",
+						"          CAMPUS_INACTIVATION_YEAR as string,",
+						"          CAMPUS_MODIFIED_DATE_AND_TIME as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> TririgaRemoteServerSite",
 						"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -58852,21 +58879,216 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
+						"          CAMPUS_ID,",
+						"          CAMPUS_NAME,",
+						"          CAMPUS_STATUS,",
+						"          CAMPUS_GROUP,",
 						"          SITE_ID,",
-						"          SITE_NAME,",
-						"          SITE_STATUS,",
-						"          GEOGRAPHY_ID,",
-						"          GEOGRAPHY_NAME,",
-						"          REGION_ID,",
-						"          REGION_NAME",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
+						"          PHYSICAL_GEO,",
+						"          WORLD_REGION_CODE,",
+						"          WORLD_REGION_NAME,",
+						"          MARKET_TEAM_REGION_CODE,",
+						"          MARKET_TEAM_REGION_NAME,",
+						"          WORK_LOCATION_CODE,",
+						"          ADDRESS,",
+						"          CITY,",
+						"          STATE_PROVINCE_ID,",
+						"          POSTAL_CODE,",
+						"          COUNTRY_CODE,",
+						"          LATITUDE,",
+						"          LONGITUDE,",
+						"          UTC_OFFSET,",
+						"          ICU_TIME_ZONE,",
+						"          PEOPLE_HOUSED_FLAG,",
+						"          REMOTE_SUPPORT_FLAG,",
+						"          PRIMARY_CAMPUS_USE_ID,",
+						"          PRIMARY_CAMPUS_USE_NAME,",
+						"          PRIMARY_CAMPUS_USE_DESCRIPTION,",
+						"          CAMPUS_OWNERSHIP,",
+						"          CAMPUS_ACTIVATION_YEAR,",
+						"          CAMPUS_INACTIVATION_YEAR,",
+						"          CAMPUS_MODIFIED_DATE_AND_TIME",
+						"     )) ~> AzureDataLakeStorage"
 					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGASiteQuery')]",
-				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGASiteQueryCSV')]"
+				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGACampusQuery')]",
+				"[concat(variables('workspaceId'), '/datasets/IWTRIRIGACampusQueryCSV')]",
+				"[concat(variables('workspaceId'), '/linkedServices/AzureDataLakeStorage2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/IWTRIRIGACampusQuery')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SftpTririga",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"fileName": "IWTRIRIGACampusQuery.csv",
+						"folderPath": "/GlobalDir/CustomerFiles/tririga"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CAMPUS_ID",
+						"type": "String"
+					},
+					{
+						"name": "CAMPUS_NAME",
+						"type": "String"
+					},
+					{
+						"name": "CAMPUS_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CAMPUS_GROUP",
+						"type": "String"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "String"
+					},
+					{
+						"name": "PHYSICAL_GEO",
+						"type": "String"
+					},
+					{
+						"name": "WORLD_REGION_CODE",
+						"type": "String"
+					},
+					{
+						"name": "WORLD_REGION_NAME",
+						"type": "String"
+					},
+					{
+						"name": "MARKET_TEAM_REGION_CODE",
+						"type": "String"
+					},
+					{
+						"name": "MARKET_TEAM_REGION_NAME",
+						"type": "String"
+					},
+					{
+						"name": "WORK_LOCATION_CODE",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS",
+						"type": "String"
+					},
+					{
+						"name": "CITY",
+						"type": "String"
+					},
+					{
+						"name": "STATE_PROVINCE_ID",
+						"type": "String"
+					},
+					{
+						"name": "POSTAL_CODE",
+						"type": "String"
+					},
+					{
+						"name": "COUNTRY_CODE",
+						"type": "String"
+					},
+					{
+						"name": "LATITUDE",
+						"type": "String"
+					},
+					{
+						"name": "LONGITUDE",
+						"type": "String"
+					},
+					{
+						"name": "UTC_OFFSET",
+						"type": "String"
+					},
+					{
+						"name": "ICU_TIME_ZONE",
+						"type": "String"
+					},
+					{
+						"name": "PEOPLE_HOUSED_FLAG",
+						"type": "String"
+					},
+					{
+						"name": "REMOTE_SUPPORT_FLAG",
+						"type": "String"
+					},
+					{
+						"name": "PRIMARY_CAMPUS_USE_ID",
+						"type": "String"
+					},
+					{
+						"name": "PRIMARY_CAMPUS_USE_NAME",
+						"type": "String"
+					},
+					{
+						"name": "PRIMARY_CAMPUS_USE_DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "CAMPUS_OWNERSHIP",
+						"type": "String"
+					},
+					{
+						"name": "CAMPUS_ACTIVATION_YEAR",
+						"type": "String"
+					},
+					{
+						"name": "CAMPUS_INACTIVATION_YEAR",
+						"type": "String"
+					},
+					{
+						"name": "CAMPUS_MODIFIED_DATE_AND_TIME",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/SftpTririga')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/IWTRIRIGACampusQueryCSV')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "extract/Tririga/campus",
+						"fileSystem": "etlhubfilestorage"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureDataLakeStorage2')]"
 			]
 		}
 	]
