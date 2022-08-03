@@ -2,7 +2,7 @@
 	"name": "nb_dhtr_stte_prov",
 	"properties": {
 		"folder": {
-			"name": "ETLHub/Dimensions&Facts"
+			"name": "ETLHub/Dimensions&Facts/GREIW"
 		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -46,8 +46,7 @@
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
-				"memory": 56,
-				"automaticScaleJobs": false
+				"memory": 56
 			},
 			"sessionKeepAliveTimeout": 30
 		},
