@@ -17964,8 +17964,8 @@
 						"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     umask: 0777,",
-						"     preCommands: ['rm -r /extract/Tririga/site/'],",
-						"     postCommands: ['mv /extract/Tririga/site/*.csv /extract/Tririga/site/IWTRIRIGASiteQuery.csv'],",
+						"     preCommands: ['rm -r /extract/Tririga/Site/'],",
+						"     postCommands: ['mv /extract/Tririga/Site/*.csv /extract/Tririga/Site/IWTRIRIGASiteQuery.csv'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
@@ -23400,7 +23400,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "37441e08-5599-42fc-860c-f7235c113012"
+						"spark.autotune.trackingId": "90cff3a6-b1ba-4182-8728-e113153e1d59"
 					}
 				},
 				"metadata": {
@@ -23425,7 +23425,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
