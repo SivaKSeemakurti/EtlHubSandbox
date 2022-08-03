@@ -17510,7 +17510,7 @@
 								"referenceName": "IWTRIRIGASiteQuery",
 								"type": "DatasetReference"
 							},
-							"name": "TririgaRemoteServerCampus"
+							"name": "TririgaRemoteServerSite"
 						}
 					],
 					"sinks": [
@@ -17535,8 +17535,8 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> TririgaRemoteServerCampus",
-						"TririgaRemoteServerCampus sink(allowSchemaDrift: true,",
+						"     ignoreNoFilesFound: false) ~> TririgaRemoteServerSite",
+						"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     umask: 0777,",
 						"     preCommands: ['rm -r /extract/Tririga/campus/'],",
@@ -58775,7 +58775,7 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"TririgaRemoteServerCampus": {},
+									"TririgaRemoteServerSite": {},
 									"AzureDataLakeStorage": {}
 								}
 							},
