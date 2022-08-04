@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "IWTRIRIGACampusQueryCSV",
+						"referenceName": "resodb_space_tririga_stagingCsv",
 						"type": "DatasetReference"
 					},
 					"name": "AzureDataLakeStorage",
@@ -50,8 +50,8 @@
 				"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     umask: 0777,",
-				"     preCommands: ['rm -r /extract/Tririga/campus/'],",
-				"     postCommands: ['mv /extract/Tririga/campus/*.csv /extract/Tririga/campus/IWTRIRIGASCampusQuery.csv'],",
+				"     preCommands: ['rm -r /extract/Tririga/office_space/'],",
+				"     postCommands: ['mv /extract/Tririga/office_space/*.csv /extract/Tririga/office_space/resodb_space_tririga_staging.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
