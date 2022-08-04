@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6429eda7-3cb2-4721-b805-06b0711255cf"
+				"spark.autotune.trackingId": "759c6da5-5d89-4a6c-89c7-1e28471b3a49"
 			}
 		},
 		"metadata": {
@@ -122,7 +122,7 @@
 					"%%sql\r\n",
 					"select * from etlhubConfirmed.DHT_OFFICE_SPACE"
 				],
-				"execution_count": 2
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
