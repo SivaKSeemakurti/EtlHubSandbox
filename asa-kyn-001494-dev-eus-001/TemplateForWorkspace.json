@@ -18167,7 +18167,7 @@
 						"     validateSchema: false,",
 						"     umask: 0777,",
 						"     preCommands: ['rm -r /extract/Tririga/OfficeSpace/'],",
-						"     postCommands: ['mv /extract/Tririga/OfficeSpace/*.csv /extract/Tririga/OfficeSpace/resodb_space_tririga_staging.csv'],",
+						"     postCommands: ['mv /extract/Tririga/OfficeSpace/ /extract/Tririga/OfficeSpace/'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
@@ -44697,7 +44697,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "bfc4a538-041f-4791-95d5-b09cd7fff096"
+						"spark.autotune.trackingId": "b7aef694-d177-4325-bace-6eef9bf957bb"
 					}
 				},
 				"metadata": {
@@ -51722,7 +51722,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f0dd4230-0e6b-4fab-b468-2ac8970a2a62"
+						"spark.autotune.trackingId": "d32f3303-94fe-4d6e-8a1b-f3ef2f1a002a"
 					}
 				},
 				"metadata": {
