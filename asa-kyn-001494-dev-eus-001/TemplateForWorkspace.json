@@ -117,6 +117,15 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/BALSEQ0000_MASTER_EN_SEQ')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -1034,6 +1043,56 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_LOCATION_SFTP_PULL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_OFFICE_SPACE_SFTP_PULL')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_TRIRIGA_OFFICE_SPACE_SFTP_PULL",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TririgaRemoteServerSite": {},
+									"AzureDataLakeStorage": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETLHub"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_OFFICE_SPACE_SFTP_PULL')]"
 			]
 		},
 		{
@@ -31270,7 +31329,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "ba5b67c2-c7da-46ad-a63a-2af7a10dda0e"
+						"spark.autotune.trackingId": "f3c031fb-cab8-4a37-9929-0837fb5e96e3"
 					}
 				},
 				"metadata": {
@@ -31295,7 +31354,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -32104,6 +32164,33 @@
 						],
 						"outputs": [],
 						"execution_count": 14
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							}
+						},
+						"source": [
+							"%%sql\n",
+							"SELECT @@keycolumn,BUSINESS_ID, BUILDING_OWNERSHIP_DESCR,VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
+							" from etlhubconfirmed.dht_building A\n",
+							"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001')\n",
+							"ORDER BY BUSINESS_ID, REC_START_DT\n",
+							"    ;"
+						],
+						"outputs": [],
+						"execution_count": 1
 					}
 				]
 			},
@@ -44697,7 +44784,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b7aef694-d177-4325-bace-6eef9bf957bb"
+						"spark.autotune.trackingId": "b4ca5957-e07e-4f3c-8979-816ec56b8570"
 					}
 				},
 				"metadata": {
@@ -44722,8 +44809,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -51722,7 +51808,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "d32f3303-94fe-4d6e-8a1b-f3ef2f1a002a"
+						"spark.autotune.trackingId": "3c00665b-6354-4d10-b23a-da93fea4da51"
 					}
 				},
 				"metadata": {
@@ -51747,8 +51833,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -61220,57 +61305,6 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/PL_TRIRIGA_OFFICE_SPACE_SFTP_PULL')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_TRIRIGA_OFFICE_SPACE_SFTP_PULL",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"TririgaRemoteServerSite": {},
-									"AzureDataLakeStorage": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "ETLHub"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_OFFICE_SPACE_SFTP_PULL')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
 		}
 	]
 }
