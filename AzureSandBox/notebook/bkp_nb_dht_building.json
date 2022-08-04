@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ba5b67c2-c7da-46ad-a63a-2af7a10dda0e"
+				"spark.autotune.trackingId": "ca8b2548-ba7b-4b64-873a-2d84745bae64"
 			}
 		},
 		"metadata": {
@@ -841,6 +841,32 @@
 					"    ;"
 				],
 				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT @@keycolumn,BUSINESS_ID, BUILDING_OWNERSHIP_DESCR,VERSION,EXTRACT_DT,REC_START_DT,REC_END_DT,IMG_CREATED_DT,IMG_LST_UPD_DT,CURRENT_IND\n",
+					" from etlhubconfirmed.dht_building A\n",
+					"where BUSINESS_ID in ('BLDMAIN~006','CYNICOSI~0002','RTPMAIN~002','ITMEDMLN~004','MQFORTFR~001','JPATAGOE~001')\n",
+					"ORDER BY BUSINESS_ID, REC_START_DT\n",
+					"    ;"
+				],
+				"execution_count": 1
 			}
 		]
 	}
