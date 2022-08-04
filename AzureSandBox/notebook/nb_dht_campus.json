@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "eed56ffd-ceba-4141-b2c1-921f03a3d90e"
+				"spark.autotune.trackingId": "b0addbcb-7691-4160-afda-9be0c826d229"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 14
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -266,13 +266,15 @@
 					"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE ,\n",
 					"cast(C.mediumDescription AS VARCHAR(64)) as COUNTRY_NAME,A.CAMPUS_ID,A.CAMPUS_NAME,A.CAMPUS_STATUS,A.WORK_LOCATION_CODE, \n",
 					"A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID, \n",
-					"'' as STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,\n",
+					"D.STTE_PROV_DESC as STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,\n",
 					"A.ICU_TIME_ZONE,A.PEOPLE_HOUSED_FLAG,A.REMOTE_SUPPORT_FLAG,A.PRIMARY_CAMPUS_USE_NAME,\n",
 					"A.PRIMARY_CAMPUS_USE_DESCRIPTION as PRIMARY_CAMPUS_USE_DESCR,\n",
 					"A.CAMPUS_OWNERSHIP,A.CAMPUS_ACTIVATION_YEAR,A.CAMPUS_INACTIVATION_YEAR \n",
 					"from ChildTable   A\n",
 					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\n",
 					"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\n",
+					"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD) \n",
+					"and trim(A.COUNTRY_CODE) = trim(D.CNTRY_CD)\n",
 					"where B.SITE_ID is not null  \n",
 					"\"\"\"\n",
 					"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\n",
@@ -291,7 +293,30 @@
 					"\n",
 					""
 				],
-				"execution_count": 38
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT COUNT(*) as CNT, CAMPUS_ID FROM incrementalData_DF2 GROUP BY CAMPUS_ID HAVING COUNT(*)>1"
+				],
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -337,7 +362,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 39
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -357,34 +382,6 @@
 					"- Referential Integrity checks\n",
 					""
 				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select CNTRY_CD,STTE_PROV_CD,STTE_PROV_DESC,  SUBSTRING(trim(STTE_PROV_CD),1,1) , --= '0'\r\n",
-					"/*and SUBSTRING(trim(STTE_PROV_CD),2,1) IN ('1','2','3','4','5','6','7','8','9',) \r\n",
-					"then SUBSTRING(trim(STTE_PROV_CD),2,length(trim(STTE_PROV_CD)))\r\n",
-					"ELSE trim(STTE_PROV_CD) end as STTE_PROV_CD_1,*/\r\n",
-					"ROW_NUMBER() OVER (PARTITION BY STTE_PROV_CD ORDER BY ACTIVE_DATE DESC) AS SEQ\r\n",
-					"from etlhubconfirmed.dhtr_stte_prov where STTE_PROV_CD = 15"
-				],
-				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -465,7 +462,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 40
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -529,7 +526,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 41
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -618,7 +615,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 42
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -662,7 +659,7 @@
 					"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 				],
-				"execution_count": 43
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -695,7 +692,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
 					""
 				],
-				"execution_count": 44
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -771,7 +768,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 45
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -805,7 +802,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 				],
-				"execution_count": 46
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -850,7 +847,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 47
+				"execution_count": 13
 			}
 		]
 	}
