@@ -18166,8 +18166,8 @@
 						"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     umask: 0777,",
-						"     preCommands: ['rm -r /extract/Tririga/office_space/'],",
-						"     postCommands: ['mv /extract/Tririga/office_space/*.csv /extract/Tririga/office_space/resodb_space_tririga_staging.csv'],",
+						"     preCommands: ['rm -r /extract/Tririga/OfficeSpace/'],",
+						"     postCommands: ['mv /extract/Tririga/OfficeSpace/*.csv /extract/Tririga/OfficeSpace/resodb_space_tririga_staging.csv'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
@@ -44697,7 +44697,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "94b2b51a-d8b5-493c-8a27-b797bf84236b"
+						"spark.autotune.trackingId": "bfc4a538-041f-4791-95d5-b09cd7fff096"
 					}
 				},
 				"metadata": {
@@ -51722,7 +51722,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4a32af00-3e3e-46ca-933e-b4f08e90dae9"
+						"spark.autotune.trackingId": "f0dd4230-0e6b-4fab-b468-2ac8970a2a62"
 					}
 				},
 				"metadata": {
