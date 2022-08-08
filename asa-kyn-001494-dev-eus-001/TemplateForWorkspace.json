@@ -117,15 +117,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/dsqlpoolKyn001494DevEtlHubEUS001')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/BALSEQ0000_MASTER_EN_SEQ')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -31310,7 +31301,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"folder": {
-					"name": "ETLHub/Dimensions&Facts/GREIW"
+					"name": "ETLHub/Dimensions&Facts/GREIW/backup"
 				},
 				"nbformat": 4,
 				"nbformat_minor": 2,
@@ -31329,7 +31320,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f3c031fb-cab8-4a37-9929-0837fb5e96e3"
+						"spark.autotune.trackingId": "ca8b2548-ba7b-4b64-873a-2d84745bae64"
 					}
 				},
 				"metadata": {
@@ -31354,8 +31345,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -43783,7 +43773,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"folder": {
-					"name": "ETLHub/Dimensions&Facts/GREIW"
+					"name": "ETLHub/Dimensions&Facts/GREIW/backup"
 				},
 				"nbformat": 4,
 				"nbformat_minor": 2,
