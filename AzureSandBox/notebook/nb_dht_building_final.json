@@ -2,7 +2,7 @@
 	"name": "nb_dht_building_final",
 	"properties": {
 		"folder": {
-			"name": "ETLHub/Dimensions&Facts/GREIW"
+			"name": "ETLHub/Dimensions&Facts/GREIW/backup"
 		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -46,8 +46,7 @@
 				"sparkVersion": "3.2",
 				"nodeCount": 10,
 				"cores": 80,
-				"memory": 472,
-				"automaticScaleJobs": false
+				"memory": 472
 			},
 			"sessionKeepAliveTimeout": 30
 		},
