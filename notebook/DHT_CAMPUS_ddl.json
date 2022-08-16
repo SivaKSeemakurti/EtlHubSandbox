@@ -1,0 +1,193 @@
+{
+	"name": "DHT_CAMPUS_ddl",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPool001494New",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "86b8bbb8-30b1-4359-a688-7efad9fa37af"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 80,
+				"memory": 472,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"-- DBXDH.DHT_CAMPUS definition\r\n",
+					"CREATE TABLE etlhubConfirmed.dht_campus (\t\r\n",
+					"CAMPUS_KEY INTEGER NOT NULL,\r\n",
+					"VERSION INTEGER NOT NULL ,\r\n",
+					"GEOGRAPHY_ID VARCHAR(5),\r\n",
+					"GEOGRAPHY_NAME VARCHAR(64),\r\n",
+					"REGION_ID VARCHAR(8),\r\n",
+					"REGION_NAME VARCHAR(64),\r\n",
+					"SITE_ID VARCHAR(8),\r\n",
+					"SITE_NAME VARCHAR(64),\r\n",
+					"WORLD_REGION_CODE VARCHAR(2),\r\n",
+					"WORLD_REGION_NAME VARCHAR(64),\r\n",
+					"MARKET_TEAM_REGION_CODE VARCHAR(3),\r\n",
+					"MARKET_TEAM_REGION_NAME VARCHAR(64),\r\n",
+					"COUNTRY_CODE VARCHAR(2),\r\n",
+					"COUNTRY_NAME VARCHAR(64),\r\n",
+					"CAMPUS_ID VARCHAR(8),\r\n",
+					"CAMPUS_NAME VARCHAR(64),\r\n",
+					"CAMPUS_STATUS VARCHAR(32),\r\n",
+					"WORK_LOCATION_CODE VARCHAR(3),\r\n",
+					"ADDRESS VARCHAR(256),\r\n",
+					"CITY VARCHAR(64),\r\n",
+					"STATE_PROVINCE_ID VARCHAR(3),\r\n",
+					"STATE_PROVINCE_NAME VARCHAR(64),\r\n",
+					"POSTAL_CODE VARCHAR(16),\r\n",
+					"LATITUDE DECIMAL(11,8),\r\n",
+					"LONGITUDE DECIMAL(11,8),\r\n",
+					"UTC_OFFSET VARCHAR(16),\r\n",
+					"ICU_TIME_ZONE VARCHAR(64),\r\n",
+					"PEOPLE_HOUSED_FLAG VARCHAR(1),\r\n",
+					"REMOTE_SUPPORT_FLAG VARCHAR(1),\r\n",
+					"PRIMARY_CAMPUS_USE_NAME VARCHAR(32),\r\n",
+					"PRIMARY_CAMPUS_USE_DESCR VARCHAR(128),\r\n",
+					"CAMPUS_OWNERSHIP VARCHAR(8),\r\n",
+					"CAMPUS_ACTIVATION_YEAR INTEGER,\r\n",
+					"CAMPUS_INACTIVATION_YEAR INTEGER,\r\n",
+					"CURRENT_IND\tVARCHAR(1), -- Y for active row and N for all rows expired\r\n",
+					"EXTRACT_DT TIMESTAMP, -- Load Cycle date, contains same value for all the records inserted in a single batch\r\n",
+					"REC_START_DT TIMESTAMP, --SCD TYpe 2 start date\r\n",
+					"REC_END_DT TIMESTAMP, -- SCD Type 2 End date, will have high date (9999-12-31) for active dimensional row\r\n",
+					"SOURCE_SYSTEM VARCHAR(10), \r\n",
+					"REC_CHECKSUM VARCHAR(32), \r\n",
+					"IMG_LST_UPD_DT TIMESTAMP, \r\n",
+					"IMG_CREATED_DT TIMESTAMP \r\n",
+					")\r\n",
+					"USING DELTA\r\n",
+					"PARTITIONED BY (CURRENT_IND)\r\n",
+					"-- specify data lake folder location\r\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS' "
+				],
+				"attachments": null,
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from etlhubConfirmed.dht_campus"
+				],
+				"attachments": null,
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DROP TABLE etlhubConfirmed.DHT_CAMPUS"
+				],
+				"attachments": null,
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DELETE FROM etlhubConfirmed.DHT_CAMPUS"
+				],
+				"attachments": null,
+				"execution_count": 2
+			}
+		]
+	}
+}

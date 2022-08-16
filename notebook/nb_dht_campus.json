@@ -1,0 +1,874 @@
+{
+	"name": "nb_dht_campus",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/Dimensions&Facts/GREIW"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPool001494New",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "f97c1a18-8b39-495f-8ebc-7e98055c8ff8"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 80,
+				"memory": 472,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"**Campus load**\n",
+					"\n",
+					"This notebook loads data to deltalake table etlhubConfirmed.DHT_CMAPUS by sourcing data from Tririga system.\n",
+					"The file is pulled to datastage server using SFTP protocol.\n",
+					"\n",
+					"The CSV formatted file is uploaded to adls for loading to CAMPUS deltalake table created.\n",
+					"\n",
+					"The script used for file transfer is /home/resodba/trrgprocget.sh\n",
+					"\n",
+					"File Name: IWTRIRIGACampusQuery.csv from /GlobalDir/CustomerFiles/tririga"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Import all the necessary libraries"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from azure.storage.blob import BlobClient\n",
+					"import pandas as pd\n",
+					"from io import StringIO\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
+					"from sqlite3 import connect\n",
+					"from pyspark.sql import functions as F\n",
+					"from pyspark.sql.functions import col\n",
+					"from pyspark.sql import SparkSession \n",
+					"from pyspark.sql.types import * \n",
+					"from delta.tables import *\n",
+					"import os\n",
+					"import sys\n",
+					"from datetime import datetime"
+				],
+				"attachments": null,
+				"execution_count": 14
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Define Parameters"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"tags": []
+				},
+				"source": [
+					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
+					"container_name = 'etlhubfilestorage' # fill in your container name \n",
+					"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
+					"relative_path1 = 'extract/Tririga/Site/'\n",
+					"relative_archive_path='archive/'\n",
+					"file_name='IWTRIRIGASCampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
+					"natural_key=\"CAMPUS_ID\"\n",
+					"MinimumTririgaCampusCount=450\n",
+					"tablename=\"etlhubConfirmed.dht_campus\"\n",
+					"stagingtable=\"DHTS_CAMPUS\"\n",
+					"keycolumn=\"CAMPUS_KEY\"\n",
+					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
+					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
+					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
+					"print(extract_dt)\n",
+					"print(natural_key)"
+				],
+				"attachments": null,
+				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Copy source CSV file to archive folder including timestamp in file name"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\n",
+					"#Read data from adls csv file extracted from source at \n",
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/Tririga/campus/IWTRIRIGACampusQuery.csv\n",
+					"\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
+					"adls_path1 = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path1) \n",
+					"print('Primary storage account path: ' + adls_path) \n",
+					"\n",
+					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
+					"print('Primary archive path: ' + adls_arch_path) \n",
+					"\n",
+					"print(natural_key)\n",
+					"\n",
+					"relative_archive_path\n",
+					"# Read a csv file \n",
+					"csv_path = adls_path + file_name\n",
+					"csv_path1= adls_path1 + 'IWTRIRIGASiteQuery.csv'\n",
+					"arch_fil_name=file_name.rsplit(\".\")\n",
+					"arch_fil_name1='IWTRIRIGASiteQuery.csv'.rsplit(\".\")\n",
+					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
+					"csv_archive_path1 = adls_arch_path + arch_fil_name1[0] + '_' + date + '.' + arch_fil_name1[1]\n",
+					"\n",
+					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
+					"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
+					"\n",
+					"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
+					"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
+					"\n",
+					"# Capturing recods that are not available in parent table\n",
+					"qry_RefIntegrityFailDF=\"\"\"\n",
+					"select A.*\n",
+					"from ChildTable A\n",
+					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
+					"where A.SITE_ID IS NULL;\n",
+					"\"\"\"\n",
+					"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
+					"RejDataDF.createOrReplaceTempView('RejDataView')\n",
+					"\n",
+					"qry_RefIntegrityFailCntryDF=\"\"\"\n",
+					"select A.*\n",
+					"from ChildTable A\n",
+					"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\n",
+					"where C.CODE IS NULL;\n",
+					"\"\"\"\n",
+					"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF)\n",
+					"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')\n",
+					"\n",
+					"\n",
+					"qry_RefIntegrityFailStteProvDF=\"\"\"\n",
+					"select A.*\n",
+					"from ChildTable A\n",
+					"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD)\n",
+					"where d.STTE_PROV_CD IS NULL;\n",
+					"\"\"\"\n",
+					"RejStteProvDataDF=spark.sql(qry_RefIntegrityFailStteProvDF)\n",
+					"RejStteProvDataDF.createOrReplaceTempView('RejStteProvDataView')\n",
+					"\n",
+					"qry_IncrementalDataDF=\"\"\"\n",
+					"select distinct B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,B.SITE_NAME,\n",
+					"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE ,\n",
+					"cast(C.mediumDescription AS VARCHAR(64)) as COUNTRY_NAME,A.CAMPUS_ID,A.CAMPUS_NAME,A.CAMPUS_STATUS,A.WORK_LOCATION_CODE, \n",
+					"A.ADDRESS, A.CITY, A.STATE_PROVINCE_ID, \n",
+					"D.STTE_PROV_DESC as STATE_PROVINCE_NAME,A.POSTAL_CODE,A.LATITUDE,A.LONGITUDE,A.UTC_OFFSET,\n",
+					"A.ICU_TIME_ZONE,A.PEOPLE_HOUSED_FLAG,A.REMOTE_SUPPORT_FLAG,A.PRIMARY_CAMPUS_USE_NAME,\n",
+					"A.PRIMARY_CAMPUS_USE_DESCRIPTION as PRIMARY_CAMPUS_USE_DESCR,\n",
+					"A.CAMPUS_OWNERSHIP,A.CAMPUS_ACTIVATION_YEAR,A.CAMPUS_INACTIVATION_YEAR \n",
+					"from ChildTable   A\n",
+					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID)\n",
+					"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\n",
+					"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD) \n",
+					"and trim(A.COUNTRY_CODE) = trim(D.CNTRY_CD)\n",
+					"where B.SITE_ID is not null  \n",
+					"\"\"\"\n",
+					"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\n",
+					"\n",
+					"col_list=[]\n",
+					"for i in FinalIncrementalDataDF.columns:\n",
+					"    col_list.append(i)\n",
+					"\n",
+					"# Add a checsum column to help identify the changed rows\n",
+					"\n",
+					"incrementalData_DF1 = FinalIncrementalDataDF.withColumn(\"nk_hash\",md5(natural_key))\n",
+					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+					"\n",
+					"#sell_cyclecolhashDF.show()\n",
+					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
+					"\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT COUNT(*) as CNT, CAMPUS_ID FROM incrementalData_DF2 GROUP BY CAMPUS_ID HAVING COUNT(*)>1"
+				],
+				"attachments": null,
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\n",
+					"#Create a dataframe with target deltalake table data with necessary columns\n",
+					"\n",
+					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
+					"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
+					"\n",
+					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
+					"\n",
+					"#existingMaxKeyDF=spark.sql(\"SELECT MAX(EMPLOYEE_KEY) existing_MAX_KEY from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
+					"\n",
+					"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
+					"\n",
+					"existingDataDF1 = existingDataDF.select([F.col(c).alias('existing_'+c) for c in existingDataDF.columns])\n",
+					"\n",
+					"existingDataDF1.createOrReplaceTempView('existingDataDF1')\n",
+					"\n",
+					"fullJoin1=incrementalData_DF2.join(existingDataDF1, col(natural_key) == col(\"existing_\" + natural_key), \"fullouter\")\n",
+					"\n",
+					"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
+					"\n",
+					"fullJoin2.createOrReplaceTempView('fullJoin')\n",
+					"\n",
+					"fullJoin2.write \\\n",
+					"  .format(\"delta\") \\\n",
+					"  .mode(\"overwrite\") \\\n",
+					"  .option(\"overwriteSchema\", \"true\") \\\n",
+					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/{}\".format(stagingtable)) \\\n",
+					"  .saveAsTable(stagingtable)\n",
+					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
+				],
+				"attachments": null,
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Data Validation Checks :\n",
+					"\n",
+					"- Check for duplicates in Source data based on natural key\n",
+					"- Check for partial data from source. That is if the file has expected number of rows\n",
+					"- Check for duplicates in target delta lake table based on natural key\n",
+					"- Referential Integrity checks\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry3=\"\"\"\n",
+					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"qry4=\"\"\"\n",
+					"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"qry5=\"\"\"\n",
+					"SELECT * FROM incrementalData_DF2\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"df3=spark.sql(qry3.format(natural_key,natural_key))\n",
+					"cnt1=df3.count()\n",
+					"\n",
+					"print (cnt1)\n",
+					"if cnt1 == 0:\n",
+					"    print(\"No Duplicates in source data\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    print(\"Below are the duplicates in source:\")\n",
+					"    df3.show()\n",
+					"    status = 'fail'\n",
+					"    #os.abort() this will take the spark cluster also down\n",
+					"    --sys.exit(1)\n",
+					"    print(\"This will not be printed\")\n",
+					"\n",
+					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
+					"cnt2=df4.count()\n",
+					"\n",
+					"print (cnt2)\n",
+					"if cnt2 == 0:\n",
+					"    print(\"no duplicates in target delta lake table\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    print(\"Below are the duplicates in target delta lake table:\")\n",
+					"    df4.show()\n",
+					"    status = 'fail'\n",
+					"    #os.abort() this will take the spark cluster also down\n",
+					"    sys.exit(2)\n",
+					"    print(\"This will not be printed\")\n",
+					"\n",
+					"\n",
+					"df5=spark.sql(qry5)\n",
+					"cnt3=df5.count()\n",
+					"\n",
+					"if cnt3 >= MinimumTririgaCampusCount:\n",
+					"    print(\"The number of rows in source data is more than the threshold, data can be processed\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    print(\"The source data is having less number of rows than expected. Please check:\" )\n",
+					"    print(cnt3)\n",
+					"    status = 'fail'\n",
+					"    #os.abort() this will take the spark cluster also down\n",
+					"    sys.exit(2)\n",
+					"    print(\"This will not be printed\")\n",
+					"\n",
+					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
+					"\n",
+					"\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry_4_recon1=\"\"\"\n",
+					"\n",
+					"SELECT COUNT(*) from {} A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE A.{}=B.{}\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					"\n",
+					"\"\"\"\n",
+					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable,tablename,natural_key,natural_key))\n",
+					"print('New records or Inserts are:') \n",
+					"df_4_recon1.show()\n",
+					"\n",
+					"qry_4_recon2=\"\"\"\n",
+					"\n",
+					"SELECT count(*) from {} A \n",
+					"WHERE LOWER({}) = LOWER(existing_{}) \n",
+					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE LOWER(A.{})=LOWER(B.{})\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM\n",
+					")\n",
+					";\n",
+					"\n",
+					"\"\"\"\n",
+					"df_4_recon2=spark.sql(qry_4_recon2.format(stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))\n",
+					"print('Changed records or Updates are:') \n",
+					"df_4_recon2.show()\n",
+					"\n",
+					"qry_4_recon3=\"\"\"\n",
+					"SELECT count(*) from \n",
+					"{} A\n",
+					"join fullJoin B\n",
+					"ON A.{} = B.existing_{}\n",
+					"AND B.{} is NULL\n",
+					"AND A.CURRENT_IND='Y' --AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
+					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					"\n",
+					"\"\"\"\n",
+					"\n",
+					"df_4_recon3=spark.sql(qry_4_recon3.format(tablename,natural_key,natural_key,natural_key))\n",
+					"print('Soft Deletes are:') \n",
+					"df_4_recon3.show()"
+				],
+				"attachments": null,
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"\n",
+					"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
+					"\n",
+					"qry_4_recon1=\"\"\"\n",
+					"SELECT COUNT(*) from {} A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE A.{}=B.{}\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					"\n",
+					"\"\"\"\n",
+					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))\n",
+					"\n",
+					"qry_ins_new_rows=\"\"\"\n",
+					"INSERT INTO {}\n",
+					"select \n",
+					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
+					",1 AS VERSION\n",
+					",GEOGRAPHY_ID\n",
+					",GEOGRAPHY_NAME\n",
+					",REGION_ID\n",
+					",REGION_NAME\n",
+					",SITE_ID\n",
+					",SITE_NAME\n",
+					",WORLD_REGION_CODE\n",
+					",WORLD_REGION_NAME\n",
+					",MARKET_TEAM_REGION_CODE\n",
+					",MARKET_TEAM_REGION_NAME\n",
+					",COUNTRY_CODE\n",
+					",COUNTRY_NAME\n",
+					",CAMPUS_ID\n",
+					",CAMPUS_NAME\n",
+					",CAMPUS_STATUS\n",
+					",WORK_LOCATION_CODE\n",
+					",ADDRESS, CITY\n",
+					",STATE_PROVINCE_ID\n",
+					",STATE_PROVINCE_NAME\n",
+					",POSTAL_CODE\n",
+					",LATITUDE\n",
+					",LONGITUDE\n",
+					",UTC_OFFSET\n",
+					",ICU_TIME_ZONE\n",
+					",PEOPLE_HOUSED_FLAG\n",
+					",REMOTE_SUPPORT_FLAG\n",
+					",PRIMARY_CAMPUS_USE_NAME\n",
+					",PRIMARY_CAMPUS_USE_DESCR\n",
+					",CAMPUS_OWNERSHIP\n",
+					",CAMPUS_ACTIVATION_YEAR\n",
+					",CAMPUS_INACTIVATION_YEAR\n",
+					",   'Y' AS CURRENT_IND\n",
+					",   '{}' AS EXTRACT_DT\n",
+					",   '{}' AS REC_START_DT\n",
+					",   '9999-12-31 00:00:00' as REC_END_DT\n",
+					",   'Tririga' AS SOURCE_SYSTEM\n",
+					",    column_hash as REC_CHECKSUM\n",
+					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
+					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+					"    from {} A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE A.{}=B.{}\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\n",
+					"qry_ins_new_rows_test=\"\"\"\n",
+					"\n",
+					"\tselect \n",
+					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
+					",\t1 AS VERSION\n",
+					",{}\n",
+					",   'Y' AS CURRENT_IND\n",
+					",   '{}' AS EXTRACT_DT\n",
+					",   '{}' AS REC_START_DT\n",
+					",   '9999-12-31 00:00:00' as REC_END_DT\n",
+					",   'Tririga' AS SOURCE_SYSTEM\n",
+					",    column_hash as REC_CHECKSUM\n",
+					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
+					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+					"    from {} A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE A.{}=B.{}\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+					"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
+				],
+				"attachments": null,
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Update or expire the rows with existing instance of the changed rows:\n",
+					"qry_4_upd_changes_rows=\"\"\"\n",
+					"\n",
+					"MERGE INTO {} A\n",
+					"USING {} B\n",
+					"ON A.{} = B.{}\n",
+					"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
+					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
+					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
+					"    ,REC_END_DT= '{}' -  INTERVAL 1 seconds\n",
+					"    ,IMG_LST_UPD_DT=current_timestamp\n",
+					";\n",
+					"\"\"\"\n",
+					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Insert for changed rows which are missing in target and present in source based on Natural Key.\n",
+					"\n",
+					"qry_ins_changed_rows=\"\"\"\n",
+					"INSERT INTO {}\n",
+					"\tselect \n",
+					"    existing_CAMPUS_KEY\n",
+					",\t1 + existing_VERSION\n",
+					",GEOGRAPHY_ID\n",
+					",GEOGRAPHY_NAME\n",
+					",REGION_ID\n",
+					",REGION_NAME\n",
+					",SITE_ID\n",
+					",SITE_NAME\n",
+					",WORLD_REGION_CODE\n",
+					",WORLD_REGION_NAME\n",
+					",MARKET_TEAM_REGION_CODE\n",
+					",MARKET_TEAM_REGION_NAME\n",
+					",COUNTRY_CODE\n",
+					",COUNTRY_NAME\n",
+					",CAMPUS_ID\n",
+					",CAMPUS_NAME\n",
+					",CAMPUS_STATUS\n",
+					",WORK_LOCATION_CODE\n",
+					",ADDRESS, CITY\n",
+					",STATE_PROVINCE_ID\n",
+					",STATE_PROVINCE_NAME\n",
+					",POSTAL_CODE\n",
+					",LATITUDE\n",
+					",LONGITUDE\n",
+					",UTC_OFFSET\n",
+					",ICU_TIME_ZONE\n",
+					",PEOPLE_HOUSED_FLAG\n",
+					",REMOTE_SUPPORT_FLAG\n",
+					",PRIMARY_CAMPUS_USE_NAME\n",
+					",PRIMARY_CAMPUS_USE_DESCR\n",
+					",CAMPUS_OWNERSHIP\n",
+					",CAMPUS_ACTIVATION_YEAR\n",
+					",CAMPUS_INACTIVATION_YEAR\n",
+					",   'Y' AS CURRENT_IND\n",
+					",   '{}' AS EXTRACT_DT\n",
+					",   '{}' AS REC_START_DT\n",
+					",   '9999-12-31 00:00:00' as REC_END_DT\n",
+					",   'Tririga' AS SOURCE_SYSTEM\n",
+					",    column_hash as REC_CHECKSUM\n",
+					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
+					",    existing_IMG_CREATED_DT\n",
+					"from {} A \n",
+					"WHERE LOWER({}) = LOWER(existing_{}) \n",
+					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE LOWER(A.{})=LOWER(B.{})\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM\n",
+					")\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
+				],
+				"attachments": null,
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Soft Deletes - Update Active_Ind for the rows no longer active in source:\n",
+					"\n",
+					"qry_4_upd_deleted_rows=\"\"\"\n",
+					"\n",
+					"MERGE INTO {} A\n",
+					"USING {} B\n",
+					"ON A.{} = B.existing_{}\n",
+					"AND B.{} is NULL\n",
+					"AND A.CURRENT_IND='Y' --AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
+					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
+					"    ,IMG_LST_UPD_DT=current_timestamp\n",
+					"    ,REC_END_DT= '{}' -  INTERVAL 1 seconds\n",
+					"\n",
+					";\n",
+					"\"\"\"\n",
+					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
+				],
+				"attachments": null,
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry3=\"\"\"\n",
+					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"qry4=\"\"\"\n",
+					"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"\n",
+					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
+					"cnt2=df4.count()\n",
+					"\n",
+					"print (cnt2)\n",
+					"if cnt2 == 0:\n",
+					"    print(\"no duplicates in target delta lake table\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    print(\"Below are the duplicates in target delta lake table:\")\n",
+					"    df4.show()\n",
+					"    status = 'fail'\n",
+					"    #os.abort() this will take the spark cluster also down\n",
+					"    sys.exit(2)\n",
+					"    print(\"This will not be printed\")\n",
+					"\n",
+					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 13
+			}
+		]
+	}
+}

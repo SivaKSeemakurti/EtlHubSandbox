@@ -1,0 +1,180 @@
+{
+	"name": "DHT_OFFICE_SPACE_ddl",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPool001494New",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "759c6da5-5d89-4a6c-89c7-1e28471b3a49"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 80,
+				"memory": 472,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"-- DBXDH.DHT_OFFICE_SPACE definition\r\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_OFFICE_SPACE  (\t\r\n",
+					"SPACE_KEY INT NOT NULL,\r\n",
+					"VERSION INT NOT NULL ,\r\n",
+					"BUSINESS_ID VARCHAR(64),\r\n",
+					"CAMPUS_ID VARCHAR(8),\r\n",
+					"BUILDING_ID VARCHAR(8),\r\n",
+					"FLOOR_ID VARCHAR(4),\r\n",
+					"FLOOR_DESCRIPTION VARCHAR(32),\r\n",
+					"SPACE_ID VARCHAR(16),\r\n",
+					"SPACE_DESCRIPTION VARCHAR(256),\r\n",
+					"SPACE_STATUS VARCHAR(8),\r\n",
+					"SPACE_CATEGORY_CODE VARCHAR(4),\r\n",
+					"SPACE_CATEGORY_DESCRIPTION VARCHAR(64),\r\n",
+					"SPACE_TYPE_CODE VARCHAR(4),\r\n",
+					"SPACE_TYPE_DESCRIPTION VARCHAR(64),\r\n",
+					"OCCUPANCY_TYPE VARCHAR(16),\r\n",
+					"CAPACITY INTEGER,\r\n",
+					"AREA_SQUARE_FEET INTEGER ,\r\n",
+					"OSCRE_CODE VARCHAR(8),\r\n",
+					"WORKPOINT VARCHAR(8),\r\n",
+					"RSYP_ID VARCHAR(8),\r\n",
+					"CURRENT_IND\tVARCHAR(1), -- Y for active row and N for all rows expired\r\n",
+					"EXTRACT_DT TIMESTAMP, -- Load Cycle date, contains same value for all the records inserted in a single batch\r\n",
+					"REC_START_DT TIMESTAMP, --SCD TYpe 2 start date\r\n",
+					"REC_END_DT TIMESTAMP, -- SCD Type 2 End date, will have high date (9999-12-31) for active dimensional row\r\n",
+					"SOURCE_SYSTEM STRING, -- Name of the source system\r\n",
+					"REC_CHECKSUM STRING, -- Hash value of all dimensional columns. Used to identify changed records \r\n",
+					"IMG_LST_UPD_DT TIMESTAMP, --Timestamp of when the record got updated in table\r\n",
+					"IMG_CREATED_DT TIMESTAMP --Timestamp of when the record got inserted in table\r\n",
+					")\r\n",
+					"USING DELTA\r\n",
+					"PARTITIONED BY (CURRENT_IND)\r\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE'\r\n",
+					"\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from etlhubConfirmed.DHT_OFFICE_SPACE"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DROP TABLE etlhubConfirmed.DHT_OFFICE_SPACE"
+				],
+				"attachments": null,
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DELETE FROM etlhubConfirmed.DHT_OFFICE_SPACE"
+				],
+				"attachments": null,
+				"execution_count": 2
+			}
+		]
+	}
+}

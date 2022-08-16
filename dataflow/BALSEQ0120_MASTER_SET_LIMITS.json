@@ -1,0 +1,94 @@
+{
+	"name": "BALSEQ0120_MASTER_SET_LIMITS",
+	"properties": {
+		"description": "Job Creation: 29-06-2022\nJob Name: BALSEQ0120_MASTER_SET_LIMITS\nCreated By: Subramanian R",
+		"folder": {
+			"name": "PGMP/Sequence"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getParamTS"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "updateTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "addParamStartEndTS"
+				},
+				{
+					"name": "addDefaultStartEndTS"
+				},
+				{
+					"name": "mergedData"
+				},
+				{
+					"name": "setLimitsInput"
+				},
+				{
+					"name": "updateRows"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     BLOCK_SIZE as integer,",
+				"     PROCESS_CTR_IND as string,",
+				"     PARAM_START_TS as string,",
+				"     PARAM_END_TS as string,",
+				"     REPLICATION_OFFSET as integer",
+				"}",
+				"source(output(",
+				"          ETL_PARAM_END_TMS as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\\n     ETL_PARAM_END_TMS\\nFrom\\n     PGMPDM.ZAUX_ETL_EXCTN PE\\n     inner join (\\n          Select\\n               max(ETL_EXCTN_ID) as LAST_ETL_EXECUTION_ID\\n          From\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          Where\\n               IS_CURR_IND = \\'N\\'\\n               and WAS_SUCCESS_IND = \\'Y\\'\\n     ) LE\\n     on PE.ETL_EXCTN_ID = LE.LAST_ETL_EXECUTION_ID\\n',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getParamTS",
+				"getParamTS derive(ETL_PARAM_START_TMS = toTimestamp(case(ltrim(rtrim($PARAM_START_TS))=='', toString(ETL_PARAM_END_TMS), $PARAM_START_TS)),",
+				"          ETL_PARAM_END_TMS = toTimestamp(case(ltrim(rtrim($PARAM_END_TS))=='', '', $PARAM_END_TS))) ~> addParamStartEndTS",
+				"getParamTS derive(ETL_PARAM_START_TMS = toTimestamp(coalesce(case(ltrim(rtrim($PARAM_START_TS))=='', toString(null()), $PARAM_START_TS), '2010-01-01 00:00:00.000001')),",
+				"          ETL_PARAM_END_TMS = toTimestamp(coalesce(case(ltrim(rtrim($PARAM_END_TS))=='', toString(null()), $PARAM_END_TS), toString(currentTimestamp())))) ~> addDefaultStartEndTS",
+				"addDefaultStartEndTS, addParamStartEndTS join(1 == 1,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'right')~> mergedData",
+				"mergedData derive(ETL_PARAM_START_TMS = coalesce(addParamStartEndTS@ETL_PARAM_START_TMS, addDefaultStartEndTS@ETL_PARAM_START_TMS) - minutes($REPLICATION_OFFSET),",
+				"          ETL_PARAM_END_TMS = coalesce(addParamStartEndTS@ETL_PARAM_END_TMS, addDefaultStartEndTS@ETL_PARAM_END_TMS),",
+				"          ETL_PARAM_CTR_BLOCK_SIZE = $BLOCK_SIZE,",
+				"          ETL_PARAM_CTR_IND = coalesce($PROCESS_CTR_IND, 'N'),",
+				"          IS_CURR_IND = 'Y') ~> setLimitsInput",
+				"setLimitsInput alterRow(updateIf(true())) ~> updateRows",
+				"updateRows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'ZAUX_ETL_EXCTN',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['IS_CURR_IND'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> updateTable"
+			]
+		}
+	}
+}

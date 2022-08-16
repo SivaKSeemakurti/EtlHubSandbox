@@ -1,0 +1,420 @@
+{
+	"name": "DHT_EXTRACT_CONTROL",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "64f7eefa-002f-47d2-895f-7555742d7821"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"-- DBXDH.DHT_EMPLOYEE definition\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_EXTRACT_CONTROL  (\n",
+					"\t\t  EMPLOYEE_KEY INTEGER NOT NULL , \n",
+					"\t\t  EMPLOYEE_VERSION INTEGER NOT NULL , \n",
+					"\t\t  EMPLOYEE_SERIAL_NUM VARCHAR(20)  , \n",
+					"\t\t  EMPLOYEE_COUNTRY_CODE VARCHAR(10)  , \n",
+					"\t\t  EMPLOYEE_COMPANY_CD VARCHAR(50)  , \n",
+					"\t\t  EMPLOYEE_BUSINESS_CD VARCHAR(100)  , \n",
+					"\t\t  NOTES_ID_RAW VARCHAR(100)  , \n",
+					"\t\t  NOTES_ID VARCHAR(100)  , \n",
+					"\t\t  CURRENT_IND VARCHAR(1) ,\n",
+					"\t\t  EXTRACT_DT TIMESTAMP  , \n",
+					"\t\t  REC_START_DT TIMESTAMP  , \n",
+					"\t\t  REC_END_DT TIMESTAMP  , \n",
+					"\t\t  SOURCE_SYSTEM VARCHAR(50)  , \n",
+					"\t\t  REC_CHECKSUM VARCHAR(32)  , \n",
+					"\t\t  REC_STATUS VARCHAR(1)  , \n",
+					"\t\t  IMG_LST_UPD_DT TIMESTAMP ,\n",
+					"\t\t  IMG_CREATED_DT TIMESTAMP ,\n",
+					"\t\t  EMPLOYEE_INITIALS VARCHAR(50)  , \n",
+					"\t\t  EMPLOYEE_LAST_NAME VARCHAR(100)  , \n",
+					"\t\t  EMPLOYEE_DISCON_DT TIMESTAMP  , \n",
+					"\t\t  EMPLOYEE_EFF_DT TIMESTAMP  , \n",
+					"\t\t  EMPLOYEE_STATUS VARCHAR(10)  , \n",
+					"\t\t  EMPLOYEE_LEVEL_CD VARCHAR(10)  , \n",
+					"\t\t  EMPLOYEE_USER_ID VARCHAR(10)  , \n",
+					"\t\t  MANAGER_IND VARCHAR(1)  , \n",
+					"\t\t  HOME_NODE_ID VARCHAR(10)  , \n",
+					"\t\t  HOME_USER_ID VARCHAR(10)  , \n",
+					"\t\t  BURDEN_CD VARCHAR(1)  , \n",
+					"\t\t  BURDEN_CD_UPD_IND VARCHAR(1)  , \n",
+					"\t\t  FIN_ADMIN_CD VARCHAR(10)  , \n",
+					"\t\t  LONGEVITY_CD VARCHAR(1)  , \n",
+					"\t\t  GROUP_ID VARCHAR(10)  , \n",
+					"\t\t  JOB_FAMILY_CD VARCHAR(10)  , \n",
+					"\t\t  PROFESSION_CD VARCHAR(10)  , \n",
+					"\t\t  EMF_SOURCE_CD VARCHAR(10)  , \n",
+					"\t\t  LBR_RPT_IND VARCHAR(1)  , \n",
+					"\t\t  INET_MAIL_ADDR VARCHAR(100)  , \n",
+					"\t\t  TEAM_ID VARCHAR(10)  , \n",
+					"\t\t  SITE_LOC_CD VARCHAR(10)  , \n",
+					"\t\t  EMP_NODE_ID VARCHAR(10)  , \n",
+					"\t\t  CNUM_ID VARCHAR(10)  , \n",
+					"\t\t  WEEK_SCHEDULE_HRS DECIMAL(5,1)  , \n",
+					"\t\t  UNIT_PRICE_AMT DECIMAL(20,2)  , \n",
+					"\t\t  SHIFT_1_RATE DECIMAL(20,3)  , \n",
+					"\t\t  SHIFT_2_RATE DECIMAL(20,3)  , \n",
+					"\t\t  SHIFT_3_RATE DECIMAL(20,3)  , \n",
+					"\t\t  STANDBY_RATE DECIMAL(20,3)  , \n",
+					"\t\t  OVERTIME_AMT DECIMAL(20,2)  , \n",
+					"\t\t  COMPETENCY_SEGMENT_CD VARCHAR(10)  , \n",
+					"\t\t  PROFESSION_NAME VARCHAR(30)  , \n",
+					"\t\t  ORIG_LOC_CD VARCHAR(10)  , \n",
+					"\t\t  DEPT_CATG_CD VARCHAR(15)  , \n",
+					"\t\t  LOB_ID VARCHAR(10)  , \n",
+					"\t\t  SAP_IND VARCHAR(1)  , \n",
+					"\t\t  CHARGE_GROUP_CD VARCHAR(10)  , \n",
+					"\t\t  SAP_COMPANY_CD VARCHAR(10)  , \n",
+					"\t\t  WORK_WEEK_HRS_MIN DECIMAL(5,1)  , \n",
+					"\t\t  WORK_WEEK_HRS_MAX DECIMAL(5,1)  , \n",
+					"\t\t  IMG_ACTIVE_EMPLOYEE_STATUS_CD VARCHAR(1)  , \n",
+					"\t\t  EMP_FIRST_NM VARCHAR(100)  , \n",
+					"\t\t  ISO_CTRY_CD VARCHAR(10)  , \n",
+					"\t\t  MGR_CTRY_CD VARCHAR(10)  , \n",
+					"\t\t  MGR_CMPNY_CD VARCHAR(50)  , \n",
+					"\t\t  MGR_SER_NUM VARCHAR(20)  , \n",
+					"\t\t  RDM_CTRY_CD VARCHAR(10)  , \n",
+					"\t\t  RDM_CMPNY_CD VARCHAR(50)  , \n",
+					"\t\t  RDM_SER_NUM VARCHAR(20)  , \n",
+					"\t\t  DIVISION_CODE VARCHAR(2) , \n",
+					"\t\t  DEPT_NUMBER VARCHAR(8) , \n",
+					"\t\t  MGR_CNUM_ID VARCHAR(10) , \n",
+					"\t\t  JOB_ROLE VARCHAR(70),\n",
+					"          DATA_IND varchar(10)  ,\n",
+					"\t      ACTIVE_IN_SOURCE_IND char(1) )   \n",
+					"USING DELTA\n",
+					"PARTITIONED BY (CURRENT_IND)\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_EMPLOYEE7'\n",
+					"--option(\"mergeSchema\", \"true\") \n",
+					"--#======"
+				],
+				"attachments": null,
+				"execution_count": 47
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"-- DBXDH.DHT_EMPLOYEE definition\n",
+					"--trying new definition to fix data issue\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_EMPLOYEE  (\n",
+					"\t\t  EMPLOYEE_KEY INTEGER NOT NULL , \n",
+					"\t\t  EMPLOYEE_VERSION INTEGER NOT NULL , \n",
+					"\t\t  EMPLOYEE_SERIAL_NUM VARCHAR(20)  , \n",
+					"\t\t  EMPLOYEE_COUNTRY_CODE VARCHAR(10)  , \n",
+					"\t\t  EMPLOYEE_COMPANY_CD VARCHAR(50)  , \n",
+					"\t\t  EMPLOYEE_BUSINESS_CD VARCHAR(100)  , \n",
+					"\t\t  NOTES_ID_RAW VARCHAR(100)  , \n",
+					"\t\t  NOTES_ID VARCHAR(100)  , \n",
+					"\t\t  CURRENT_IND VARCHAR(1) ,\n",
+					"\t\t  EXTRACT_DT TIMESTAMP  , \n",
+					"\t\t  REC_START_DT TIMESTAMP  , \n",
+					"\t\t  REC_END_DT TIMESTAMP  , \n",
+					"\t\t  SOURCE_SYSTEM VARCHAR(50)  , \n",
+					"\t\t  REC_CHECKSUM VARCHAR(32)  , \n",
+					"\t\t  REC_STATUS VARCHAR(1)  , \n",
+					"\t\t  IMG_LST_UPD_DT TIMESTAMP ,\n",
+					"\t\t  IMG_CREATED_DT TIMESTAMP ,\n",
+					"\t\t  EMPLOYEE_INITIALS VARCHAR(50)  , \n",
+					"\t\t  EMPLOYEE_LAST_NAME VARCHAR(100)  , \n",
+					"\t\t  EMPLOYEE_DISCON_DT TIMESTAMP  , \n",
+					"\t\t  EMPLOYEE_EFF_DT TIMESTAMP  , \n",
+					"\t\t  EMPLOYEE_STATUS VARCHAR(10)  , \n",
+					"\t\t  EMPLOYEE_LEVEL_CD VARCHAR(10)  , \n",
+					"\t\t  EMPLOYEE_USER_ID VARCHAR(10)  , \n",
+					"\t\t  MANAGER_IND VARCHAR(1)  , \n",
+					"\t\t  HOME_NODE_ID VARCHAR(10)  , \n",
+					"\t\t  HOME_USER_ID VARCHAR(10)  , \n",
+					"\t\t  BURDEN_CD VARCHAR(1)  , \n",
+					"\t\t  BURDEN_CD_UPD_IND VARCHAR(1)  , \n",
+					"\t\t  FIN_ADMIN_CD VARCHAR(10)  , \n",
+					"\t\t  LONGEVITY_CD VARCHAR(1)  , \n",
+					"\t\t  GROUP_ID VARCHAR(10)  , \n",
+					"\t\t  JOB_FAMILY_CD VARCHAR(10)  , \n",
+					"\t\t  PROFESSION_CD VARCHAR(10)  , \n",
+					"\t\t  EMF_SOURCE_CD VARCHAR(10)  , \n",
+					"\t\t  LBR_RPT_IND VARCHAR(1)  , \n",
+					"\t\t  INET_MAIL_ADDR VARCHAR(100)  , \n",
+					"\t\t  TEAM_ID VARCHAR(10)  , \n",
+					"\t\t  SITE_LOC_CD VARCHAR(10)  , \n",
+					"\t\t  EMP_NODE_ID VARCHAR(10)  , \n",
+					"\t\t  CNUM_ID VARCHAR(10)  , \n",
+					"\t\t  WEEK_SCHEDULE_HRS DECIMAL(5,1)  , \n",
+					"\t\t  UNIT_PRICE_AMT DECIMAL(20,2)  , \n",
+					"\t\t  SHIFT_1_RATE DECIMAL(20,3)  , \n",
+					"\t\t  SHIFT_2_RATE DECIMAL(20,3)  , \n",
+					"\t\t  SHIFT_3_RATE DECIMAL(20,3)  , \n",
+					"\t\t  STANDBY_RATE DECIMAL(20,3)  , \n",
+					"\t\t  OVERTIME_AMT DECIMAL(20,2)  , \n",
+					"\t\t  COMPETENCY_SEGMENT_CD VARCHAR(10)  , \n",
+					"\t\t  PROFESSION_NAME VARCHAR(30)  , \n",
+					"\t\t  ORIG_LOC_CD VARCHAR(10)  , \n",
+					"\t\t  DEPT_CATG_CD VARCHAR(15)  , \n",
+					"\t\t  LOB_ID VARCHAR(10)  , \n",
+					"\t\t  SAP_IND VARCHAR(1)  , \n",
+					"\t\t  CHARGE_GROUP_CD VARCHAR(10)  , \n",
+					"\t\t  SAP_COMPANY_CD VARCHAR(10)  , \n",
+					"\t\t  WORK_WEEK_HRS_MIN DECIMAL(5,1)  , \n",
+					"\t\t  WORK_WEEK_HRS_MAX DECIMAL(5,1)  , \n",
+					"\t\t  IMG_ACTIVE_EMPLOYEE_STATUS_CD VARCHAR(1)  , \n",
+					"\t\t  EMP_FIRST_NM VARCHAR(100)  , \n",
+					"\t\t  ISO_CTRY_CD VARCHAR(10)  , \n",
+					"\t\t  MGR_CTRY_CD VARCHAR(10)  , \n",
+					"\t\t  MGR_CMPNY_CD VARCHAR(50)  , \n",
+					"\t\t  MGR_SER_NUM VARCHAR(20)  , \n",
+					"\t\t  RDM_CTRY_CD VARCHAR(10)  , \n",
+					"\t\t  RDM_CMPNY_CD VARCHAR(50)  , \n",
+					"\t\t  RDM_SER_NUM VARCHAR(20)  , \n",
+					"\t\t  DIVISION_CODE VARCHAR(2) , \n",
+					"\t\t  DEPT_NUMBER VARCHAR(8) , \n",
+					"\t\t  MGR_CNUM_ID VARCHAR(10) , \n",
+					"\t\t  JOB_ROLE VARCHAR(70),\n",
+					"          DATA_IND varchar(10)  ,\n",
+					"\t      ACTIVE_IN_SOURCE_IND char(1) )   \n",
+					"USING DELTA\n",
+					"PARTITIONED BY (CURRENT_IND)\n",
+					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_EMPLOYEE'\n",
+					"--#======"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DROP TABLE etlhubconfirmed.dht_employee"
+				],
+				"attachments": null,
+				"execution_count": 45
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DELETE FROM etlhubconfirmed.dht_employee"
+				],
+				"attachments": null,
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#sample table\n",
+					"# Create table in the metastore\n",
+					"from delta.tables import *\n",
+					"\n",
+					"DeltaTable.createIfNotExists(spark) \\\n",
+					"  .tableName(\"etlhubConfirmed.test\") \\\n",
+					"  .addColumn(\"id\", \"INT\") \\\n",
+					"  .addColumn(\"firstName\", \"STRING\") \\\n",
+					"  .addColumn(\"middleName\", \"STRING\") \\\n",
+					"  .addColumn(\"lastName\", \"STRING\", comment = \"surname\") \\\n",
+					"  .addColumn(\"gender\", \"STRING\") \\\n",
+					"  .addColumn(\"birthDate\", \"TIMESTAMP\") \\\n",
+					"  .addColumn(\"ssn\", \"STRING\") \\\n",
+					"  .addColumn(\"salary\", \"INT\") \\\n",
+					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST') \\\n",
+					"  .property(\"mergeSchema\", \"true\") \\\n",
+					"  .partitionedBy(\"gender\") \\\n",
+					"  .execute()"
+				],
+				"attachments": null,
+				"execution_count": 37
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#sample table\n",
+					"# Create table in the metastore\n",
+					"from delta.tables import *\n",
+					"\n",
+					"DeltaTable.createIfNotExists(spark) \\\n",
+					"  .tableName(\"etlhubConfirmed.test_timestamp\") \\\n",
+					"  .addColumn(\"EMPLOYEE_DISCON_DT\", \"TIMESTAMP\") \\\n",
+					"  .addColumn(\"EMPLOYEE_EFF_DT\", \"TIMESTAMP\") \\\n",
+					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST_timestamp') \\\n",
+					"  .property(\"mergeSchema\", \"true\") \\\n",
+					"  .partitionedBy(\"EMPLOYEE_DISCON_DT\") \\\n",
+					"  .execute()"
+				],
+				"attachments": null,
+				"execution_count": 42
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT DISTINCT EMPLOYEE_DISCON_DT\n",
+					",EMPLOYEE_EFF_DT from fullJoin A \n",
+					"--\n",
+					"limit 20"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select * from etlhubConfirmed.test"
+				],
+				"attachments": null,
+				"execution_count": 40
+			}
+		]
+	}
+}

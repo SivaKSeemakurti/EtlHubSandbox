@@ -1,0 +1,324 @@
+{
+	"name": "DHT_MARKET_ddl",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "1fdbc122-538d-44aa-a296-02f4f6bfdc58"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"-- DBXDH.DHT_MARKET definition\n",
+					"\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_MARKET  (\t\n",
+					"\t\tMARKET_KEY\tINT \tNOT\tNULL\t,\n",
+					"\tMARKET_VERSION\tINT \tNOT\tNULL\t,\n",
+					"\tCUSTOMER_NO\tSTRING\t,\t\t\n",
+					"\tCUSTOMER_NM\tSTRING\t,\t\t\n",
+					"\tINAC_CD\tSTRING\t,\t\t\n",
+					"\tINAC_DESC\tSTRING\t,\t\t\n",
+					"\tCOUNTRY_CD\tSTRING\t,\t\t\n",
+					"\tMARKET_BUSINESS_CD\tSTRING\t,\t\t\n",
+					"\tSMB_IND\tSTRING\t,\t\t\n",
+					"\tCOMPANY_NO\tSTRING\t,\t\t\n",
+					"\tENTERPRISE_NM\tSTRING\t,\t\t\n",
+					"\tENTERPRISE_NO\tSTRING\t,\t\t\n",
+					"\tCUST_CITY_NM\tSTRING\t,\t\t\n",
+					"\tCUST_STATE_PROV_CD\tSTRING\t,\t\t\n",
+					"\tCUST_POSTL_CD\tSTRING\t,\t\t\n",
+					"\tISO_COUNTRY_CD\tSTRING\t,\t\t\n",
+					"\tISO_COUNTRY_DESC\tSTRING\t,\t\t\n",
+					"\tCMR_ISU_CD\tSTRING\t,\t\t\n",
+					"\tSUB_INDUSTRY_CD\tSTRING\t,\t\t\n",
+					"\tCURR_CVRG_TYP_CD\tSTRING\t,\t\t\n",
+					"\tCURR_CVRG_TYP_DESC\tSTRING\t,\t\t\n",
+					"\tCURR_CVRG_ID\tSTRING\t,\t\t\n",
+					"\tCURR_CVRG_NM\tSTRING\t,\t\t\n",
+					"\tDLGTD_CVRG_IND\tSTRING\t,\t\t\n",
+					"\tBASE_CVRG_TYP_CD\tSTRING\t,\t\t\n",
+					"\tBASE_CVRG_TYP_DESC\tSTRING\t,\t\t\n",
+					"\tBASE_CVRG_ID\tSTRING\t,\t\t\n",
+					"\tBASE_CVRG_NM\tSTRING\t,\t\t\n",
+					"\tTERR_ID\tSTRING\t,\t\t\n",
+					"\tTERR_NM\tSTRING\t,\t\t\n",
+					"\tDBCS_CUSTOMER_NM\tSTRING\t,\t\t\n",
+					"\tCLIENT_ID\tSTRING\t,\t\t\n",
+					"\tCLIENT_NM\tSTRING\t,\t\t\n",
+					"\tCVI_BRNCH_ID\tSTRING\t,\t\t\n",
+					"\tCVI_BRNCH_DESC\tSTRING\t,\t\t\n",
+					"\tCVI_BRNCH_GRP_CD\tSTRING\t,\t\t\n",
+					"\tCVI_BRNCH_GRP_DESC\tSTRING\t,\t\t\n",
+					"\tCVI_BRNCH_UNT_ID\tSTRING\t,\t\t\n",
+					"\tCVI_BRNCH_UNT_NM\tSTRING\t,\t\t\n",
+					"\tSMB_QUADTIER_CD\tSTRING\t,\t\t\n",
+					"\tCUST_ACCT_ID\tSTRING\t,\t\t\n",
+					"\tRPTS_TO_IMT_ID\tSTRING\t,\t\t\n",
+					"\tRPTS_TO_SCTR_CD\tSTRING\t,\t\t\n",
+					"\tRPTS_TO_SCTR_DESC\tSTRING\t,\t\t\n",
+					"\tCURRENT_IND\tSTRING\t,\t\t\n",
+					"\tEXTRACT_DT\tTIMESTAMP\t,\t\t\n",
+					"\tREC_START_DT\tTIMESTAMP\t,\t\t\n",
+					"\tREC_END_DT\tTIMESTAMP\t,\t\t\n",
+					"\tREC_CHECKSUM\tSTRING\t,\t\t\n",
+					"\tREC_STATUS\tSTRING\t,\t\t\n",
+					"\tSOURCE_SYSTEM\tSTRING\t,\t\t\n",
+					"\tCUST_INDUSTRY_SECTOR_KEY\tINT \t,\t\t\n",
+					"\tCUST_INDUSTRY_SECTOR_VERSION\tINT \t,\t\t\n",
+					"\tTERRITORY_RGN_KEY\tINT \t,\t\t\n",
+					"\tREPORTS_TO_IMT_GEO_KEY\tINT \t,\t\t\n",
+					"\tFIN_COUNTRY_KEY\tINT \t,\t\t\n",
+					"\tIMG_LST_UPD_DT\tTIMESTAMP\t,\t\t\n",
+					"\tIMG_CREATED_DT\tTIMESTAMP\t,\t\t\n",
+					"\tBOID\tSTRING\t,\t\t\n",
+					"\tDOMESTIC_CLIENT_ID\tSTRING\t,\t\t\n",
+					"\tDOMESTIC_CLIENT_NM\tSTRING\t,\t\t\n",
+					"\tGLOBAL_CLIENT_ID\tSTRING\t,\t\t\n",
+					"\tGLOBAL_CLIENT_NM\tSTRING\t,\t\t\n",
+					"\tGLOBAL_ULTIMATE_CLIENT_ID\tSTRING\t,\t\t\n",
+					"\tGLOBAL_ULTIMATE_CLIENT_NM\tSTRING\t,\t\t\n",
+					"\tDOMESTIC_BUYING_GROUP_ID\tSTRING\t,\t\t\n",
+					"\tDOMESTIC_BUYING_GROUP_NM\tSTRING\t,\t\t\n",
+					"\tGLOBAL_BUYING_GROUP_ID\tSTRING\t,\t\t\n",
+					"\tGLOBAL_BUYING_GROUP_NM\tSTRING\t,\t\t\n",
+					"\tTOP_TREE_ACCT_ID\tSTRING\t,\t\t\n",
+					"\tTOP_TREE_ID\tSTRING\t,\t\t\n",
+					"\tTOP_TREE_NM\tSTRING\t,\t\t\n",
+					"\tSTANDARD_INDUSTRIAL_CLASSIFICATION_CD\tSTRING\t,\t\t\n",
+					"\tCOV_CLIENT_TYPE\tSTRING\t,\t\t\n",
+					"\tCOV_CLIENT_TYPE_DESC\tSTRING\t,\t\t\n",
+					"\tCOV_CLIENT_SUBTYPE\tSTRING\t,\t\t\n",
+					"\tCOV_CLIENT_SUBTYPE_DESC\tSTRING\t,\n",
+					"\tACTIVE_IN_SOURCE_IND STRING )   \n",
+					"USING DELTA\n",
+					"PARTITIONED BY (CURRENT_IND)\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_MARKET'"
+				],
+				"attachments": null,
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DROP TABLE etlhubconfirmed.dht_MARKET"
+				],
+				"attachments": null,
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DELETE FROM etlhubconfirmed.dht_MARKET"
+				],
+				"attachments": null,
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#sample table\n",
+					"# Create table in the metastore\n",
+					"from delta.tables import *\n",
+					"\n",
+					"DeltaTable.createIfNotExists(spark) \\\n",
+					"  .tableName(\"etlhubConfirmed.test\") \\\n",
+					"  .addColumn(\"id\", \"INT\") \\\n",
+					"  .addColumn(\"firstName\", \"STRING\") \\\n",
+					"  .addColumn(\"middleName\", \"STRING\") \\\n",
+					"  .addColumn(\"lastName\", \"STRING\", comment = \"surname\") \\\n",
+					"  .addColumn(\"gender\", \"STRING\") \\\n",
+					"  .addColumn(\"birthDate\", \"TIMESTAMP\") \\\n",
+					"  .addColumn(\"ssn\", \"STRING\") \\\n",
+					"  .addColumn(\"salary\", \"INT\") \\\n",
+					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST') \\\n",
+					"  .property(\"mergeSchema\", \"true\") \\\n",
+					"  .partitionedBy(\"gender\") \\\n",
+					"  .execute()"
+				],
+				"attachments": null,
+				"execution_count": 37
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#sample table\n",
+					"# Create table in the metastore\n",
+					"from delta.tables import *\n",
+					"\n",
+					"DeltaTable.createIfNotExists(spark) \\\n",
+					"  .tableName(\"etlhubConfirmed.test_timestamp\") \\\n",
+					"  .addColumn(\"EMPLOYEE_DISCON_DT\", \"TIMESTAMP\") \\\n",
+					"  .addColumn(\"EMPLOYEE_EFF_DT\", \"TIMESTAMP\") \\\n",
+					"  .location('abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/TEST_timestamp') \\\n",
+					"  .property(\"mergeSchema\", \"true\") \\\n",
+					"  .partitionedBy(\"EMPLOYEE_DISCON_DT\") \\\n",
+					"  .execute()"
+				],
+				"attachments": null,
+				"execution_count": 42
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					}
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT DISTINCT EMPLOYEE_DISCON_DT\n",
+					",EMPLOYEE_EFF_DT from fullJoin A \n",
+					"--\n",
+					"limit 20"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select * from etlhubConfirmed.test"
+				],
+				"attachments": null,
+				"execution_count": 40
+			}
+		]
+	}
+}

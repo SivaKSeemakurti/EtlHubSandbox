@@ -1,0 +1,109 @@
+{
+	"name": "DF_TRIRIGA_CAMPUS_SFTP_PULL",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGACampusQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TririgaRemoteServerSite"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGACampusQueryCSV",
+						"type": "DatasetReference"
+					},
+					"name": "AzureDataLakeStorage",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage2",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          CAMPUS_ID as string,",
+				"          CAMPUS_NAME as string,",
+				"          CAMPUS_STATUS as string,",
+				"          CAMPUS_GROUP as string,",
+				"          SITE_ID as string,",
+				"          PHYSICAL_GEO as string,",
+				"          WORLD_REGION_CODE as string,",
+				"          WORLD_REGION_NAME as string,",
+				"          MARKET_TEAM_REGION_CODE as string,",
+				"          MARKET_TEAM_REGION_NAME as string,",
+				"          WORK_LOCATION_CODE as string,",
+				"          ADDRESS as string,",
+				"          CITY as string,",
+				"          STATE_PROVINCE_ID as string,",
+				"          POSTAL_CODE as string,",
+				"          COUNTRY_CODE as string,",
+				"          LATITUDE as string,",
+				"          LONGITUDE as string,",
+				"          UTC_OFFSET as string,",
+				"          ICU_TIME_ZONE as string,",
+				"          PEOPLE_HOUSED_FLAG as string,",
+				"          REMOTE_SUPPORT_FLAG as string,",
+				"          PRIMARY_CAMPUS_USE_ID as string,",
+				"          PRIMARY_CAMPUS_USE_NAME as string,",
+				"          PRIMARY_CAMPUS_USE_DESCRIPTION as string,",
+				"          CAMPUS_OWNERSHIP as string,",
+				"          CAMPUS_ACTIVATION_YEAR as string,",
+				"          CAMPUS_INACTIVATION_YEAR as string,",
+				"          CAMPUS_MODIFIED_DATE_AND_TIME as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> TririgaRemoteServerSite",
+				"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0777,",
+				"     preCommands: ['rm -r /extract/Tririga/campus/'],",
+				"     postCommands: ['mv /extract/Tririga/campus/*.csv /extract/Tririga/campus/IWTRIRIGASCampusQuery.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          CAMPUS_ID,",
+				"          CAMPUS_NAME,",
+				"          CAMPUS_STATUS,",
+				"          CAMPUS_GROUP,",
+				"          SITE_ID,",
+				"          PHYSICAL_GEO,",
+				"          WORLD_REGION_CODE,",
+				"          WORLD_REGION_NAME,",
+				"          MARKET_TEAM_REGION_CODE,",
+				"          MARKET_TEAM_REGION_NAME,",
+				"          WORK_LOCATION_CODE,",
+				"          ADDRESS,",
+				"          CITY,",
+				"          STATE_PROVINCE_ID,",
+				"          POSTAL_CODE,",
+				"          COUNTRY_CODE,",
+				"          LATITUDE,",
+				"          LONGITUDE,",
+				"          UTC_OFFSET,",
+				"          ICU_TIME_ZONE,",
+				"          PEOPLE_HOUSED_FLAG,",
+				"          REMOTE_SUPPORT_FLAG,",
+				"          PRIMARY_CAMPUS_USE_ID,",
+				"          PRIMARY_CAMPUS_USE_NAME,",
+				"          PRIMARY_CAMPUS_USE_DESCRIPTION,",
+				"          CAMPUS_OWNERSHIP,",
+				"          CAMPUS_ACTIVATION_YEAR,",
+				"          CAMPUS_INACTIVATION_YEAR,",
+				"          CAMPUS_MODIFIED_DATE_AND_TIME",
+				"     )) ~> AzureDataLakeStorage"
+			]
+		}
+	}
+}

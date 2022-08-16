@@ -1,0 +1,164 @@
+{
+	"name": "DHT_Opportunity_Daily_Fact_ddl",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPool001494New",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "0ea5228d-36cb-42f6-826f-6c955833e1b8"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 80,
+				"memory": 472,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"-- DBXDH.DHT_OPPORTUNITY_DAILY_FT definition\n",
+					"\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_OPPORTUNITY_DAILY_FT  (\n",
+					"\t\t  OPPORTUNITY_FACT_KEY INTEGER NOT NULL , \n",
+					"\t\t  OPPORTUNITY_FACT_VERSION INTEGER NOT NULL  , \n",
+					"\t\t  OPPORTUNITY_KEY INTEGER  , \n",
+					"\t\t  OPPORTUNITY_OWNER_KEY INTEGER  , \n",
+					"\t\t  REGION_LEVEL_4_KEY INTEGER  , \n",
+					"\t\t  IMG_INDUSTRY_SECTOR_KEY INTEGER  , \n",
+					"\t\t  MARKET_KEY INTEGER  , \n",
+					"\t\t  OPPORTUNITY_SALES_STAGE_KEY INTEGER  , \n",
+					"\t\t  PREVIOUS_OPPORTUNITY_SALES_STAGE_KEY INTEGER  , \n",
+					"\t\t  DECISION_DATE_KEY INTEGER  , \n",
+					"\t\t  EIW_DATE_KEY INTEGER  , \n",
+					"\t\t  OPPORTUNITY_CLOSE_DATE_KEY INTEGER  , \n",
+					"\t\t  OPPORTUNITY_CREATE_DATE_KEY INTEGER  , \n",
+					"\t\t  OPPORTUNITY_UPDATE_DATE_KEY INTEGER  , \n",
+					"\t\t  OPPORTUNITY_SALES_STAGE_UPDATE_DATE_KEY INTEGER  , \n",
+					"\t\t  GEOGRAPHY_KEY INTEGER  , \n",
+					"\t\t  TOTAL_OPP_VAL_USD DECIMAL(15,0)  , \n",
+					"\t\t  CURRENT_IND VARCHAR(1) , \n",
+					"\t\t  EXTRACT_DT TIMESTAMP  , \n",
+					"\t\t  REC_START_DT TIMESTAMP  , \n",
+					"\t\t  REC_END_DT TIMESTAMP  , \n",
+					"\t\t  SOURCE_SYSTEM VARCHAR(50)  , \n",
+					"\t\t  REC_CHECKSUM VARCHAR(32)  , \n",
+					"\t\t  REC_STATUS VARCHAR(1)  , \n",
+					"\t\t  IMG_LST_UPD_DT TIMESTAMP  , \n",
+					"\t\t  IMG_CREATED_DT TIMESTAMP  , \n",
+					"\t\t  PROP_DELIVERY_DATE_KEY INTEGER , \n",
+					"\t\t  PERF_CRITERIA_CONF SMALLINT , \n",
+					"\t\t  PRICE_AGREEMENT SMALLINT , \n",
+					"\t\t  PRICING_SECURED SMALLINT , \n",
+					"\t\t  EXECUTIVE_SPONSOR_EMP_KEY VARCHAR(100) , \n",
+					"\t\t  OPP_ACTIVE_IN_SOURCE_IND VARCHAR(1) ,\n",
+					"          DATA_IND varchar(10)  ,\n",
+					"\t      ACTIVE_IN_SOURCE_IND char(1) )   \n",
+					"USING DELTA\n",
+					"PARTITIONED BY (CURRENT_IND)\n",
+					"-- specify data lake folder location\n",
+					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/facts/DHT_OPPORTUNITY_DAILY_FT'      "
+				],
+				"attachments": null,
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DROP TABLE etlhubconfirmed.DHT_OPPORTUNITY_DAILY_FT"
+				],
+				"attachments": null,
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select * FROM etlhubconfirmed.DHT_OPPORTUNITY_DAILY_FT"
+				],
+				"attachments": null,
+				"execution_count": 2
+			}
+		]
+	}
+}

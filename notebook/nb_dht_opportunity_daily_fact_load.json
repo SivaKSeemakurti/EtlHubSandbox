@@ -1,0 +1,772 @@
+{
+	"name": "nb_dht_opportunity_daily_fact_load",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/Dimensions&Facts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPool001494New",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "86f6b3dd-555b-41b9-a044-02d22bce6624"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 80,
+				"memory": 472,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"**Opportunity Fact load**\n",
+					"\n",
+					"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
+					"Since ESA is not accessible from Azure, a datastage job srcESA_Opportunity_Daily_Fact_Azure is executed on datastage to push the ESA extract to adls.\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Import all the necessary libraries"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from azure.storage.blob import BlobClient\n",
+					"import pandas as pd\n",
+					"from io import StringIO\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
+					"from sqlite3 import connect\n",
+					"from pyspark.sql import functions as F\n",
+					"from pyspark.sql import SparkSession\n",
+					"from pyspark.sql.functions import col\n",
+					"from pyspark.sql.types import * \n",
+					"from delta.tables import *\n",
+					"import os\n",
+					"import sys\n",
+					"from datetime import datetime"
+				],
+				"attachments": null,
+				"execution_count": 96
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Define Parameters"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"tags": []
+				},
+				"source": [
+					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
+					"container_name = 'etlhubfilestorage' # fill in your container name \n",
+					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
+					"relative_archive_path='archive/'\n",
+					"file_name='DS_OPPORTUNITY_DAILY_FACT.csv' \n",
+					"natural_key=\"OPPORTUNITY_KEY\"\n",
+					"tablename=\"etlhubConfirmed.dht_opportunity_daily_ft\"\n",
+					"stagingtable=\"DHTS_OPPORTUNITY_DAILY_FT\"\n",
+					"keycolumn=\"OPPORTUNITY_FACT_KEY\"\n",
+					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
+					"print(date)"
+				],
+				"attachments": null,
+				"execution_count": 97
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Copy source CSV file to archive folder including timestamp in file name"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\n",
+					"#Read data from adls csv file extracted from source at \n",
+					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_MARKET_DATA.csv"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \n",
+					"print('Primary storage account path: ' + adls_path) \n",
+					"\n",
+					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
+					"print('Primary storage account path: ' + adls_path) \n",
+					"\n",
+					"relative_archive_path\n",
+					"# Read a csv file \n",
+					"csv_path = adls_path + file_name\n",
+					"arch_fil_name=file_name.rsplit(\".\")\n",
+					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
+					"print (csv_archive_path)\n",
+					"\n",
+					"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\n",
+					"incrementalData_DF.createOrReplaceTempView('SourceView')\n",
+					"#joining with dimension tables\n",
+					"DIMOPPDataDF=spark.sql(\"select distinct Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY as OPPORTUNITY_KEY,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY FROM SourceView Src LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR where current_ind = 'Y') as INDUS ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode\")\n",
+					"DIMOPPDataDF.createOrReplaceTempView('SrcDIMJoinView')\n",
+					"\n",
+					"# Get column list for creating Rec_Checksum\n",
+					"col_list=[]\n",
+					"for i in DIMOPPDataDF.columns:\n",
+					"    col_list.append(i)\n",
+					"\n",
+					"# Add a checsum column to help identify the changed rows  \n",
+					"incrementalData_DF2 = DIMOPPDataDF.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+					"\n",
+					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
+				],
+				"attachments": null,
+				"execution_count": 98
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\n",
+					"#Create a dataframe with target deltalake table data with necessary columns\n",
+					"\n",
+					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
+					"\n",
+					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
+					"\n",
+					"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
+					"\n",
+					"existingDataDF1 = existingDataDF.select([F.col(c).alias('existing_'+c) for c in existingDataDF.columns])\n",
+					"\n",
+					"existingDataDF1.createOrReplaceTempView('existingDataDF1')\n",
+					"\n",
+					"fullJoin1=incrementalData_DF2.join(existingDataDF1, col(natural_key) == col(\"existing_\" + natural_key), \"fullouter\")\n",
+					"\n",
+					"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\n",
+					"\n",
+					"fullJoin2.createOrReplaceTempView('fullJoin')\n",
+					"\n",
+					"fullJoin2.write \\\n",
+					"  .format(\"delta\") \\\n",
+					"  .mode(\"overwrite\") \\\n",
+					"  .option(\"overwriteSchema\", \"true\") \\\n",
+					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/{}\".format(stagingtable)) \\\n",
+					"  .saveAsTable(stagingtable)\n",
+					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
+				],
+				"attachments": null,
+				"execution_count": 99
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Data Validation Checks :\n",
+					"\n",
+					"- Check for duplicates in Source data based on natural key\n",
+					"- Check for duplicates in target delta lake table based on natural key\n",
+					""
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry3=\"\"\"\n",
+					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 where {} is not null GROUP BY {} HAVING COUNT(*)>1\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"qry4=\"\"\"\n",
+					"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"df3=spark.sql(qry3.format(natural_key,natural_key,natural_key))\n",
+					"cnt1=df3.count()\n",
+					"\n",
+					"print (cnt1)\n",
+					"if cnt1 == 0:\n",
+					"    print(\"No Duplicates in source data\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    print(\"Below are the duplicates in source:\")\n",
+					"    df3.show()\n",
+					"    status = 'fail'\n",
+					"    #os.abort() this will take the spark cluster also down\n",
+					"    sys.exit(1)\n",
+					"    print(\"This will not be printed\")\n",
+					"\n",
+					"#print(natural_key)\n",
+					"#print(tablename)\n",
+					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
+					"cnt2=df4.count()\n",
+					"\n",
+					"print (cnt2)\n",
+					"if cnt2 == 0:\n",
+					"    print(\"no duplicates in target delta lake table\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    print(\"Below are the duplicates in target delta lake table:\")\n",
+					"    df4.show()\n",
+					"    status = 'fail'\n",
+					"    #os.abort() this will take the spark cluster also down\n",
+					"    sys.exit(2)\n",
+					"    print(\"This will not be printed\")\n",
+					"\n",
+					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 100
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"--select Src.OPPORTUNITY_NUM,OPP.OPPORTUNITY_KEY as OPPORTUNITY_KEY,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY FROM SourceView Src LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM from  etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from  etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR where current_ind = 'Y') as INDUS ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode\r\n",
+					"--select * from incrementalData_DF2 where opportunity_key=25049\r\n",
+					"select Src.OPPORTUNITY_NUM --,OPP.OPPORTUNITY_KEY as OPPORTUNITY_KEY --,CUST.MARKET_KEY,emp.EMPLOYEE_KEY,emp.EMPLOYEE_VERSION,\r\n",
+					"--emp_exc.EXECUTIVE_SPONSOR_EMP_KEY,sales.SALES_STAGE_KEY,prev_sales.SALES_STAGE_KEY as PREV_SALES_STAGE_KEY,DECISION_DATE,\r\n",
+					"--OPPORTUNITY_CLOSE_DATE,OPPORTUNITY_CREATE_DATE,OPPORTUNITY_UPDATE_DATE,TOTAL_OPP_VAL_USD,OPPORTUNITY_SALES_STAGE_UPDATE_DATE,\r\n",
+					"--PERF_CRITERIA_CONF,PROP_DELIVERY_DATE,PRICE_AGREEMENT,PRICING_SECURED,INDUS.INDUSTRY_SECTOR_KEY \r\n",
+					"FROM (select * from SourceView where opportunity_num='SOC-WIJKD3I') as Src \r\n",
+					"LEFT OUTER JOIN (select OPPORTUNITY_KEY,OPPORTUNITY_VERSION,OPPORTUNITY_NUM from etlhubConfirmed.dht_opportunity where current_ind = 'Y') as OPP ON Src.OPPORTUNITY_NUM=OPP.OPPORTUNITY_NUM \r\n",
+					"LEFT OUTER JOIN (select MARKET_KEY,MARKET_VERSION,CUSTOMER_NO,COUNTRY_CD from etlhubConfirmed.DHT_MARKET where current_ind = 'Y') as CUST on Src.CUSTOMER_NO=CUST.CUSTOMER_NO and Src.COUNTRY_CODE=CUST.COUNTRY_CD \r\n",
+					"/*LEFT OUTER JOIN (select t2.EMPLOYEE_KEY,t2.EMPLOYEE_VERSION,t2.CNUM_ID from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp on Src.EMP_CNUM=emp.CNUM_ID \r\n",
+					"LEFT OUTER JOIN (select t2.EMPLOYEE_KEY as EXECUTIVE_SPONSOR_EMP_KEY,t2.EMPLOYEE_VERSION as EXECUTIVE_SPONSOR_EMP_VERSION,t2.CNUM_ID as EXECUTIVE_SPONSOR_EMP from (select EMPLOYEE_KEY,EMPLOYEE_VERSION,trim(CNUM_ID) as CNUM_ID,row_number() OVER (PARTITION BY CNUM_ID ORDER BY EMPLOYEE_KEY DESC) AS Seq from etlhubConfirmed.DHT_EMPLOYEE where current_ind = 'Y' and IMG_ACTIVE_EMPLOYEE_STATUS_CD='Y' and CNUM_ID is not null) t2 where t2.seq = 1) as emp_exc on emp_exc.EXECUTIVE_SPONSOR_EMP=Src.EXECUTIVE_SPONSOR_EMP_KEY \r\n",
+					"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') sales ON Src.OPPORTUNITY_SALES_STAGE_CODE = sales.SALES_STAGE_CD \r\n",
+					"LEFT OUTER JOIN (select SALES_STAGE_KEY,SALES_STAGE_CD from etlhubConfirmed.DHT_SALES_STAGE where CURRENT_IND='Y') prev_sales ON Src.PREV_OPPORTUNITY_SALES_STAGE_CODE = prev_sales.SALES_STAGE_CD \r\n",
+					"LEFT OUTER JOIN (select CODE,INDUSTRY_SECTOR_KEY,parentCode from etlhubConfirmed.DHT_INDUSTRY_SECTOR where current_ind = 'Y') as INDUS ON Src.CMR_ISU_CODE=INDUS.CODE AND Src.SUB_INDUSTRY_CODE = INDUS.parentCode\r\n",
+					"where opportunity_key=25049 */"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry_4_recon1=\"\"\"\n",
+					"\n",
+					"SELECT COUNT(*) from {} A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE A.{}=B.{}\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					"\n",
+					"\"\"\"\n",
+					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable,tablename,natural_key,natural_key))\n",
+					"print('New records or Inserts are:') \n",
+					"df_4_recon1.show()\n",
+					"\n",
+					"qry_4_recon2=\"\"\"\n",
+					"\n",
+					"SELECT COUNT(*) from {} A \n",
+					"WHERE LOWER({}) = LOWER(existing_{}) \n",
+					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE LOWER(A.{})=LOWER(B.{})\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM\n",
+					")\n",
+					";\n",
+					"\n",
+					"\"\"\"\n",
+					"df_4_recon2=spark.sql(qry_4_recon2.format(stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))\n",
+					"print('Changed records or Updates are:') \n",
+					"df_4_recon2.show()\n",
+					"\n",
+					"qry_4_recon3=\"\"\"\n",
+					"SELECT COUNT(*) from \n",
+					"{} A\n",
+					"join fullJoin B\n",
+					"ON A.{} = B.existing_{}\n",
+					"AND B.{} is NULL\n",
+					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
+					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					"\n",
+					"\"\"\"\n",
+					"\n",
+					"df_4_recon3=spark.sql(qry_4_recon3.format(tablename,natural_key,natural_key,natural_key))\n",
+					"print('Soft Deletes are:') \n",
+					"df_4_recon3.show()"
+				],
+				"attachments": null,
+				"execution_count": 44
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT DECISION_DATE ,\n",
+					"date_format(DECISION_DATE,\"yyyyMMdd\") \n",
+					"FROM DHTS_OPPORTUNITY_DAILY_FT "
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"\n",
+					"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
+					"\n",
+					"qry_4_recon1=\"\"\"\n",
+					"SELECT COUNT(*) from {} A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE A.{}=B.{}\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					"\n",
+					"\"\"\"\n",
+					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))\n",
+					"\n",
+					"qry_ins_new_rows=\"\"\"\n",
+					"\n",
+					"INSERT INTO {}\n",
+					"\tselect \n",
+					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as OPPORTUNITY_FACT_VERSION \n",
+					",\tOPPORTUNITY_KEY\n",
+					",EMPLOYEE_KEY\n",
+					",-1 as REGION_LEVEL_4_KEY\n",
+					",INDUSTRY_SECTOR_KEY\n",
+					",MARKET_KEY\n",
+					",SALES_STAGE_KEY\n",
+					",PREV_SALES_STAGE_KEY\n",
+					",date_format(DECISION_DATE,\"yyyyMMdd\") as DECISION_DATE_KEY\n",
+					",-1 as EIW_DATE_KEY\n",
+					",date_format(OPPORTUNITY_CLOSE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CLOSE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_CREATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CREATE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_UPDATE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_SALES_STAGE_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_SALES_STAGE_UPDATE_DATE_KEY\n",
+					",-1 as GEOGRAPHY_KEY\n",
+					",TOTAL_OPP_VAL_USD\n",
+					",'Y' AS CURRENT_IND\n",
+					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
+					"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
+					"\t,'9999-12-31 00:00:00.000' as REC_END_DT\n",
+					"\t,'ESA' AS SOURCE_SYSTEM\n",
+					"\t,column_hash as REC_CHECKSUM\n",
+					"\t,'I' as REC_STATUS\n",
+					"\t,current_timestamp as IMG_LST_UPD_DT\n",
+					"\t,CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+					"\t,date_format(PROP_DELIVERY_DATE,\"yyyyMMdd\") as PROP_DELIVERY_DATE_KEY\n",
+					"\t,PERF_CRITERIA_CONF\n",
+					"\t,PRICE_AGREEMENT\n",
+					"    ,PRICING_SECURED\n",
+					"    ,EXECUTIVE_SPONSOR_EMP_KEY\n",
+					"\t,'Y' as OPP_ACTIVE_IN_SOURCE_IND\n",
+					"\t,'ED' AS DATA_IND\n",
+					"\t,'Y' AS ACTIVE_IN_SOURCE_IND \n",
+					"from {} A \n",
+					"WHERE existing_REC_CHECKSUM is null\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE A.{}=B.{}\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 102
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Update or expire the rows with existing instance of the changed rows:\n",
+					"qry_4_upd_changes_rows=\"\"\"\n",
+					"\n",
+					"MERGE INTO {} A\n",
+					"USING {} B\n",
+					"ON A.{} = B.{}\n",
+					"AND LOWER(B.{}) = LOWER(B.existing_{}) \n",
+					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
+					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
+					"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+					"    ,IMG_LST_UPD_DT=current_timestamp\n",
+					";\n",
+					"\"\"\"\n",
+					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 60
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Insert for changed rows which are missing in target and present in source based on Natural Key.\n",
+					"\n",
+					"qry_ins_changed_rows=\"\"\"\n",
+					"INSERT INTO {}\n",
+					"\tselect \n",
+					"    existing_MARKET_KEY\n",
+					"    ,1 + existing_MARKET_VERSION as VERSION\n",
+					",\tOPPORTUNITY_KEY\n",
+					",EMPLOYEE_KEY\n",
+					",-1 as REGION_LEVEL_4_KEY\n",
+					",INDUSTRY_SECTOR_KEY\n",
+					",MARKET_KEY\n",
+					",SALES_STAGE_KEY\n",
+					",PREV_SALES_STAGE_KEY\n",
+					",date_format(DECISION_DATE,\"yyyyMMdd\") as DECISION_DATE_KEY\n",
+					",-1 as EIW_DATE_KEY\n",
+					",date_format(OPPORTUNITY_CLOSE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CLOSE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_CREATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_CREATE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_UPDATE_DATE_KEY\n",
+					",date_format(OPPORTUNITY_SALES_STAGE_UPDATE_DATE,\"yyyyMMdd\") as OPPORTUNITY_SALES_STAGE_UPDATE_DATE_KEY\n",
+					",-1 as GEOGRAPHY_KEY\n",
+					",TOTAL_OPP_VAL_USD\n",
+					",'Y' AS CURRENT_IND\n",
+					",CURRENT_TIMESTAMP AS EXTRACT_DT\n",
+					",CURRENT_TIMESTAMP AS REC_START_DT\n",
+					",'9999-12-31 00:00:00.000' as REC_END_DT\n",
+					",'ESA' AS SOURCE_SYSTEM\n",
+					",column_hash as REC_CHECKSUM\n",
+					",'U' as REC_STATUS\n",
+					",existing_IMG_LST_UPD_DT as IMG_LST_UPD_DT\n",
+					",CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+					",date_format(PROP_DELIVERY_DATE,\"yyyyMMdd\") as PROP_DELIVERY_DATE_KEY\n",
+					",PERF_CRITERIA_CONF\n",
+					",PRICE_AGREEMENT\n",
+					",PRICING_SECURED\n",
+					",EXECUTIVE_SPONSOR_EMP_KEY\n",
+					",'Y' as OPP_ACTIVE_IN_SOURCE_IND\n",
+					",'ED' AS DATA_IND\n",
+					",'Y' AS ACTIVE_IN_SOURCE_IND \n",
+					"from {} A \n",
+					"WHERE LOWER({}) = LOWER(existing_{}) \n",
+					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
+					"AND NOT EXISTS\n",
+					"(SELECT 1 FROM {} B\n",
+					"WHERE LOWER(A.{})=LOWER(B.{})\n",
+					"and b.CURRENT_IND='Y'\n",
+					"AND A.column_hash=B.REC_CHECKSUM\n",
+					")\n",
+					";\n",
+					"\"\"\"\n",
+					"\n",
+					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
+				],
+				"attachments": null,
+				"execution_count": 52
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Soft Deletes - Update Active_Ind for the rows no longer active in source:\n",
+					"\n",
+					"qry_4_upd_deleted_rows=\"\"\"\n",
+					"\n",
+					"MERGE INTO {} A\n",
+					"USING {} B\n",
+					"ON A.{} = B.existing_{}\n",
+					"AND B.{} is NULL\n",
+					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
+					"AND A.REC_START_DT=b.existing_REC_START_DT\n",
+					"WHEN MATCHED THEN UPDATE SET ACTIVE_IN_SOURCE_IND='N'\n",
+					"    ,IMG_LST_UPD_DT=current_timestamp\n",
+					"\n",
+					";\n",
+					"\"\"\"\n",
+					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
+				],
+				"attachments": null,
+				"execution_count": 53
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select 'Number of Active Rows' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
+					";\n",
+					"\n",
+					"\n",
+					"select 'Duplicate Rows based on surrogate key' as Title,OPPORTUNITY_FACT_KEY,count(*) from etlhubconfirmed.dht_opportunity_daily_ft \n",
+					"where CURRENT_IND='Y'\n",
+					"    group by OPPORTUNITY_FACT_KEY\n",
+					"    having count(*)>1\n",
+					";\n",
+					"\n",
+					"select 'Duplicate Rows based on natural key' as Title,OPPORTUNITY_KEY,count(*) from etlhubconfirmed.dht_opportunity_daily_ft\n",
+					" where CURRENT_IND='Y'\n",
+					"    group by OPPORTUNITY_KEY\n",
+					"    having count(*)>1\n",
+					";\n",
+					"\n",
+					"select 'New rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
+					"    and date(extract_dt)=current_date and rec_status='I'\n",
+					";\n",
+					"\n",
+					"select 'Changed rows inserted in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
+					"    and date(extract_dt)=current_date and rec_status='U'\n",
+					";\n",
+					"\n",
+					"select 'Changed rows updated in this run' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='N'\n",
+					"    and date(REC_END_DT)=current_date --and rec_status='I'\n",
+					";\n",
+					"\n",
+					"select 'Rows no longer active in source' as Title,count(*) from etlhubconfirmed.dht_opportunity_daily_ft where CURRENT_IND='Y'\n",
+					"    AND \n",
+					"     date(REC_END_DT)=current_date --and rec_status='I'\n",
+					";\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 104
+			}
+		]
+	}
+}

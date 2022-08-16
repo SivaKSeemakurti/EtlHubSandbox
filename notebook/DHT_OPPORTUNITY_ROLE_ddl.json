@@ -1,0 +1,142 @@
+{
+	"name": "DHT_OPPORTUNITY_ROLE_ddl",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/CreateTableScripts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "9f212310-ffac-4c32-8c3e-92060490d5df"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"-- DBXDH.DHT_OPPORTUNITY_ROLE definition\n",
+					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_OPPORTUNITY_ROLE  (\n",
+					"\t\t  OPPORTUNITY_ROLE_KEY INTEGER NOT NULL , \n",
+					"\t\t  OPPORTUNITY_ROLE_VERSION INTEGER NOT NULL , \n",
+					"\t\t  ROLE_CD VARCHAR(254) , \n",
+					"\t\t  ROLE_DESC VARCHAR(128) , \n",
+					"\t\t  CURRENT_IND VARCHAR(1) , \n",
+					"\t\t  EXTRACT_DT TIMESTAMP , \n",
+					"\t\t  REC_START_DT TIMESTAMP , \n",
+					"\t\t  REC_END_DT TIMESTAMP , \n",
+					"\t\t  SOURCE_SYSTEM VARCHAR(50) , \n",
+					"\t\t  REC_CHECKSUM VARCHAR(32) , \n",
+					"\t\t  REC_STATUS VARCHAR(1) , \n",
+					"\t\t  IMG_LST_UPD_DT TIMESTAMP , \n",
+					"\t\t  IMG_CREATED_DT TIMESTAMP  ,\n",
+					"          DATA_IND varchar(10)  ,\n",
+					"\t      ACTIVE_IN_SOURCE_IND char(1) )   \n",
+					"USING DELTA\n",
+					"PARTITIONED BY (CURRENT_IND)\n",
+					"-- specify data lake folder location\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OPPORTUNITY_ROLE'      \n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DROP TABLE etlhubconfirmed.dht_opportunity_role"
+				],
+				"attachments": null,
+				"execution_count": 45
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DELETE FROM etlhubconfirmed.dht_opportunity_role"
+				],
+				"attachments": null,
+				"execution_count": 9
+			}
+		]
+	}
+}

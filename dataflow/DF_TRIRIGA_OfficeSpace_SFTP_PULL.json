@@ -1,0 +1,87 @@
+{
+	"name": "DF_TRIRIGA_OfficeSpace_SFTP_PULL",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "resodbspacetririgastaging",
+						"type": "DatasetReference"
+					},
+					"name": "TririgaRemoteServerSite"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ResodbOfficeSpaceTririgaStaging",
+						"type": "DatasetReference"
+					},
+					"name": "AzureDataLakeStorage",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage2",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          CAMPUS_ID as string,",
+				"          BLDG_ID as string,",
+				"          FLOOR_ID as string,",
+				"          SPACE_ID as string,",
+				"          SPACE_DESCR as string,",
+				"          AREA as string,",
+				"          CAPACITY as string,",
+				"          SPACE_CLASS_CODE1 as string,",
+				"          SPACE_CLASS_CODE2 as string,",
+				"          OSCRE_CODE as string,",
+				"          WORKPOINT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> TririgaRemoteServerSite",
+				"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CAMPUS_ID as string,",
+				"          BLDG_ID as string,",
+				"          FLOOR_ID as string,",
+				"          SPACE_ID as string,",
+				"          SPACE_DESCR as string,",
+				"          AREA as string,",
+				"          CAPACITY as string,",
+				"          SPACE_CLASS_CODE1 as string,",
+				"          SPACE_CLASS_CODE2 as string,",
+				"          OSCRE_CODE as string,",
+				"          WORKPOINT as string",
+				"     ),",
+				"     umask: 0777,",
+				"     preCommands: ['rm -r /extract/Tririga/OfficeSpace/'],",
+				"     postCommands: ['mv /extract/Tririga/OfficeSpace/*.csv /extract/Tririga/OfficeSpace/ResodbOfficeSpaceTririgaStaging.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          CAMPUS_ID,",
+				"          BLDG_ID,",
+				"          FLOOR_ID,",
+				"          SPACE_ID,",
+				"          SPACE_DESCR,",
+				"          AREA,",
+				"          CAPACITY,",
+				"          SPACE_CLASS_CODE1,",
+				"          SPACE_CLASS_CODE2,",
+				"          OSCRE_CODE,",
+				"          WORKPOINT",
+				"     )) ~> AzureDataLakeStorage"
+			]
+		}
+	}
+}

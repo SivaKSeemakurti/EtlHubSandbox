@@ -1,0 +1,191 @@
+{
+	"name": "DF_BALD0210_DELD_DIM",
+	"properties": {
+		"description": "Job Creation: 09-06-2022\nJob Name: DF_BALD0210_DELD_DIM\nCreated By: Subramanian R",
+		"folder": {
+			"name": "PGMP/Dimension"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getSourceData"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getLookupData"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "updateTable"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "insertTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "sortedLookupData"
+				},
+				{
+					"name": "updateRows"
+				},
+				{
+					"name": "CDC"
+				},
+				{
+					"name": "mergedData"
+				},
+				{
+					"name": "selectInsertData"
+				},
+				{
+					"name": "addColumns1"
+				},
+				{
+					"name": "addColumns2"
+				},
+				{
+					"name": "selectUpdateData"
+				},
+				{
+					"name": "CDCval"
+				},
+				{
+					"name": "renamedColumns"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     current_user as string",
+				"}",
+				"source(output(",
+				"          DELD_DIM_UID as integer,",
+				"          DELD_CD as string,",
+				"          DELD_DESC as string,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          SRC_SYS_DIM_UID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\\n     D.DELD_DIM_UID,\\n     cast(D.DELD_CD as varchar(20)) as DELD_CD,\\n     cast(D.DELD_DESC as varchar(128)) as DELD_DESC,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID\\nFrom\\n     (\\n          Select\\n               -1 as DELD_DIM_UID,\\n               \\'UNK\\' as DELD_CD,\\n               \\'Unknown\\' as DELD_DESC\\n          union all\\n          Select\\n               0 as DELD_DIM_UID,\\n               \\'NOT_DELETED\\' as DELD_CD,\\n               \\'Not Deleted\\' as DELD_DESC\\n          union all\\n          Select\\n               1 as DELD_DIM_UID,\\n               \\'DELETED\\' as DELD_CD,\\n               \\'Deleted\\' as DELD_DESC\\n     ) D\\n     left join (\\n          Select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          From\\n               PGMPDM.ZAUX_ETL_JOBS\\n          Where\\n               ETL_JOB_NM = \\'BALD0210_DELD_DIM\\'\\n     ) JOB\\n     on 1 = 1\\n     left join (\\n          Select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          Where\\n               IS_CURR_IND = \\'Y\\'\\n     ) FIL\\n     on 1 = 1\\n     left join (\\n          Select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          From\\n               PGMPDM.SRC_SYS_DIM\\n          Where\\n               SRC_SYS_CD = \\'PGMP\\'\\n     ) SYS\\n     on 1 = 1',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getSourceData",
+				"source(output(",
+				"          DELD_DIM_UID as integer,",
+				"          DELD_CD as string,",
+				"          DELD_DESC as string,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          ETL_JOB_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\\n     DELD_DIM_UID,\\n     DELD_CD,\\n     DELD_DESC,\\n     SRC_SYS_DIM_UID,\\n     ETL_JOB_ID\\nFrom\\n     PGMPDM.DELD_DIM',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getLookupData",
+				"renamedColumns sort(asc(LKP_DELD_DIM_UID, false)) ~> sortedLookupData",
+				"selectUpdateData alterRow(updateIf(true())) ~> updateRows",
+				"CDCval split(ROW_STATUS!='I',",
+				"     disjoint: false) ~> CDC@(dataToBeUpdated, dataToBeInserted)",
+				"getSourceData, sortedLookupData join(DELD_DIM_UID == LKP_DELD_DIM_UID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> mergedData",
+				"addColumns2 select(mapColumn(",
+				"          DELD_DIM_UID,",
+				"          DELD_CD,",
+				"          DELD_DESC,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          ROW_STATUS,",
+				"          DM_CRETD_USER_ID,",
+				"          DM_CRETD_TMS,",
+				"          DM_UPDTD_USER_ID,",
+				"          DM_UPDTD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectInsertData",
+				"CDC@dataToBeUpdated derive(DM_CRETD_USER_ID = $current_user,",
+				"          DM_UPDTD_USER_ID = $current_user,",
+				"          DM_UPDTD_TMS = currentTimestamp()) ~> addColumns1",
+				"CDC@dataToBeInserted derive(DM_CRETD_USER_ID = $current_user,",
+				"          DM_CRETD_TMS = currentTimestamp(),",
+				"          DM_UPDTD_USER_ID = $current_user,",
+				"          DM_UPDTD_TMS = currentTimestamp()) ~> addColumns2",
+				"addColumns1 select(mapColumn(",
+				"          DELD_DIM_UID,",
+				"          DELD_CD,",
+				"          DELD_DESC,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          ROW_STATUS,",
+				"          DM_CRETD_USER_ID,",
+				"          DM_UPDTD_USER_ID,",
+				"          DM_UPDTD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectUpdateData",
+				"mergedData derive(ROW_STATUS = case(DELD_DIM_UID == toInteger(null()) && LKP_DELD_DIM_UID != toInteger(null()), 'D', case(DELD_DIM_UID != toInteger(null()) && LKP_DELD_DIM_UID == toInteger(null()), 'I', 'U'))) ~> CDCval",
+				"getLookupData select(mapColumn(",
+				"          each(match(true()),",
+				"               'LKP_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> renamedColumns",
+				"updateRows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'DELD_DIM',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['DELD_DIM_UID'],",
+				"     skipKeyWrites:true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 0,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     preCommands: [],",
+				"     postCommands: []) ~> updateTable",
+				"selectInsertData sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'DELD_DIM',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> insertTable"
+			]
+		}
+	}
+}

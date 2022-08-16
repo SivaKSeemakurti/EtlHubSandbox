@@ -1,0 +1,210 @@
+{
+	"name": "DF_BALD0296_EVALN_ANSWR_DIM",
+	"properties": {
+		"description": "Job creation:29-06-2022\nJob name: DF_BALD0296_EVALN_ANSWR_DIMCreatedBy: Varaprasad\n\n",
+		"folder": {
+			"name": "PGMP/Dimension"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "srcEvalnansdim"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "tgtEvalnansdimlkp"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "Tgtupdibmcommdimtable"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InsTgtibmcommsDim"
+				}
+			],
+			"transformations": [
+				{
+					"name": "mergeddata"
+				},
+				{
+					"name": "srtdtgtIbmcomm"
+				},
+				{
+					"name": "split"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "CdcVal"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          MAX_ID as integer,",
+				"          ROW_NUM as long,",
+				"          EVALN_ANSWR_CD as string,",
+				"          EVALN_ANSWR_TXT as string,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          HASHED_VAL as binary",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'select\\n     EVL.MAX_ID as MAX_ID,\\n     EVL.ROW_NUM as ROW_NUM,\\n     EVL.EVALN_ANSWR_CD,\\n     EVL.EVALN_ANSWR_TXT,\\n     JOB.ETL_JOB_ID,\\n     FIL.ETL_EXCTN_ID,\\n     SYS.SRC_SYS_DIM_UID,\\n      HashBytes(\\'SHA2_256\\', coalesce(\\n          cast(EVL.MAX_ID as varchar) + \\n          Cast(EVL.ROW_NUM as varchar) + \\n          EVL.EVALN_ANSWR_CD+ \\n            EVL.EVALN_ANSWR_TXT+\\n            Cast(JOB.ETL_JOB_ID as Varchar)+\\n            Cast(FIL.ETL_EXCTN_ID as Varchar)+\\n            cast(SYS.SRC_SYS_DIM_UID as Varchar) , \\'\\')\\n          ) as HASHED_VAL\\nfrom\\n     (select\\n               (select coalesce(max(EVALN_ANSWR_DIM_UID), 0) from PGMPDM.EVALN_ANSWR_DIM) as MAX_ID,\\n               ROW_NUMBER() over (order by SELLIST.UI_SEL_LIST_ID,SELLIST.MULTILANG_SEL_TEXT_ID  ) as ROW_NUM,\\n               SELLIST.INTERNAL_VAL AS EVALN_ANSWR_CD,\\n            T.TEXT AS EVALN_ANSWR_TXT\\n        FROM \\n            APPFUN.UI_SEL_LIST_DEF SELLIST, APPFUN.MULTILANG_TEXT_DEF T\\n        WHERE \\n            UI_SEL_LIST_ID = 95515\\n/*Commented for filter the both active and Inactive */\\n       --AND SELLIST.ACTIVE_IND = \\'Y\\'\\n        AND T.MULTILANG_TEXT_ID = SELLIST.MULTILANG_SEL_TEXT_ID\\n        AND T.LANG_ID = 1) EVL\\n     left join\\n     (select\\n               coalesce(max(ETL_JOB_ID), -1) as ETL_JOB_ID\\n          from\\n               PGMPDM.ZAUX_ETL_JOBS\\n          where\\n               ETL_JOB_NM = \\'#DSJobName#\\')JOB\\n     on 1 = 1\\n     left join\\n     (select\\n               ETL_EXCTN_ID\\n          from\\n               PGMPDM.ZAUX_ETL_EXCTN\\n          where\\n               IS_CURR_IND = \\'Y\\')FIL\\n     on 1 = 1\\n     left join\\n     (select\\n               coalesce(max(SRC_SYS_DIM_UID), -1) as SRC_SYS_DIM_UID\\n          from\\n               PGMPDM.SRC_SYS_DIM\\n          where\\n               SRC_SYS_CD = \\'PGMP\\')SYS\\n     on 1 = 1\\n\\n',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> srcEvalnansdim",
+				"source(output(",
+				"          LKP_EVALN_ANSWR_CD as string,",
+				"          LKP_EVALN_ANSWR_TXT as string,",
+				"          LKP_ETL_JOB_ID as integer,",
+				"          LKP_SRC_SYS_DIM_UID as integer,",
+				"          LKP_HASHED_VAL as binary",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'select\\n     EVALN_ANSWR_CD AS LKP_EVALN_ANSWR_CD,\\n     EVALN_ANSWR_TXT AS LKP_EVALN_ANSWR_TXT,\\n     ETL_JOB_ID AS LKP_ETL_JOB_ID,\\n     SRC_SYS_DIM_UID AS LKP_SRC_SYS_DIM_UID,\\n     HashBytes(\\'SHA2_256\\', coalesce(\\n                   EVALN_ANSWR_CD+ \\n            EVALN_ANSWR_TXT+\\n            Cast(ETL_JOB_ID as Varchar)+\\n            Cast(ETL_EXCTN_ID as Varchar)+\\n            cast(SRC_SYS_DIM_UID as Varchar) , \\'\\')\\n          ) as  LKP_HASHED_VAL\\nfrom\\n     PGMPDM.EVALN_ANSWR_DIM',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> tgtEvalnansdimlkp",
+				"srcEvalnansdim, srtdtgtIbmcomm join(EVALN_ANSWR_CD == LKP_EVALN_ANSWR_CD,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> mergeddata",
+				"tgtEvalnansdimlkp sort(asc(LKP_EVALN_ANSWR_CD, true)) ~> srtdtgtIbmcomm",
+				"filter1 split(ROW_STATUS_CD!='I',",
+				"     disjoint: false) ~> split@(datatobeupdted, datatobeinserted)",
+				"derivedColumn1 select(mapColumn(",
+				"          MAX_ID,",
+				"          ROW_NUM,",
+				"          EVALN_ANSWR_CD,",
+				"          EVALN_ANSWR_TXT,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          DM_CRETD_TMS,",
+				"          ROW_STAT_CD",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 alterRow(updateIf(true())) ~> alterRow1",
+				"derivedColumn2 select(mapColumn(",
+				"          MAX_ID,",
+				"          ROW_NUM,",
+				"          EVALN_ANSWR_CD,",
+				"          EVALN_ANSWR_TXT,",
+				"          ETL_JOB_ID,",
+				"          ETL_EXCTN_ID,",
+				"          SRC_SYS_DIM_UID,",
+				"          HASHED_VAL,",
+				"          LKP_HASHED_VAL,",
+				"          ROW_STATUS_CD,",
+				"          EVALN_ANSWR_DIM_UID,",
+				"          DM_CRETD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"split@datatobeupdted derive(DM_CRETD_TMS = currentTimestamp(),",
+				"          ROW_STAT_CD = 'U') ~> derivedColumn1",
+				"split@datatobeinserted derive(EVALN_ANSWR_DIM_UID = MAX_ID+ROW_NUM,",
+				"          DM_CRETD_TMS = currentTimestamp()) ~> derivedColumn2",
+				"mergeddata derive(ROW_STATUS_CD = case(EVALN_ANSWR_CD == toString(null()) && LKP_EVALN_ANSWR_CD != toString(null()), 'D', \r",
+				"      case(EVALN_ANSWR_CD != toString(null()) && LKP_EVALN_ANSWR_CD == toString(null()), 'I', \r",
+				"      case(HASHED_VAL == LKP_HASHED_VAL, 'L', 'U')))) ~> CdcVal",
+				"CdcVal filter(ROW_STATUS_CD!='L') ~> filter1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          GEO_DIM_UID as integer,",
+				"          IOT_RGN_CD as string,",
+				"          IOT_RGN_NM as string,",
+				"          IMT_RGN_CD as string,",
+				"          IMT_SRGN_NM as string,",
+				"          SRGN_CD as string,",
+				"          SRGNCTRY_CD as string,",
+				"          SRGNCTRY_NM as string,",
+				"          IOTSORT_NUM as integer,",
+				"          GEO_CD as string,",
+				"          GEO_TYP_CD as string,",
+				"          GMR_RGN_CD as string,",
+				"          GMR_RGN_NM as string,",
+				"          IOT_SHORT_NM as string,",
+				"          IMT_SHORT_NM as string,",
+				"          ROW_STAT_CD as string,",
+				"          SRC_SYS_DIM_UID as integer,",
+				"          ETL_JOB_ID as integer,",
+				"          ETL_EXCTN_ID as integer,",
+				"          DM_CRETD_TMS as timestamp,",
+				"          DM_CRETD_USER_ID as string,",
+				"          DM_UPDTD_TMS as timestamp,",
+				"          DM_UPDTD_USER_ID as string,",
+				"          KYNDRYL_GLBL_ORG as string,",
+				"          KYNDRYL_ORG_CD as string,",
+				"          KYNDRYL_RGN as string,",
+				"          KYNDRYL_RGN_CD as string",
+				"     ),",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'EVALN_ANSWR_DIM',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['EVALN_ANSWR_CD'],",
+				"     skipKeyWrites:true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> Tgtupdibmcommdimtable",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'PGMPDM',",
+				"     tableName: 'EVALN_ANSWR_DIM',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> InsTgtibmcommsDim"
+			]
+		}
+	}
+}
