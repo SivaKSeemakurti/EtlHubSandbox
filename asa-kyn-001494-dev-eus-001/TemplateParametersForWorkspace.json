@@ -5,10 +5,28 @@
 		"workspaceName": {
 			"value": "asa-kyn-001494-dev-eus-001"
 		},
-		"AzureBlobStorage1_connectionString": {
+		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"ls_db2_esa_kyndryl_connectionString": {
+			"value": ""
+		},
+		"ls_adls_project_dimension_accountKey": {
+			"value": ""
+		},
+		"asdb_etlhub_confirmed_connectionString": {
 			"value": ""
 		},
 		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
+		"linkedService1_connectionString": {
+			"value": ""
+		},
+		"ls_pgmp_rfs_db_connectionString": {
+			"value": ""
+		},
+		"AzureBlobStorage1_connectionString": {
 			"value": ""
 		},
 		"AzureDataLakeStorage2_accountKey": {
@@ -17,40 +35,43 @@
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
+		"tgt_geo_accountKey": {
+			"value": ""
+		},
+		"ln_rfs_pgmp_connectionString": {
+			"value": ""
+		},
 		"SftpTririga_privateKeyContent": {
 			"value": ""
 		},
 		"SftpTririga_passPhrase": {
 			"value": ""
 		},
-		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultSqlServer_connectionString": {
+		"Sftp1_privateKeyContent": {
 			"value": ""
 		},
-		"asdb_etlhub_confirmed_connectionString": {
+		"Sftp1_passPhrase": {
 			"value": ""
 		},
-		"linkedService1_connectionString": {
+		"tririga-prod-sftp_privateKeyContent": {
 			"value": ""
 		},
-		"ln_rfs_pgmp_connectionString": {
+		"tririga-prod-sftp_passPhrase": {
 			"value": ""
 		},
-		"ls_adls_project_dimension_accountKey": {
-			"value": ""
+		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"
 		},
-		"ls_db2_esa_kyndryl_connectionString": {
-			"value": ""
-		},
-		"ls_pgmp_rfs_db_connectionString": {
-			"value": ""
-		},
-		"tgt_geo_accountKey": {
-			"value": ""
+		"ls_adls_project_dimension_properties_typeProperties_url": {
+			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"
 		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://adlskyn001494deveus001.dfs.core.windows.net"
 		},
 		"AzureDataLakeStorage2_properties_typeProperties_url": {
+			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"
+		},
+		"tgt_geo_properties_typeProperties_url": {
 			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"
 		},
 		"SftpTririga_properties_typeProperties_host": {
@@ -59,14 +80,17 @@
 		"SftpTririga_properties_typeProperties_userName": {
 			"value": "sftpNewCoProd"
 		},
-		"asa-kyn-001494-dev-eus-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
-			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"
+		"Sftp1_properties_typeProperties_host": {
+			"value": "52.116.64.97"
 		},
-		"ls_adls_project_dimension_properties_typeProperties_url": {
-			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"
+		"Sftp1_properties_typeProperties_userName": {
+			"value": "sftpNewCoProd"
 		},
-		"tgt_geo_properties_typeProperties_url": {
-			"value": "https://adls4fsoetlhubdevuseast.dfs.core.windows.net"
+		"tririga-prod-sftp_properties_typeProperties_host": {
+			"value": "52.116.64.97"
+		},
+		"tririga-prod-sftp_properties_typeProperties_userName": {
+			"value": "sftpNewCoProd"
 		},
 		"Trigger_BALIN_MAster_Seq_properties_BALSEQ0000_MASTER_EN_SEQ_parameters_BLOCK_SIZE": {
 			"value": 2500
