@@ -7,25 +7,28 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "sPoolKyn001494",
+			"referenceName": "sPool001494New",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
-			"driverMemory": "56g",
-			"driverCores": 8,
-			"executorMemory": "56g",
-			"executorCores": 8,
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
 			"numExecutors": 2,
 			"runAsWorkspaceSystemIdentity": false,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4e6601fb-f52e-4ee0-89d3-f1beebf9e7f9"
+				"spark.autotune.trackingId": "79801970-eac0-4e30-afb3-794c8f7d18ab"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -35,19 +38,20 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
-				"name": "sPoolKyn001494",
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
 				"type": "Spark",
-				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
-				"sparkVersion": "3.1",
+				"sparkVersion": "3.2",
 				"nodeCount": 10,
-				"cores": 8,
-				"memory": 56,
-				"automaticScaleJobs": false
+				"cores": 80,
+				"memory": 472,
+				"extraHeader": null
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -67,7 +71,8 @@
 					"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
 					"Since ESA is not accessible from Azure, a datastage job src_ESA_Sales_Stage_Azure is executed on datastage to push the ESA extract to adls.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
@@ -80,7 +85,8 @@
 				},
 				"source": [
 					"Import all the necessary libraries"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -104,13 +110,15 @@
 					"from pyspark.sql import functions as F\n",
 					"#conn = connect(':memory:')\n",
 					"from pyspark.sql import SparkSession \n",
+					"from pyspark.sql.functions import col\n",
 					"from pyspark.sql.types import * \n",
 					"from delta.tables import *\n",
 					"import os\n",
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 57
+				"attachments": null,
+				"execution_count": 51
 			},
 			{
 				"cell_type": "markdown",
@@ -123,7 +131,8 @@
 				},
 				"source": [
 					"Define Parameters"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -152,7 +161,8 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 50
+				"attachments": null,
+				"execution_count": 36
 			},
 			{
 				"cell_type": "markdown",
@@ -165,7 +175,8 @@
 				},
 				"source": [
 					"Copy source CSV file to archive folder including timestamp in file name"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
@@ -179,7 +190,8 @@
 				"source": [
 					"#Read data from adls csv file extracted from source at \n",
 					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_SALES_STAGE_DATA.csv"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -212,9 +224,6 @@
 					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
 					"# Get column list for creating Rec_Checksum\n",
 					"\n",
-					"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\n",
-					"# 2. Dups in target already\n",
-					"\n",
 					"col_list=[]\n",
 					"for i in incrementalData_DF.columns:\n",
 					"    col_list.append(i)\n",
@@ -222,11 +231,11 @@
 					"# Add a checsum column to help identify the changed rows\n",
 					"print(col_list)\n",
 					"incrementalData_SDF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\n",
-					"#incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
-					"\n",
-					"#incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
+					"incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
+					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": null
+				"attachments": null,
+				"execution_count": 37
 			},
 			{
 				"cell_type": "code",
@@ -269,7 +278,8 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 19
+				"attachments": null,
+				"execution_count": 38
 			},
 			{
 				"cell_type": "markdown",
@@ -286,7 +296,8 @@
 					"- Check for duplicates in Source data based on natural key\n",
 					"- Check for duplicates in target delta lake table based on natural key\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -345,7 +356,8 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 41
+				"attachments": null,
+				"execution_count": 39
 			},
 			{
 				"cell_type": "code",
@@ -409,7 +421,8 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 44
+				"attachments": null,
+				"execution_count": 40
 			},
 			{
 				"cell_type": "code",
@@ -431,6 +444,34 @@
 					"%%sql\n",
 					"SELECT count(*) FROM etlhubconfirmed.dht_sales_stage where current_ind='Y'"
 				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select \r\n",
+					"\t* \r\n",
+					"    from dhts_sales_stage A \r\n",
+					"WHERE existing_REC_CHECKSUM is null"
+				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -450,7 +491,6 @@
 				"source": [
 					"\n",
 					"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
-					"#delete FROM etlhubconfirmed.dht_employee;\n",
 					"\n",
 					"qry_4_recon1=\"\"\"\n",
 					"SELECT COUNT(*) from {} A \n",
@@ -470,10 +510,9 @@
 					"\tselect \n",
 					"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY 1) AS {},1 as SALES_STAGE_VERSION \n",
 					"    ,SALES_STAGE_CD\n",
-					"\t,SALES_STAGE_DESC\n",
+					"\t,SIEBEL_SALES_STAGE_NAME\n",
 					"\t,SSM_STEP_NO\n",
 					"\t,SSM_STEP_NAME\n",
-					"\t,OFFERING_DESC\n",
 					"\t,'Y' AS CURRENT_IND\n",
 					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -498,7 +537,8 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 45
+				"attachments": null,
+				"execution_count": 41
 			},
 			{
 				"cell_type": "code",
@@ -518,10 +558,11 @@
 					"collapsed": false
 				},
 				"source": [
-					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
+					"%%sql\r\n",
+					"SELECT * from etlhubconfirmed.dht_sales_stage"
 				],
-				"execution_count": 47
+				"attachments": null,
+				"execution_count": 44
 			},
 			{
 				"cell_type": "code",
@@ -554,7 +595,8 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 60
+				"attachments": null,
+				"execution_count": 45
 			},
 			{
 				"cell_type": "code",
@@ -602,7 +644,8 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
-				"execution_count": 50
+				"attachments": null,
+				"execution_count": 46
 			},
 			{
 				"cell_type": "code",
@@ -626,10 +669,9 @@
 					"    existing_SALES_STAGE_KEY\n",
 					"    ,1 + existing_SALES_STAGE_VERSION as SALES_STAGE_VERSION\n",
 					"    ,SALES_STAGE_CD\n",
-					"\t,SALES_STAGE_DESC\n",
+					"\t,SIEBEL_SALES_STAGE_NAME\n",
 					"\t,SSM_STEP_NO\n",
 					"\t,SSM_STEP_NAME\n",
-					"\t,OFFERING_DESC\n",
 					"\t,'Y' AS CURRENT_IND\n",
 					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
 					"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
@@ -655,7 +697,8 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 52
+				"attachments": null,
+				"execution_count": 47
 			},
 			{
 				"cell_type": "code",
@@ -688,7 +731,8 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 53
+				"attachments": null,
+				"execution_count": 48
 			},
 			{
 				"cell_type": "code",
@@ -741,7 +785,8 @@
 					";\n",
 					""
 				],
-				"execution_count": 54
+				"attachments": null,
+				"execution_count": 49
 			},
 			{
 				"cell_type": "code",
@@ -784,76 +829,8 @@
 					"    and date(img_lst_upd_dt)=current_date\n",
 					"        ;  "
 				],
-				"execution_count": 55
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"qry3=\"\"\"\n",
-					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\n",
-					";\n",
-					"\"\"\"\n",
-					"\n",
-					"qry4=\"\"\"\n",
-					"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\n",
-					";\n",
-					"\"\"\"\n",
-					"\n",
-					"\n",
-					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
-					"cnt2=df4.count()\n",
-					"\n",
-					"print (cnt2)\n",
-					"if cnt2 == 0:\n",
-					"    print(\"no duplicates in target delta lake table\")\n",
-					"    status = 'success'\n",
-					"else:\n",
-					"    print(\"Below are the duplicates in target delta lake table:\")\n",
-					"    df4.show()\n",
-					"    status = 'fail'\n",
-					"    #os.abort() this will take the spark cluster also down\n",
-					"    sys.exit(2)\n",
-					"    print(\"This will not be printed\")\n",
-					"\n",
-					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
-					""
-				],
-				"execution_count": 62
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\n",
-					"SELECT * FROM etlhubconfirmed.dht_sales_stage\n",
-					""
-				],
-				"execution_count": 8
+				"attachments": null,
+				"execution_count": 50
 			}
 		]
 	}

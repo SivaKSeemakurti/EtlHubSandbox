@@ -1,0 +1,61 @@
+{
+	"name": "DF_TRIRIGA_SITE_SFTP_PULL",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGASiteQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TririgaRemoteServerSite"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGASiteQueryCSV",
+						"type": "DatasetReference"
+					},
+					"name": "AzureDataLakeStorage"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          SITE_ID as string,",
+				"          SITE_NAME as string,",
+				"          SITE_STATUS as string,",
+				"          GEOGRAPHY_ID as string,",
+				"          GEOGRAPHY_NAME as string,",
+				"          REGION_ID as string,",
+				"          REGION_NAME as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TririgaRemoteServerSite",
+				"TririgaRemoteServerSite sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0777,",
+				"     preCommands: ['rm -r /extract/Tririga/Site/'],",
+				"     postCommands: ['mv /extract/Tririga/Site/*.csv /extract/Tririga/Site/IWTRIRIGASiteQuery.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          SITE_ID,",
+				"          SITE_NAME,",
+				"          SITE_STATUS,",
+				"          GEOGRAPHY_ID,",
+				"          GEOGRAPHY_NAME,",
+				"          REGION_ID,",
+				"          REGION_NAME",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
+			]
+		}
+	}
+}

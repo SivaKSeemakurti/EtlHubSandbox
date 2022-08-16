@@ -7,21 +7,21 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "sPoolKyn001494",
+			"referenceName": "sPool001494New",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
-			"driverMemory": "56g",
-			"driverCores": 8,
-			"executorMemory": "56g",
-			"executorCores": 8,
+			"driverMemory": "472g",
+			"driverCores": 80,
+			"executorMemory": "472g",
+			"executorCores": 80,
 			"numExecutors": 2,
 			"runAsWorkspaceSystemIdentity": false,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "fcc78131-0612-48ba-b6d4-8749efe91633"
+				"spark.autotune.trackingId": "85c6c5ef-1a21-4f9e-bbb6-82f1c3a01a2d"
 			}
 		},
 		"metadata": {
@@ -35,19 +35,20 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
-				"name": "sPoolKyn001494",
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPool001494New",
+				"name": "sPool001494New",
 				"type": "Spark",
-				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
-				"sparkVersion": "3.1",
+				"sparkVersion": "3.2",
 				"nodeCount": 10,
-				"cores": 8,
-				"memory": 56,
-				"automaticScaleJobs": false
+				"cores": 80,
+				"memory": 472,
+				"extraHeader": null
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -64,41 +65,42 @@
 					"%%sql\n",
 					"-- DBXDH.DHT_BUILDING definition\n",
 					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_BUILDING  (\t\n",
-					"\tBUILDING_KEY INTEGER NOT NULL,\n",
-					"\tBUILDING_VERSION INT NOT NULL,\n",
-					"\tCAMPUS_ID CHAR(8) NOT NULL,\n",
-					"\tBUILDING_ID CHAR(6) NOT NULL,\n",
-					"\tBUILDING_NAME VARCHAR(150),\n",
-					"\tBUILDING_STATUS VARCHAR(32) NOT NULL,\n",
-					"\tBUILDING_OWNERSHIP_ID CHAR(2),\n",
-					"\tBUILDING_OWNERSHIP_NAME VARCHAR(32),\n",
-					"\tBUILDING_OWNERSHIP_DESCR VARCHAR(256),\n",
-					"\tPRIMARY_BUILDING_USE_ID CHAR(2),\n",
-					"\tPRIMARY_BUILDING_USE_NAME VARCHAR(64),\n",
-					"\tPRIMARY_BUILDING_USE_DESCR VARCHAR(512),\n",
-					"\tSECONDARY_BUILDING_USE_ID CHAR(3),\n",
-					"\tSECONDARY_BUILDING_USE_NAME VARCHAR(64),\n",
-					"\tSECONDARY_BUILDING_USE_DESCR VARCHAR(512),\n",
+					"\tBUILDING_KEY INTEGER NOT NULL, -- Surrogate Key one to one relation with natural Key\n",
+					"\tVERSION INT NOT NULL, -- Inremental version number. Record with max version number is the latest/active row  \n",
+					"\tBUSINESS_ID STRING,\n",
+					"\tCAMPUS_ID STRING NOT NULL,\n",
+					"\tBUILDING_ID STRING NOT NULL,\n",
+					"\tBUILDING_NAME STRING,\n",
+					"\tBUILDING_STATUS STRING NOT NULL,\n",
+					"\t--BUILDING_OWNERSHIP_ID STRING, Not needed\n",
+					"\tBUILDING_OWNERSHIP_NAME STRING,\n",
+					"\tBUILDING_OWNERSHIP_DESCR STRING,\n",
+					"\t--PRIMARY_BUILDING_USE_ID STRING, Not needed\n",
+					"\tPRIMARY_BUILDING_USE_NAME STRING,\n",
+					"\tPRIMARY_BUILDING_USE_DESCR STRING,\n",
+					"\t--SECONDARY_BUILDING_USE_ID STRING, Not needed\n",
+					"\tSECONDARY_BUILDING_USE_NAME STRING,\n",
+					"\tSECONDARY_BUILDING_USE_DESCR STRING,\n",
 					"\tRENTABLE_AREA INTEGER,\n",
-					"\tBUILDING_ACTIVATION_YEAR SMALLINT,\n",
-					"\tBUILDING_INACTIVATION_YEAR SMALLINT,\n",
-					"\tPROCESSED_DT TIMESTAMP NOT NULL,\n",
-					"\tCURRENT_IND\tSTRING\n",
-					",\tEXTRACT_DT TIMESTAMP\n",
-					",\tREC_START_DT TIMESTAMP\n",
-					",\tREC_END_DT TIMESTAMP\n",
-					",\tSOURCE_SYSTEM STRING\n",
-					",\tREC_CHECKSUM STRING\n",
-					",\tREC_STATUS STRING\t\n",
-					",\tIMG_LST_UPD_DT TIMESTAMP\n",
-					",\tIMG_CREATED_DT TIMESTAMP\n",
-					",   ACTIVE_IN_SOURCE_IND STRING\n",
+					"\tBUILDING_ACTIVATION_YEAR INTEGER,\n",
+					"\tBUILDING_INACTIVATION_YEAR INTEGER,\n",
+					"\t--PROCESSED_DT TIMESTAMP NOT NULL, Not needed\n",
+					"\tCURRENT_IND\tSTRING -- Y for active row and N for all rows expired\n",
+					",\tEXTRACT_DT TIMESTAMP -- Load Cycle date, contains same value for all the records inserted in a single batch\n",
+					",\tREC_START_DT TIMESTAMP --SCD TYpe 2 start date\n",
+					",\tREC_END_DT TIMESTAMP -- SCD Type 2 End date, will have high date (9999-12-31) for active dimensional row\n",
+					",\tSOURCE_SYSTEM STRING -- Name of the source system\n",
+					",\tREC_CHECKSUM STRING -- Hash value of all dimensional columns. Used to identify changed records \n",
+					"--,\tREC_STATUS STRING\t--I or U depending on the DML operation\n",
+					",\tIMG_LST_UPD_DT TIMESTAMP --Timestamp of when the record got updated in table\n",
+					",\tIMG_CREATED_DT TIMESTAMP --Timestamp of when the record got inserted in table\n",
 					")\n",
 					"USING DELTA\n",
 					"PARTITIONED BY (CURRENT_IND)\n",
 					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_BUILDING'"
 				],
-				"execution_count": 2
+				"attachments": null,
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -121,7 +123,32 @@
 					"%%sql\n",
 					"DROP TABLE etlhubConfirmed.DHT_BUILDING"
 				],
-				"execution_count": 1
+				"attachments": null,
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"DELETE FROM etlhubConfirmed.DHT_BUILDING"
+				],
+				"attachments": null,
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -166,6 +193,26 @@
 					");\n",
 					"CREATE UNIQUE INDEX SQL200724134512900 ON RESOWW.BUILDING (BUILDING_KEY);"
 				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"attachments": null,
 				"execution_count": null
 			}
 		]

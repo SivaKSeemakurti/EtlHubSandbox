@@ -1,0 +1,79 @@
+{
+	"name": "DF_TRIRIGA_LOCATION_SFTP_PULL",
+	"properties": {
+		"folder": {
+			"name": "ETLHub"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGABuildingQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TririgaRemoteServer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "IWTRIRIGABuildingQueryCSV",
+						"type": "DatasetReference"
+					},
+					"name": "AzureDataLakeStorage"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          CAMPUS_ID as string,",
+				"          BUILDING_ID as string,",
+				"          BUILDING_NAME as string,",
+				"          BUILDING_STATUS as string,",
+				"          BUILDING_OWNERSHIP_ID as string,",
+				"          BUILDING_OWNERSHIP_NAME as string,",
+				"          BUILDING_OWNERSHIP_DESCRIPTION as string,",
+				"          BUILDING_PRIMARY_USE_ID as string,",
+				"          BUILDING_PRIMARY_USE_NAME as string,",
+				"          BUILDING_PRIMARY_USE_DESCRIPTION as string,",
+				"          BUILDING_SECONDARY_USE_ID as string,",
+				"          BUILDING_SECONDARY_USE_NAME as string,",
+				"          BUILDING_SECONDARY_USE_DESCRIPTION as string,",
+				"          RENTABLE_AREA as string,",
+				"          ACTIVE_YEAR as string,",
+				"          ACTUAL_RETIREMENT_INACTIVATION as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TririgaRemoteServer",
+				"TririgaRemoteServer sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: ['rm -r /extract/Tririga/building/'],",
+				"     postCommands: ['mv /extract/Tririga/building/*.csv /extract/Tririga/building/IWTRIRIGABuildingQuery.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          CAMPUS_ID,",
+				"          BUILDING_ID,",
+				"          BUILDING_NAME,",
+				"          BUILDING_STATUS,",
+				"          BUILDING_OWNERSHIP_ID,",
+				"          BUILDING_OWNERSHIP_NAME,",
+				"          BUILDING_OWNERSHIP_DESCRIPTION,",
+				"          BUILDING_PRIMARY_USE_ID,",
+				"          BUILDING_PRIMARY_USE_NAME,",
+				"          BUILDING_PRIMARY_USE_DESCRIPTION,",
+				"          BUILDING_SECONDARY_USE_ID,",
+				"          BUILDING_SECONDARY_USE_NAME,",
+				"          BUILDING_SECONDARY_USE_DESCRIPTION,",
+				"          RENTABLE_AREA,",
+				"          ACTIVE_YEAR,",
+				"          ACTUAL_RETIREMENT_INACTIVATION",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> AzureDataLakeStorage"
+			]
+		}
+	}
+}

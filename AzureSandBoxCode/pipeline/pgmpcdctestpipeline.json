@@ -78,6 +78,8 @@
 		"folder": {
 			"name": "PGMP"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2022-07-18T10:49:25Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

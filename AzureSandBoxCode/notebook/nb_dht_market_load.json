@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "32504cd4-ae29-4b58-8f3e-70e30fbe13dd"
+				"spark.autotune.trackingId": "de8a60e1-3324-4cf4-8df3-ca6ab1dbaa97"
 			}
 		},
 		"metadata": {
@@ -41,13 +41,14 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"automaticScaleJobs": false
+				"extraHeader": null
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -67,7 +68,8 @@
 					"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
 					"Since ESA is not accessible from Azure, a datastage job src_ESA_Market_Azure is executed on datastage to push the ESA extract to adls.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
@@ -80,7 +82,8 @@
 				},
 				"source": [
 					"Import all the necessary libraries"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -110,7 +113,8 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 1
+				"attachments": null,
+				"execution_count": 133
 			},
 			{
 				"cell_type": "markdown",
@@ -123,7 +127,8 @@
 				},
 				"source": [
 					"Define Parameters"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -145,6 +150,7 @@
 					"relative_path = 'extract/ESA/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
 					"file_name='DS_MARKET_DATA.csv' \n",
+					"#file_name='DS_MARKET_DATA_2022-07-25-08:05:43_AM.csv' \n",
 					"natural_key=\"MARKET_BUSINESS_CD\"\n",
 					"tablename=\"etlhubConfirmed.dht_market\"\n",
 					"stagingtable=\"DHTS_MARKET\"\n",
@@ -152,7 +158,8 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
-				"execution_count": 17
+				"attachments": null,
+				"execution_count": 134
 			},
 			{
 				"cell_type": "markdown",
@@ -165,7 +172,8 @@
 				},
 				"source": [
 					"Copy source CSV file to archive folder including timestamp in file name"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
@@ -180,7 +188,8 @@
 					"\n",
 					"#Read data from adls csv file extracted from source at \n",
 					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_MARKET_DATA.csv"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -230,7 +239,8 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 18
+				"attachments": null,
+				"execution_count": 135
 			},
 			{
 				"cell_type": "code",
@@ -276,7 +286,8 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 19
+				"attachments": null,
+				"execution_count": 136
 			},
 			{
 				"cell_type": "markdown",
@@ -293,7 +304,8 @@
 					"- Check for duplicates in Source data based on natural key\n",
 					"- Check for duplicates in target delta lake table based on natural key\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -352,7 +364,8 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 41
+				"attachments": null,
+				"execution_count": 137
 			},
 			{
 				"cell_type": "code",
@@ -416,7 +429,8 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 44
+				"attachments": null,
+				"execution_count": 138
 			},
 			{
 				"cell_type": "code",
@@ -432,13 +446,19 @@
 					},
 					"microsoft": {
 						"language": "sparksql"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%sql\n",
-					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
+					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'\n",
+					";\n",
+					"SELECT MARKET_BUSINESS_CD,MARKET_VERSION,CURRENT_IND,REC_START_DT,REC_END_DT,EXTRACT_DT,IMG_LST_UPD_DT,IMG_CREATED_DT,ACTIVE_IN_SOURCE_IND\n",
+					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
+					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
 				],
-				"execution_count": null
+				"attachments": null,
+				"execution_count": 139
 			},
 			{
 				"cell_type": "code",
@@ -566,7 +586,60 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
-				"execution_count": 45
+				"attachments": null,
+				"execution_count": 140
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT MARKET_BUSINESS_CD,MARKET_VERSION,CURRENT_IND,REC_START_DT,REC_END_DT,EXTRACT_DT,IMG_LST_UPD_DT,IMG_CREATED_DT,ACTIVE_IN_SOURCE_IND\n",
+					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
+					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
+				],
+				"attachments": null,
+				"execution_count": 141
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT extract_dt,count(*) FROM etlhubconfirmed.dht_market where current_ind='Y' group by extract_dt  \n",
+					"--and extract_dt like '2022-07-29-02:16%'\n",
+					"    --2022-07-29T14:17:38Z"
+				],
+				"attachments": null,
+				"execution_count": 142
 			},
 			{
 				"cell_type": "code",
@@ -589,7 +662,8 @@
 					"%%sql\n",
 					"SELECT count(*) FROM etlhubconfirmed.dht_market where current_ind='Y'"
 				],
-				"execution_count": 47
+				"attachments": null,
+				"execution_count": 143
 			},
 			{
 				"cell_type": "code",
@@ -615,14 +689,67 @@
 					"and LOWER(B.column_hash) <> LOWER(B.existing_rec_checksum)\n",
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
-					"    ,REC_END_DT= existing_REC_START_DT -  INTERVAL 5 seconds --current_timestamp --existing_REC_START_DT-1\n",
+					"    ,REC_END_DT= REC_START_DT -  INTERVAL 1 seconds --current_timestamp --existing_REC_START_DT-1\n",
 					"    ,IMG_LST_UPD_DT=current_timestamp\n",
 					";\n",
 					"\"\"\"\n",
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
-				"execution_count": 60
+				"attachments": null,
+				"execution_count": 144
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT MARKET_BUSINESS_CD,MARKET_VERSION,CURRENT_IND,REC_START_DT,REC_END_DT,EXTRACT_DT,IMG_LST_UPD_DT,IMG_CREATED_DT,ACTIVE_IN_SOURCE_IND\n",
+					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
+					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
+				],
+				"attachments": null,
+				"execution_count": 145
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"select * from  etlhubconfirmed.dht_market where rec_end_dt= rec_start_dt - INTERVAL 1 seconds\n",
+					"--and extract_dt like '2022-07-29-02:16%'\n",
+					"    --2022-07-29T14:17:38Z"
+				],
+				"attachments": null,
+				"execution_count": 146
 			},
 			{
 				"cell_type": "code",
@@ -670,7 +797,8 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
-				"execution_count": 50
+				"attachments": null,
+				"execution_count": 147
 			},
 			{
 				"cell_type": "code",
@@ -737,7 +865,7 @@
 					",\tRPTS_TO_SCTR_DESC\n",
 					",'Y' AS CURRENT_IND\n",
 					"\t,CURRENT_TIMESTAMP AS EXTRACT_DT\n",
-					"\t,CURRENT_TIMESTAMP AS REC_START_DT\n",
+					"\t,existing_REC_START_DT AS REC_START_DT\n",
 					"\t,'9999-12-31 00:00:00.000' as REC_END_DT\t\n",
 					"\t,column_hash as REC_CHECKSUM\n",
 					"\t,'U' as REC_STATUS\n",
@@ -783,7 +911,60 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 52
+				"attachments": null,
+				"execution_count": 148
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT MARKET_BUSINESS_CD,MARKET_VERSION,CURRENT_IND,REC_START_DT,REC_END_DT,EXTRACT_DT,IMG_LST_UPD_DT,IMG_CREATED_DT,ACTIVE_IN_SOURCE_IND\n",
+					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
+					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
+				],
+				"attachments": null,
+				"execution_count": 149
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT extract_dt,count(*) FROM etlhubconfirmed.dht_market where current_ind='Y' group by extract_dt  \n",
+					"--and extract_dt like '2022-07-29-02:16%'\n",
+					"    --2022-07-29T14:17:38Z"
+				],
+				"attachments": null,
+				"execution_count": 150
 			},
 			{
 				"cell_type": "code",
@@ -816,7 +997,61 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
-				"execution_count": 53
+				"attachments": null,
+				"execution_count": 151
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT MARKET_BUSINESS_CD,MARKET_VERSION,CURRENT_IND,REC_START_DT,REC_END_DT,EXTRACT_DT,IMG_LST_UPD_DT,IMG_CREATED_DT,ACTIVE_IN_SOURCE_IND\n",
+					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
+					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
+				],
+				"attachments": null,
+				"execution_count": 152
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT extract_dt,REC_START_DT,REC_END_DT,CURRENT_IND,ACTIVE_IN_SOURCE_IND,count(*) \n",
+					"FROM etlhubconfirmed.dht_market group by extract_dt,REC_START_DT,REC_END_DT,CURRENT_IND,ACTIVE_IN_SOURCE_IND\n",
+					"--and extract_dt like '2022-07-29-02:16%'\n",
+					"    --2022-07-29T14:17:38Z"
+				],
+				"attachments": null,
+				"execution_count": 153
 			},
 			{
 				"cell_type": "code",
@@ -869,7 +1104,8 @@
 					";\n",
 					""
 				],
-				"execution_count": 54
+				"attachments": null,
+				"execution_count": 154
 			},
 			{
 				"cell_type": "code",
@@ -904,15 +1140,36 @@
 					"select count(*) from etlhubconfirmed.dht_market\n",
 					"WHERE ACTIVE_IN_SOURCE_IND='N'\n",
 					"    and date(IMG_LST_UPD_DT)=current_date\n",
-					"    ;\n",
-					"UPDATE etlhubconfirmed.dht_market\n",
-					"set CURRENT_IND='Y', \n",
-					"REC_END_DT='9999-12-31'\n",
-					"  WHERE CURRENT_IND='N' and DATE(REC_END_DT)<>'9999-12-31'\n",
-					"    and date(img_lst_upd_dt)=current_date\n",
-					"        ;  "
+					"    ;"
 				],
-				"execution_count": 55
+				"attachments": null,
+				"execution_count": 155
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\n",
+					"SELECT MARKET_BUSINESS_CD,MARKET_VERSION,CURRENT_IND,REC_START_DT,REC_END_DT,EXTRACT_DT,IMG_LST_UPD_DT,IMG_CREATED_DT,ACTIVE_IN_SOURCE_IND\n",
+					" FROM etlhubconfirmed.dht_market A WHERE --CURRENT_IND='N' \n",
+					"MARKET_BUSINESS_CD  IN ('008887~613','008915~613')"
+				],
+				"attachments": null,
+				"execution_count": 156
 			},
 			{
 				"cell_type": "code",
@@ -957,7 +1214,8 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 62
+				"attachments": null,
+				"execution_count": 157
 			},
 			{
 				"cell_type": "code",
@@ -985,7 +1243,8 @@
 					"        --71590\n",
 					""
 				],
-				"execution_count": 8
+				"attachments": null,
+				"execution_count": 158
 			}
 		]
 	}

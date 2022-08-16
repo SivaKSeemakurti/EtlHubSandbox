@@ -155,7 +155,7 @@
 			"name": "PGMP/Sequence"
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-07-04T10:18:39Z"
+		"lastPublishTime": "2022-07-18T10:50:52Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

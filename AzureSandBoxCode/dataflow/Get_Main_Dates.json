@@ -1,0 +1,86 @@
+{
+	"name": "Get_Main_Dates",
+	"properties": {
+		"folder": {
+			"name": "PGMP/Utility"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_pgmp_rfs_db",
+						"type": "LinkedServiceReference"
+					},
+					"name": "getDRAandPRT"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText4",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectPRTData"
+				},
+				{
+					"name": "selectDRAData"
+				},
+				{
+					"name": "getMainDates"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PRT_PROC_ID as integer,",
+				"          PRT_PROC_TYPE_ID as string,",
+				"          PRT_CRETD_DT as date,",
+				"          PRT_RCVD_DT as date,",
+				"          PRT_ETL_EXCTN_ID as integer,",
+				"          DRA_PROC_ID as integer,",
+				"          DRA_PROC_TYPE_ID as string,",
+				"          DRA_CRETD_DT as date,",
+				"          DRA_RCVD_DT as date,",
+				"          DRA_ETL_EXCTN_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'Select\\n     PRNT.PROC_ID as PRT_PROC_ID,\\n     PRNT.PROC_TYPE_ID as PRT_PROC_TYPE_ID,\\n     cast(PRNT.CREATED_TS as Date) as PRT_CRETD_DT,\\n     coalesce(R.RQST_RECEIV_DATE, PCR.RQST_RECEIV_DATE) as PRT_RCVD_DT,\\n     F.ETL_EXCTN_ID as PRT_ETL_EXCTN_ID,\\n     DRA.*\\nFrom \\n     (\\n     Select\\n          P.PROC_ID as DRA_PROC_ID,\\n          P.PROC_TYPE_ID as DRA_PROC_TYPE_ID,\\n          cast(P.CREATED_TS as Date) as DRA_CRETD_DT,\\n          coalesce(R.RQST_RECEIV_DATE, PCR.RQST_RECEIV_DATE) as DRA_RCVD_DT,\\n          F.ETL_EXCTN_ID as DRA_ETL_EXCTN_ID\\n     From \\n          APPFUN.\"PROC\" P\\n          left join \\n          APPFUN.RQST R\\n          on P.PROC_ID = R.PROC_ID\\n          left join \\n          APPFUN.PCR PCR\\n          on P.PROC_ID = PCR.PROC_ID\\n          inner join \\n          (\\n               Select\\n                    ETL_EXCTN_ID,\\n                    ETL_PARAM_START_TMS,\\n                    ETL_PARAM_END_TMS\\n               From \\n                    PGMPDM.ZAUX_ETL_EXCTN\\n               Where \\n                    IS_CURR_IND = \\'Y\\'\\n          ) as F\\n          on\\n          -- For new records, it is required to validate whether the CREATED_TS is in range \\n          P.CREATED_TS between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS or\\n          -- For modified records, it is required to validate whether the UPDATED_TS is in range\\n          P.UPDATED_TS between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS or\\n          -- Request\\n          -- Proposals Requested date in range\\n          DATEADD(dd, 1, coalesce(R.CLIENT_REVISD_PRPSL_RQSTD_DT, R.PRPSL_RQST_DATE)) between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS or\\n          -- Expiration date in range\\n          DATEADD(dd, 1, R.PRPSL_EXP_DATE) between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS or\\n          -- Implementation Requested date in range\\n          DATEADD(dd, 1, coalesce(R.CLIENT_RVSD_RQST_IMPL_CMPL_DT, R.RQST_IMPLMNT_COMPLT_DATE)) between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS or\\n          -- PCR\\n          -- Proposals Requested date in range\\n          DATEADD(dd, 1, coalesce(PCR.CLIENT_REVISD_PRPSL_RQSTD_DT, PCR.PRPSL_RQST_DATE)) between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS or\\n          -- Expiration date in range\\n          DATEADD(dd, 1, PCR.PRPSL_EXP_DATE) between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS or\\n          -- Implementation Requested date in range\\n          DATEADD(dd, 1, coalesce(PCR.CLIENT_RVSD_RQST_IMPL_CMPL_DT, PCR.RQST_IMPLMNT_COMPLT_DATE)) between F.ETL_PARAM_START_TMS and F.ETL_PARAM_END_TMS\\n     ) DRA\\n     inner join \\n     APPFUN.\"PROC\" P\\n     on DRA.DRA_PROC_ID = P.PROC_ID\\n     inner join \\n     APPFUN.\"PROC\" PRNT\\n     on P.PARENT_PROC_ID = PRNT.PROC_ID\\n     left join \\n     APPFUN.RQST R\\n     on PRNT.PROC_ID = R.PROC_ID\\n     left join \\n     APPFUN.PCR PCR\\n     on PRNT.PROC_ID = PCR.PROC_ID\\n     inner join (\\n          Select\\n               ETL_EXCTN_ID,\\n               ETL_PARAM_START_TMS,\\n               ETL_PARAM_END_TMS\\n          From \\n               PGMPDM.ZAUX_ETL_EXCTN\\n          Where \\n               IS_CURR_IND = \\'Y\\'\\n     ) as F\\n     on 1 = 1',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> getDRAandPRT",
+				"getDRAandPRT select(mapColumn(",
+				"          PROC_ID = PRT_PROC_ID,",
+				"          PROC_TYPE_ID = PRT_PROC_TYPE_ID,",
+				"          CRETD_DT = PRT_CRETD_DT,",
+				"          RCVD_DT = PRT_RCVD_DT,",
+				"          ETL_EXCTN_ID = PRT_ETL_EXCTN_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPRTData",
+				"getDRAandPRT select(mapColumn(",
+				"          PROC_ID = DRA_PROC_ID,",
+				"          PROC_TYPE_ID = DRA_PROC_TYPE_ID,",
+				"          CRETD_DT = DRA_CRETD_DT,",
+				"          RCVD_DT = DRA_RCVD_DT,",
+				"          ETL_EXCTN_ID = DRA_ETL_EXCTN_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectDRAData",
+				"selectDRAData, selectPRTData union(byName: true)~> getMainDates",
+				"getMainDates sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

@@ -21,11 +21,14 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5c72f45e-a72c-4a03-a9a3-54d9ccaf7df6"
+				"spark.autotune.trackingId": "f001dbae-c9a7-4bcf-9735-c8c7235adfcf"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -41,13 +44,14 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"automaticScaleJobs": false
+				"extraHeader": null
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -71,7 +75,6 @@
 					"\t\t  SALES_STAGE_DESC VARCHAR(60)  , \n",
 					"\t\t  SSM_STEP_NO VARCHAR(20)  , \n",
 					"\t\t  SSM_STEP_NAME VARCHAR(60)  , \n",
-					"\t\t  OFFERING_DESC VARCHAR(50)  , \n",
 					"\t\t  CURRENT_IND VARCHAR(1) , \n",
 					"\t\t  EXTRACT_DT TIMESTAMP  , \n",
 					"\t\t  REC_START_DT TIMESTAMP  , \n",
@@ -86,9 +89,10 @@
 					"USING DELTA\n",
 					"PARTITIONED BY (CURRENT_IND)\n",
 					"-- specify data lake folder location\n",
-					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_SALES_STAGE'   "
+					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_SALES_STAGE_UPD'   "
 				],
-				"execution_count": 2
+				"attachments": null,
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -111,7 +115,8 @@
 					"%%sql\n",
 					"DROP TABLE etlhubconfirmed.DHT_SALES_STAGE"
 				],
-				"execution_count": 45
+				"attachments": null,
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -134,7 +139,8 @@
 					"%%sql\n",
 					"select * FROM etlhubconfirmed.DHT_SALES_STAGE"
 				],
-				"execution_count": 3
+				"attachments": null,
+				"execution_count": 5
 			}
 		]
 	}

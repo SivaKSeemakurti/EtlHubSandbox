@@ -38,13 +38,14 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"automaticScaleJobs": false
+				"extraHeader": null
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -62,6 +63,7 @@
 					"#\n",
 					"spark.sql(\"CREATE TABLE etlhubconfirmed.sell_cycle (SIEBEL_SALES_STAGE_CODE string, SIEBEL_SALES_STAGE_NAME string, SSM_STEP_NO string, SSM_STEP_NAME string)\")"
 				],
+				"attachments": null,
 				"execution_count": 1
 			}
 		]

@@ -1,0 +1,42 @@
+{
+	"name": "PL_TRIRIGA_LOCATION_SFTP_PULL",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_TRIRIGA_LOCATION_SFTP_PULL",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TririgaRemoteServer": {
+								"IWTRIRIGABuildingQuery": "IWTRIRIGABuildingQuery.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "ETLHub"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-07-29T06:53:34Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

@@ -93,7 +93,7 @@
 			"name": "PGMP"
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-06-22T14:19:57Z"
+		"lastPublishTime": "2022-07-18T10:48:32Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

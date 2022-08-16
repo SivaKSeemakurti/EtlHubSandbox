@@ -41,13 +41,14 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"automaticScaleJobs": false
+				"extraHeader": null
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -72,7 +73,8 @@
 					"\n",
 					"ERDM Link: https://erdmuiapp-prod.wdc1a.cirrus.ibm.com/erdmAllStandards/0\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
@@ -85,7 +87,8 @@
 				},
 				"source": [
 					"Import all the necessary libraries"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -115,6 +118,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
+				"attachments": null,
 				"execution_count": 24
 			},
 			{
@@ -128,7 +132,8 @@
 				},
 				"source": [
 					"Define Parameters"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -157,6 +162,7 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"print(date)"
 				],
+				"attachments": null,
 				"execution_count": 25
 			},
 			{
@@ -170,7 +176,8 @@
 				},
 				"source": [
 					"Copy source CSV file to archive folder including timestamp in file name"
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
@@ -187,7 +194,8 @@
 					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ERDM/DS_INDUSTRY_HIERARCHY_DATA.csv\n",
 					"\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -237,6 +245,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
+				"attachments": null,
 				"execution_count": 26
 			},
 			{
@@ -283,6 +292,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
+				"attachments": null,
 				"execution_count": 27
 			},
 			{
@@ -300,7 +310,8 @@
 					"- Check for duplicates in Source data based on natural key\n",
 					"- Check for duplicates in target delta lake table based on natural key\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -359,6 +370,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
+				"attachments": null,
 				"execution_count": 28
 			},
 			{
@@ -423,6 +435,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
+				"attachments": null,
 				"execution_count": 29
 			},
 			{
@@ -448,6 +461,7 @@
 					"\n",
 					"select * from fullJoin;"
 				],
+				"attachments": null,
 				"execution_count": 30
 			},
 			{
@@ -523,6 +537,7 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 					""
 				],
+				"attachments": null,
 				"execution_count": 31
 			},
 			{
@@ -546,6 +561,7 @@
 					"%%sql\n",
 					"SELECT count(*) FROM etlhubconfirmed.dht_industry_sector where current_ind='Y'"
 				],
+				"attachments": null,
 				"execution_count": 32
 			},
 			{
@@ -579,6 +595,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 					""
 				],
+				"attachments": null,
 				"execution_count": 33
 			},
 			{
@@ -627,6 +644,7 @@
 					"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 					";"
 				],
+				"attachments": null,
 				"execution_count": 34
 			},
 			{
@@ -687,6 +705,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
+				"attachments": null,
 				"execution_count": 35
 			},
 			{
@@ -720,6 +739,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 				],
+				"attachments": null,
 				"execution_count": 36
 			},
 			{
@@ -773,6 +793,7 @@
 					";\n",
 					""
 				],
+				"attachments": null,
 				"execution_count": 37
 			},
 			{
@@ -816,6 +837,7 @@
 					"    and date(img_lst_upd_dt)=current_date\n",
 					"        ;  "
 				],
+				"attachments": null,
 				"execution_count": 38
 			},
 			{
@@ -861,6 +883,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
+				"attachments": null,
 				"execution_count": 39
 			},
 			{
@@ -886,6 +909,7 @@
 					"    --'008915~613'\n",
 					""
 				],
+				"attachments": null,
 				"execution_count": 61
 			}
 		]

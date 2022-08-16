@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Test Job",
+				"name": "Job1",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,128 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_BALD0210_DELD_DIM",
+						"referenceName": "DF_BALD0080_CATLG_BRAND_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0190_CSTM_FIELDS_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Data flow2",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0330_PCR_CRC_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							},
+							"hash_columns": "'PCR_CRC_DIM_UID, PRPSL_PRICE_TERM_DIM_UID, CMPLXTY_DIM_UID, RQST_STAT_DIM_UID, RQST_TYPE_DIM_UID, RQST_RCVD_DT, PRPSL_RQST_DT, CLNT_RVSD_PRPSL_RQSTD_DT, PRPSL_SENT_TO_CLNT_DT, PRPSL_SENT_TO_CLNT_DT_WD, PRPSL_ACCPTD_DT, PRPSL_ACCPTD_DT_WD, PRPSL_REJCT_DT, RQST_IMPLMNT_CMPLTD_DT, CLNT_RVSD_RQST_IMPL_CMPL_DT, IMPLMNT_READY_CUST_ACCEPT_DT, IMPLMNT_READY_CUST_ACCEPT_DT_WD, PRPSL_EXP_DT, PRPSL_DSPSN_DT_WD, ON_HOLD_DT, WITHDRWN_DT, DELD_DT, LATEST_PRPSL_RQSTD_DT, LATEST_IMPLMNT_RQSTD_DT, PRPSL_OR_REJCT_DT, MERGED_DT, CLNT_ACCNTG_CD, CLNT_CNTCT_NM, CLNT_AFFCT_AREA_TXT, AGRMT_REF_DTL_TXT, SRVC_TYPE_TXT, CLNT_APPRVL_NUM, RFS_GROUP_NM, SRVC_PRVDR_ORGNZN_TXT, PREDEFND_SRVCS_DESC, SIEBEL_OPPRTNTY_NUM, BTT_NUM, SLTN_OWNR_TXT, DLVR_CRDNTR_TXT, SLTN_DSGNR_TXT, CLAIM_ACCNT_CD, CLAIM_WORK_ITEM_CD, RSRC_SUMRY_PRSNL_INVOLV_IND, RSRC_SUMRY_SERVER_COM_IND, RSRC_SUMRY_STRG_COM_IND, RSRC_SUMRY_HW_COM_IND, RSRC_SUMRY_SOFTWR_COM_IND, RJCT_RSN_CD, RJCT_SRC_CD, RJCT_EXPLNN_TXT, PRICE_TYPE_CD, RSN_CD, PURCHS_ORDR_NM, UNSLCTD_RQST_IND, CNTRCT_CHNG_RQRD_IND, OATS_RCD_RRQRD_IND, NON_STD_T_AND_C_IND, TRVL_INVC_IND, TERMNTN_CHRGS_IND, RNWL_MNTH_CD, BYPSS_SLTN_DSGN_IND, PRPSL_OWNR_TXT, ETL_JOB_ID, SRC_SYS_DIM_UID, HAS_PRNT_RFS_IND, PRNT_PROC_DIM_UID, PRJCT_DIM_UID, L30_OFFRNG_ID_1,  L30_OFFRNG_ID_2,  L30_OFFRNG_ID_3, CLNT_PRPSL_RQSTD_FIRST_TM_DT,  CLNT_RVSD_PRPSL_RQSTD_FIRST_TM_DT,  PRPSL_SENT_TO_CLNT_FIRST_TM_DT,  CLNT_RQSTD_IMPLMTN_CMPLT_FIRST_TM_DT,  CLNT_RVSD_RQSTD_IMPLMTN_CMPLT_FIRST_TM_DT,  IMPLMTN_READY_FOR_CUST_ACCPTNC_FIRST_TM_DT, GEO_DIM_UID, ORGNTG_ORG, PRICER_NM, SOLTN_TEAM, ERO_CHCKD_DT,  EA_CHCKD_DT, CE_CHCKD_DT, EXPORT_REG, ENVMNTL_AFF, CMPLNCE_ENGG, GROSS_TCP_CTRY_CD, GROSS_TCP_GEO_DIM_UID'"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Data flow3",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0340_PRFRMNC_DIM",
+						"type": "DataFlowReference",
+						"parameters": {
+							"current_user": {
+								"value": "'@{pipeline().parameters.current_user}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Data flow4",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BALD0345_PRICE_TYPE_CD_DIM",
 						"type": "DataFlowReference",
 						"parameters": {
 							"current_user": {
@@ -42,7 +163,7 @@
 			"name": "PGMP"
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-07-04T08:08:05Z"
+		"lastPublishTime": "2022-07-18T11:33:53Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

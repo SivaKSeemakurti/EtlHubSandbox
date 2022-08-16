@@ -19,7 +19,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2d586a7e-e32c-4274-86f0-3c5b02d837e0"
+				"spark.autotune.trackingId": "06b0d779-523c-43c4-97c9-3f337a3e6ca5"
 			}
 		},
 		"metadata": {
@@ -42,7 +42,8 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
@@ -82,10 +83,19 @@
 				},
 				"source": [
 					"import pandas as pd\r\n",
-					"print(\"Hello Kitty!\")"
+					"from azure.storage.blob import BlobClient\r\n",
+					"from io import StringIO\r\n",
+					"from sqlite3 import connect\r\n",
+					"import sys\r\n",
+					"import os\r\n",
+					"from datetime import datetime\r\n",
+					"from pyspark.sql.functions import col\r\n",
+					"from pyspark.sql import SparkSession\r\n",
+					"print(\"Hello Kitty!\")\r\n",
+					"print(\"Siva is genious!\")"
 				],
 				"attachments": null,
-				"execution_count": 1
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",

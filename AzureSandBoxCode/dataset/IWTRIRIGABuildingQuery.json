@@ -1,0 +1,98 @@
+{
+	"name": "IWTRIRIGABuildingQuery",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SftpTririga",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"IWTRIRIGABuildingQuery": {
+				"type": "String",
+				"defaultValue": "IWTRIRIGABuildingQuery.csv"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": {
+					"value": "@dataset().IWTRIRIGABuildingQuery",
+					"type": "Expression"
+				},
+				"folderPath": "/GlobalDir/CustomerFiles/tririga"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CAMPUS_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_STATUS",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_OWNERSHIP_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_OWNERSHIP_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_OWNERSHIP_DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_PRIMARY_USE_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_PRIMARY_USE_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_PRIMARY_USE_DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_SECONDARY_USE_ID",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_SECONDARY_USE_NAME",
+				"type": "String"
+			},
+			{
+				"name": "BUILDING_SECONDARY_USE_DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "RENTABLE_AREA",
+				"type": "String"
+			},
+			{
+				"name": "ACTIVE_YEAR",
+				"type": "String"
+			},
+			{
+				"name": "ACTUAL_RETIREMENT_INACTIVATION",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

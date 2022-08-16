@@ -41,13 +41,14 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net"
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"automaticScaleJobs": false
+				"extraHeader": null
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -97,6 +98,7 @@
 					"PARTITIONED BY (CURRENT_IND)\n",
 					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_INDUSTRY_SECTOR'"
 				],
+				"attachments": null,
 				"execution_count": 5
 			},
 			{
@@ -120,6 +122,7 @@
 					"%%sql\n",
 					"DROP TABLE etlhubConfirmed.DHT_INDUSTRY_SECTOR"
 				],
+				"attachments": null,
 				"execution_count": 4
 			},
 			{
@@ -143,6 +146,7 @@
 					"%%sql\n",
 					"DELETE FROM etlhubConfirmed.DHT_INDUSTRY_SECTOR"
 				],
+				"attachments": null,
 				"execution_count": 3
 			},
 			{
@@ -178,6 +182,7 @@
 					"  .partitionedBy(\"gender\") \\\n",
 					"  .execute()"
 				],
+				"attachments": null,
 				"execution_count": 37
 			},
 			{
@@ -207,6 +212,7 @@
 					"  .partitionedBy(\"EMPLOYEE_DISCON_DT\") \\\n",
 					"  .execute()"
 				],
+				"attachments": null,
 				"execution_count": 42
 			},
 			{
@@ -232,6 +238,7 @@
 					"--\n",
 					"limit 20"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -255,6 +262,7 @@
 					"%%sql\n",
 					"select * from etlhubConfirmed.test"
 				],
+				"attachments": null,
 				"execution_count": 40
 			}
 		]

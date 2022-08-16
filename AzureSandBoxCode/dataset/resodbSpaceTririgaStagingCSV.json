@@ -1,0 +1,141 @@
+{
+	"name": "resodbSpaceTririgaStagingCSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "extract/Tririga/OfficeSpace",
+				"fileSystem": "etlhubfilestorage"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CAMPUS_ID",
+				"type": "String"
+			},
+			{
+				"name": "CAMPUS_NAME",
+				"type": "String"
+			},
+			{
+				"name": "CAMPUS_STATUS",
+				"type": "String"
+			},
+			{
+				"name": "CAMPUS_GROUP",
+				"type": "String"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "String"
+			},
+			{
+				"name": "PHYSICAL_GEO",
+				"type": "String"
+			},
+			{
+				"name": "WORLD_REGION_CODE",
+				"type": "String"
+			},
+			{
+				"name": "WORLD_REGION_NAME",
+				"type": "String"
+			},
+			{
+				"name": "MARKET_TEAM_REGION_CODE",
+				"type": "String"
+			},
+			{
+				"name": "MARKET_TEAM_REGION_NAME",
+				"type": "String"
+			},
+			{
+				"name": "WORK_LOCATION_CODE",
+				"type": "String"
+			},
+			{
+				"name": "ADDRESS",
+				"type": "String"
+			},
+			{
+				"name": "CITY",
+				"type": "String"
+			},
+			{
+				"name": "STATE_PROVINCE_ID",
+				"type": "String"
+			},
+			{
+				"name": "POSTAL_CODE",
+				"type": "String"
+			},
+			{
+				"name": "COUNTRY_CODE",
+				"type": "String"
+			},
+			{
+				"name": "LATITUDE",
+				"type": "String"
+			},
+			{
+				"name": "LONGITUDE",
+				"type": "String"
+			},
+			{
+				"name": "UTC_OFFSET",
+				"type": "String"
+			},
+			{
+				"name": "ICU_TIME_ZONE",
+				"type": "String"
+			},
+			{
+				"name": "PEOPLE_HOUSED_FLAG",
+				"type": "String"
+			},
+			{
+				"name": "REMOTE_SUPPORT_FLAG",
+				"type": "String"
+			},
+			{
+				"name": "PRIMARY_CAMPUS_USE_ID",
+				"type": "String"
+			},
+			{
+				"name": "PRIMARY_CAMPUS_USE_NAME",
+				"type": "String"
+			},
+			{
+				"name": "PRIMARY_CAMPUS_USE_DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "CAMPUS_OWNERSHIP",
+				"type": "String"
+			},
+			{
+				"name": "CAMPUS_ACTIVATION_YEAR",
+				"type": "String"
+			},
+			{
+				"name": "CAMPUS_INACTIVATION_YEAR",
+				"type": "String"
+			},
+			{
+				"name": "CAMPUS_MODIFIED_DATE_AND_TIME",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

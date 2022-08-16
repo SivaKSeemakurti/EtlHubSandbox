@@ -1,0 +1,197 @@
+{
+	"name": "nb_get_file_sharepoint",
+	"properties": {
+		"folder": {
+			"name": "ETLHub/Dimensions&Facts"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sPoolKyn001494",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "7f4e893c-b1bf-4311-8149-ac5b9cff5095"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/eb01b8c2-e8d1-4c19-9788-5469f1f3fd10/resourceGroups/rg-kyn-001494-dev-eus-001/providers/Microsoft.Synapse/workspaces/asa-kyn-001494-dev-eus-001/bigDataPools/sPoolKyn001494",
+				"name": "sPoolKyn001494",
+				"type": "Spark",
+				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Import all the necessary libraries"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from azure.storage.blob import BlobClient\n",
+					"import pandas as pd\n",
+					"from io import StringIO\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\n",
+					"from sqlite3 import connect\n",
+					"from pyspark.sql import functions as F\n",
+					"#conn = connect(':memory:')\n",
+					"from pyspark.sql.functions import col\n",
+					"from pyspark.sql import SparkSession \n",
+					"from pyspark.sql.types import * \n",
+					"from delta.tables import *\n",
+					"import os\n",
+					"import sys\n",
+					"from datetime import datetime\n",
+					"# Import library\n",
+					"pip install py-topping\n",
+					"pip install Office365-REST-Python-Client\n",
+					"from py_topping.data_connection.sharepoint import lazy_SP365\n",
+					"\n",
+					"#from office365.runtime.auth.authentication_context import AuthenticationContext\n",
+					"#from office365.sharepoint.client_context import ClientContext\n",
+					"#from office365.sharepoint.files.file import File"
+				],
+				"attachments": null,
+				"execution_count": 3
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Define Parameters"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Create connection\r\n",
+					"sp = lazy_SP365(site_url = 'https://kyndryl-my.sharepoint.com/personal/srilatha_palivela_kyndryl_com/_layouts/15/onedrive.aspx'\r\n",
+					"                   , client_id = 'Srilatha.Palivela@kyndryl.com'\r\n",
+					"                   , client_secret = 'Sai2Krupa202207')\r\n",
+					"# Create download path from download URL\r\n",
+					"download_path = sp.create_link('https://kyndryl-my.sharepoint.com/personal/srilatha_palivela_kyndryl_com/_layouts/15/onedrive.aspx/Country(kyndryl).csv')\r\n",
+					"# Download file\r\n",
+					"sp.download(sharepoint_location = download_path \r\n",
+					"            , local_location = 'https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2Feb01b8c2-e8d1-4c19-9788-5469f1f3fd10%2FresourceGroups%2Frg-kyn-001494-dev-eus-001%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fadls4fsoetlhubdevuseast/path/etlhubfilestorage/etag/%220x8DA52B876475420%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None')"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#import office365.runtime.auth.AuthenticationContext\r\n",
+					"from office365.runtime.auth.authentication_context import AuthenticationContext"
+				],
+				"attachments": null,
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"ctx_auth = AuthenticationContext(https://kyndryl-my.sharepoint.com/personal/srilatha_palivela_kyndryl_com/_layouts/15/onedrive.aspx)\n",
+					"ctx_auth.acquire_token_for_user(Srilatha.Palivela@kyndryl.com, Sai2Krupa202207)   \n",
+					"ctx = ClientContext(url, ctx_auth)\n",
+					"response = File.open_binary(ctx, \"Country(kyndryl).csv\")\n",
+					"with open(\"./Country(kyndryl).csv\", \"wb\") as local_file:\n",
+					"    local_file.write(response.content)"
+				],
+				"attachments": null,
+				"execution_count": 3
+			}
+		]
+	}
+}
