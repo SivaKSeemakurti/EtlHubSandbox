@@ -1003,6 +1003,42 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Notebook1",
+						"type": "SynapseNotebook",
+						"dependsOn": [
+							{
+								"activity": "Data flow1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "nb_dht_campus",
+								"type": "NotebookReference"
+							},
+							"parameters": {
+								"": {
+									"value": ""
+								}
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "sPool001494New",
+								"type": "BigDataPoolReference"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1016,7 +1052,10 @@
 				"lastPublishTime": "2022-08-03T12:03:02Z"
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_CAMPUS_SFTP_PULL')]"
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_CAMPUS_SFTP_PULL')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
+				"[concat(variables('workspaceId'), '/notebooks/nb_dht_campus')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/sPool001494New')]"
 			]
 		},
 		{
@@ -46088,7 +46127,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "efec1168-4e16-4a73-b910-1e6ab198e68e"
+						"spark.autotune.trackingId": "542ab0a9-1560-46ae-b7a3-064c33cf9c8a"
 					}
 				},
 				"metadata": {
