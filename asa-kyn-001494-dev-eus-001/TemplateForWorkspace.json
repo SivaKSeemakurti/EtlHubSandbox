@@ -46088,7 +46088,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f97c1a18-8b39-495f-8ebc-7e98055c8ff8"
+						"spark.autotune.trackingId": "efec1168-4e16-4a73-b910-1e6ab198e68e"
 					}
 				},
 				"metadata": {
@@ -46108,14 +46108,13 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
 						"memory": 472,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -46140,8 +46139,7 @@
 							"The script used for file transfer is /home/resodba/trrgprocget.sh\n",
 							"\n",
 							"File Name: IWTRIRIGACampusQuery.csv from /GlobalDir/CustomerFiles/tririga"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -46154,8 +46152,7 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -46185,7 +46182,6 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 14
 					},
@@ -46200,8 +46196,7 @@
 						},
 						"source": [
 							"Define Parameters"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -46215,7 +46210,9 @@
 									"deleting": false
 								}
 							},
-							"tags": []
+							"tags": [
+								"parameters"
+							]
 						},
 						"source": [
 							"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \n",
@@ -46235,7 +46232,6 @@
 							"print(extract_dt)\n",
 							"print(natural_key)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -46250,8 +46246,7 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -46268,8 +46263,7 @@
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/Tririga/campus/IWTRIRIGACampusQuery.csv\n",
 							"\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -46370,7 +46364,6 @@
 							"\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 3
 					},
@@ -46395,7 +46388,6 @@
 							"%%sql\r\n",
 							"SELECT COUNT(*) as CNT, CAMPUS_ID FROM incrementalData_DF2 GROUP BY CAMPUS_ID HAVING COUNT(*)>1"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 4
 					},
@@ -46443,7 +46435,6 @@
 							"  .saveAsTable(stagingtable)\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 5
 					},
@@ -46464,8 +46455,7 @@
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							"- Referential Integrity checks\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -46546,7 +46536,6 @@
 							"\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 6
 					},
@@ -46612,7 +46601,6 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 7
 					},
@@ -46703,7 +46691,6 @@
 							"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 8
 					},
@@ -46749,7 +46736,6 @@
 							"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 							"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 9
 					},
@@ -46784,7 +46770,6 @@
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 10
 					},
@@ -46862,7 +46847,6 @@
 							"\n",
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 11
 					},
@@ -46898,7 +46882,6 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 12
 					},
@@ -46945,7 +46928,6 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 13
 					}
