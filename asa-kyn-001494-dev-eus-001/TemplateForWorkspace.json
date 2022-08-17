@@ -24377,7 +24377,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6b962ce7-fbdc-4f72-bcb1-5d0919ed8537"
+						"spark.autotune.trackingId": "bd4537c6-f128-4db4-8a32-b41bab8239cb"
 					}
 				},
 				"metadata": {
@@ -46123,7 +46123,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "5ca4c8da-0b7c-4d56-a382-ba57bdaf46c9"
+						"spark.autotune.trackingId": "8eb78123-a39b-4d10-88db-c1fbbe61ee32"
 					}
 				},
 				"metadata": {
@@ -46218,7 +46218,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 10
 					},
 					{
 						"cell_type": "markdown",
@@ -46268,7 +46268,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 11
 					},
 					{
 						"cell_type": "markdown",
@@ -46400,7 +46400,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 12
 					},
 					{
 						"cell_type": "code",
@@ -46471,7 +46471,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 14
 					},
 					{
 						"cell_type": "markdown",
@@ -46572,7 +46572,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": 15
 					},
 					{
 						"cell_type": "code",
@@ -46637,7 +46637,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 7
+						"execution_count": 16
 					},
 					{
 						"cell_type": "code",
@@ -46673,7 +46673,7 @@
 							"INSERT INTO {}\n",
 							"select \n",
 							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
-							",1 AS VERSION\n",
+							",1 AS CAMPUS_VERSION\n",
 							",CAMPUS_ID\n",
 							",CAMPUS_NAME\n",
 							",CAMPUS_STATUS\n",
@@ -46724,11 +46724,11 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+							"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,extract_dt,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": 19
 					},
 					{
 						"cell_type": "code",
