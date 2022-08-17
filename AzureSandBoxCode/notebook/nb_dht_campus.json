@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "97a3a739-f35c-4c21-8334-1220a2694162"
+				"spark.autotune.trackingId": "4a29def4-c0e4-4f48-a71e-e04fa53fe328"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 1
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
@@ -164,7 +164,7 @@
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"execution_count": 2
+				"execution_count": 11
 			},
 			{
 				"cell_type": "markdown",
@@ -295,7 +295,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 3
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -364,7 +364,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 5
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -464,7 +464,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -528,7 +528,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 7
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -564,7 +564,7 @@
 					"INSERT INTO {}\n",
 					"select \n",
 					"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
-					",1 AS VERSION\n",
+					",1 AS CAMPUS_VERSION\n",
 					",CAMPUS_ID\n",
 					",CAMPUS_NAME\n",
 					",CAMPUS_STATUS\n",
@@ -615,10 +615,10 @@
 					";\n",
 					"\"\"\"\n",
 					"\n",
-					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,extract_dt,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 8
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
