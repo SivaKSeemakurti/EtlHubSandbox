@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "00fdacb6-49e1-4a25-8e9c-238a85161297"
+				"spark.autotune.trackingId": "87ff092c-36bb-4244-90ff-f877ef3cbb46"
 			}
 		},
 		"metadata": {
@@ -113,9 +113,11 @@
 					"from delta.tables import *\n",
 					"import os\n",
 					"import sys\n",
-					"from datetime import datetime"
+					"from datetime import datetime\n",
+					"from pyspark.sql.functions import *\n",
+					""
 				],
-				"execution_count": 54
+				"execution_count": 88
 			},
 			{
 				"cell_type": "markdown",
@@ -161,10 +163,36 @@
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
+					"rec_end_dt='9999-12-31 00:00:00'\n",
+					"rec_end_date_time=to_timestamp('9999-12-31 00:00:00','yyyy-mm-dd hh:mm:ss' )\n",
+					"#,'YYYY-MM-DD HH:MI:SS')\n",
 					"print(extract_dt)\n",
-					"print(natural_key)"
+					"print(rec_end_date_time)"
 				],
-				"execution_count": 55
+				"execution_count": 108
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select timestamp('2019-06-24 12:01:19.000'),to_timestamp('9999-12-31 00:00:00.000') as timestamp"
+				],
+				"execution_count": 111
 			},
 			{
 				"cell_type": "markdown",
@@ -295,7 +323,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 56
+				"execution_count": 74
 			},
 			{
 				"cell_type": "code",
@@ -362,7 +390,7 @@
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\\n",
 					""
 				],
-				"execution_count": 59
+				"execution_count": 75
 			},
 			{
 				"cell_type": "code",
@@ -485,7 +513,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 61
+				"execution_count": 76
 			},
 			{
 				"cell_type": "code",
@@ -564,7 +592,7 @@
 					"\"\"\"\n",
 					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))"
 				],
-				"execution_count": 62
+				"execution_count": 77
 			},
 			{
 				"cell_type": "code",
@@ -646,13 +674,13 @@
 					",'Y'\n",
 					",CURRENT_TIMESTAMP \n",
 					",CURRENT_TIMESTAMP\n",
-					",TIMESTAMP_FORMAT('1999-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')\n",
+					",to_timestamp('9999-12-31 00:00:00')  -- 'yyyy-MM-dd hh:mm:ss')\n",
 					",'Tririga'\n",
 					",column_hash\n",
 					",CURRENT_TIMESTAMP\n",
 					",CURRENT_TIMESTAMP \n",
 					"    from dhts_campus A \n",
-					"WHERE existing_REC_CHECKSUM is null\n",
+					"WHERE  existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM etlhubconfirmed.dht_campus B\n",
 					"WHERE A.CAMPUS_ID=B.CAMPUS_ID\n",
@@ -664,7 +692,30 @@
 					"--dfIns=spark.sql(qry_ins_new_rows.format(extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 71
+				"execution_count": 140
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select column_hash,to_timestamp('9999-12-31 00:00:00') from dhts_campus"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -736,7 +787,7 @@
 					"and b.CURRENT_IND='Y'\r\n",
 					"AND A.column_hash=B.REC_CHECKSUM)"
 				],
-				"execution_count": 64
+				"execution_count": 119
 			},
 			{
 				"cell_type": "code",
