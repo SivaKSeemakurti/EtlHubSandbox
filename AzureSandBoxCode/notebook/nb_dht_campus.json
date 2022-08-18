@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d67d9648-ed77-4d9c-9af6-8dcc55412166"
+				"spark.autotune.trackingId": "00fdacb6-49e1-4a25-8e9c-238a85161297"
 			}
 		},
 		"metadata": {
@@ -646,7 +646,7 @@
 					",'Y'\n",
 					",CURRENT_TIMESTAMP \n",
 					",CURRENT_TIMESTAMP\n",
-					",'9999-12-31 00:00:00'\n",
+					",TIMESTAMP_FORMAT('1999-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')\n",
 					",'Tririga'\n",
 					",column_hash\n",
 					",CURRENT_TIMESTAMP\n",
@@ -664,7 +664,7 @@
 					"--dfIns=spark.sql(qry_ins_new_rows.format(extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 70
+				"execution_count": 71
 			},
 			{
 				"cell_type": "code",
