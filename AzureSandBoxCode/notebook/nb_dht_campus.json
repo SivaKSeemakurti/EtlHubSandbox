@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "87ff092c-36bb-4244-90ff-f877ef3cbb46"
+				"spark.autotune.trackingId": "248a9156-aa5e-4b20-ae2a-0ba29a6e184a"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 88
+				"execution_count": 141
 			},
 			{
 				"cell_type": "markdown",
@@ -164,12 +164,11 @@
 					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 					"rec_end_dt='9999-12-31 00:00:00'\n",
-					"rec_end_date_time=to_timestamp('9999-12-31 00:00:00','yyyy-mm-dd hh:mm:ss' )\n",
-					"#,'YYYY-MM-DD HH:MI:SS')\n",
 					"print(extract_dt)\n",
-					"print(rec_end_date_time)"
+					"print(rec_end_dt)\n",
+					""
 				],
-				"execution_count": 108
+				"execution_count": 145
 			},
 			{
 				"cell_type": "code",
@@ -192,7 +191,7 @@
 					"%%sql\r\n",
 					"select timestamp('2019-06-24 12:01:19.000'),to_timestamp('9999-12-31 00:00:00.000') as timestamp"
 				],
-				"execution_count": 111
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
