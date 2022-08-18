@@ -24585,7 +24585,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "a34eba75-8951-485f-b7e0-f343beea7200"
+						"spark.autotune.trackingId": "5fa54e59-3e8b-4ad2-9a86-d3deb85fbac7"
 					}
 				},
 				"metadata": {
@@ -46116,7 +46116,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "74db3140-5e27-407d-8255-fecfe88e2c5c"
+						"spark.autotune.trackingId": "71463f2b-467a-49f4-b570-3ea1f8f68da8"
 					}
 				},
 				"metadata": {
@@ -46213,7 +46213,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 88
+						"execution_count": 141
 					},
 					{
 						"cell_type": "markdown",
@@ -46260,13 +46260,12 @@
 							"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 							"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 							"rec_end_dt='9999-12-31 00:00:00'\n",
-							"rec_end_date_time=to_timestamp('9999-12-31 00:00:00','yyyy-mm-dd hh:mm:ss' )\n",
-							"#,'YYYY-MM-DD HH:MI:SS')\n",
 							"print(extract_dt)\n",
-							"print(rec_end_date_time)"
+							"print(rec_end_dt)\n",
+							""
 						],
 						"outputs": [],
-						"execution_count": 108
+						"execution_count": 145
 					},
 					{
 						"cell_type": "code",
@@ -46290,7 +46289,7 @@
 							"select timestamp('2019-06-24 12:01:19.000'),to_timestamp('9999-12-31 00:00:00.000') as timestamp"
 						],
 						"outputs": [],
-						"execution_count": 111
+						"execution_count": null
 					},
 					{
 						"cell_type": "markdown",
@@ -49223,7 +49222,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "d0768b58-4290-40fb-847c-5c6e796c8ef9"
+						"spark.autotune.trackingId": "4832a130-6106-43cf-a9eb-65d688685693"
 					}
 				},
 				"metadata": {
