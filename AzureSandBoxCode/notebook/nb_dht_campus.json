@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "141353a5-915a-4918-b778-161276f8062c"
+				"spark.autotune.trackingId": "d67d9648-ed77-4d9c-9af6-8dcc55412166"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 19
+				"execution_count": 54
 			},
 			{
 				"cell_type": "markdown",
@@ -164,7 +164,7 @@
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"execution_count": 20
+				"execution_count": 55
 			},
 			{
 				"cell_type": "markdown",
@@ -295,7 +295,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 21
+				"execution_count": 56
 			},
 			{
 				"cell_type": "code",
@@ -318,7 +318,7 @@
 					"%%sql\r\n",
 					"SELECT COUNT(*) as CNT, CAMPUS_ID FROM incrementalData_DF2 GROUP BY CAMPUS_ID HAVING COUNT(*)>1"
 				],
-				"execution_count": 4
+				"execution_count": 57
 			},
 			{
 				"cell_type": "code",
@@ -360,10 +360,9 @@
 					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/{}\".format(stagingtable)) \\\n",
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\\n",
-					"   \n",
-					"   print(existing_MAX_KEY)"
+					""
 				],
-				"execution_count": null
+				"execution_count": 59
 			},
 			{
 				"cell_type": "code",
@@ -386,7 +385,7 @@
 					"%%sql\r\n",
 					"select * from fullJoin"
 				],
-				"execution_count": 28
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -486,7 +485,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 23
+				"execution_count": 61
 			},
 			{
 				"cell_type": "code",
@@ -565,7 +564,7 @@
 					"\"\"\"\n",
 					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))"
 				],
-				"execution_count": 24
+				"execution_count": 62
 			},
 			{
 				"cell_type": "code",
@@ -602,12 +601,16 @@
 							"deleting": false
 						}
 					},
+					"microsoft": {
+						"language": "sparksql"
+					},
 					"collapsed": false
 				},
 				"source": [
-					"qry_ins_new_rows=\"\"\"\n",
-					"INSERT INTO {}\n",
-					"select cast(COALESCE(A.existing_MAX_KEY,0)+ ROW_NUMBER()OVER(ORDER BY CAMPUS_ID) AS INTEGER) AS {},1 AS VERSION\n",
+					"%%sql\n",
+					"INSERT INTO etlhubConfirmed.dht_campus\n",
+					"select cast(COALESCE(A.existing_MAX_KEY,0)+ \n",
+					"ROW_NUMBER()OVER(ORDER BY CAMPUS_ID) AS INTEGER) AS CAMPUS_KEY,1 AS VERSION\n",
 					",GEOGRAPHY_ID\n",
 					",GEOGRAPHY_NAME\n",
 					",REGION_ID\n",
@@ -640,28 +643,28 @@
 					",CAMPUS_OWNERSHIP\n",
 					",CAMPUS_ACTIVATION_YEAR\n",
 					",CAMPUS_INACTIVATION_YEAR\n",
-					",   'Y' AS CURRENT_IND\n",
-					",   '{}' AS EXTRACT_DT\n",
-					",   '{}' AS REC_START_DT\n",
-					",   '9999-12-31 00:00:00' as REC_END_DT\n",
-					",   'Tririga' AS SOURCE_SYSTEM\n",
-					",    column_hash as REC_CHECKSUM\n",
-					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
-					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-					"    from {} A \n",
+					",'Y'\n",
+					",CURRENT_TIMESTAMP \n",
+					",CURRENT_TIMESTAMP\n",
+					",'9999-12-31 00:00:00'\n",
+					",'Tririga'\n",
+					",column_hash\n",
+					",CURRENT_TIMESTAMP\n",
+					",CURRENT_TIMESTAMP \n",
+					"    from dhts_campus A \n",
 					"WHERE existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
-					"(SELECT 1 FROM {} B\n",
-					"WHERE A.{}=B.{}\n",
+					"(SELECT 1 FROM etlhubconfirmed.dht_campus B\n",
+					"WHERE A.CAMPUS_ID=B.CAMPUS_ID\n",
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					";\n",
-					"\"\"\"\n",
+					"--\"\"\"\n",
 					"\n",
-					"dfIns=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+					"--dfIns=spark.sql(qry_ins_new_rows.format(extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"execution_count": 43
+				"execution_count": 70
 			},
 			{
 				"cell_type": "code",
@@ -682,7 +685,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select cast(COALESCE(A.existing_MAX_KEY,0)+ ROW_NUMBER()OVER(ORDER BY CAMPUS_ID) AS INTEGER) AS CAMPUS_KEY,1 AS VERSION\r\n",
+					"select \r\n",
+					"cast(COALESCE(A.existing_MAX_KEY,0)+ \r\n",
+					"ROW_NUMBER()OVER(ORDER BY CAMPUS_ID) AS INTEGER) AS CAMPUS_KEY,1 AS VERSION\r\n",
 					",GEOGRAPHY_ID\r\n",
 					",GEOGRAPHY_NAME\r\n",
 					",REGION_ID\r\n",
@@ -731,7 +736,7 @@
 					"and b.CURRENT_IND='Y'\r\n",
 					"AND A.column_hash=B.REC_CHECKSUM)"
 				],
-				"execution_count": 42
+				"execution_count": 64
 			},
 			{
 				"cell_type": "code",
