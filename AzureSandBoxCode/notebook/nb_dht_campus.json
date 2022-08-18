@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e384ede4-ce36-462e-955f-d6175fcf094b"
+				"spark.autotune.trackingId": "1365f631-4f56-40cc-9890-891f25c5e7fa"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 141
+				"execution_count": 159
 			},
 			{
 				"cell_type": "markdown",
@@ -168,7 +168,7 @@
 					"print(rec_end_dt)\n",
 					""
 				],
-				"execution_count": 145
+				"execution_count": 160
 			},
 			{
 				"cell_type": "markdown",
@@ -632,7 +632,7 @@
 					",column_hash\n",
 					",CURRENT_TIMESTAMP\n",
 					",CURRENT_TIMESTAMP \n",
-					"    from dhts_campus A \n",
+					"from dhts_campus A \n",
 					"WHERE  existing_REC_CHECKSUM is null\n",
 					"AND NOT EXISTS\n",
 					"(SELECT 1 FROM etlhubconfirmed.dht_campus B\n",
@@ -640,9 +640,6 @@
 					"and b.CURRENT_IND='Y'\n",
 					"AND A.column_hash=B.REC_CHECKSUM)\n",
 					";\n",
-					"--\"\"\"\n",
-					"\n",
-					"--dfIns=spark.sql(qry_ins_new_rows.format(extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
 				"execution_count": null
@@ -666,7 +663,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from etlhubconfirmed.dht_campus"
+					"select count(*) from etlhubconfirmed.dht_campus"
 				],
 				"execution_count": null
 			},
