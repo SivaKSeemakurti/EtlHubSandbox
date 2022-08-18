@@ -24585,7 +24585,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "065e9527-4b00-43ec-83cb-6a306c53917c"
+						"spark.autotune.trackingId": "f041ae50-26b1-452f-9112-fb96909733db"
 					}
 				},
 				"metadata": {
@@ -46116,7 +46116,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "05f6d870-8da3-4497-9b60-e7bf79c7ccc7"
+						"spark.autotune.trackingId": "f43874a2-74cd-45f2-8531-07781770ab7b"
 					}
 				},
 				"metadata": {
@@ -46213,7 +46213,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 141
+						"execution_count": 159
 					},
 					{
 						"cell_type": "markdown",
@@ -46265,7 +46265,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 145
+						"execution_count": 160
 					},
 					{
 						"cell_type": "markdown",
@@ -46735,7 +46735,7 @@
 							",column_hash\n",
 							",CURRENT_TIMESTAMP\n",
 							",CURRENT_TIMESTAMP \n",
-							"    from dhts_campus A \n",
+							"from dhts_campus A \n",
 							"WHERE  existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
 							"(SELECT 1 FROM etlhubconfirmed.dht_campus B\n",
@@ -46743,9 +46743,6 @@
 							"and b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM)\n",
 							";\n",
-							"--\"\"\"\n",
-							"\n",
-							"--dfIns=spark.sql(qry_ins_new_rows.format(extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 							""
 						],
 						"outputs": [],
@@ -46770,7 +46767,7 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from etlhubconfirmed.dht_campus"
+							"select count(*) from etlhubconfirmed.dht_campus"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -49101,7 +49098,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "06aabbf3-45f3-46d5-8295-4dba2e596629"
+						"spark.autotune.trackingId": "84bd16a6-5ab7-4dab-8bdc-4594822cce2c"
 					}
 				},
 				"metadata": {
