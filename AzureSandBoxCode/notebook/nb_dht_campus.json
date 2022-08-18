@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "248a9156-aa5e-4b20-ae2a-0ba29a6e184a"
+				"spark.autotune.trackingId": "e384ede4-ce36-462e-955f-d6175fcf094b"
 			}
 		},
 		"metadata": {
@@ -171,29 +171,6 @@
 				"execution_count": 145
 			},
 			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select timestamp('2019-06-24 12:01:19.000'),to_timestamp('9999-12-31 00:00:00.000') as timestamp"
-				],
-				"execution_count": null
-			},
-			{
 				"cell_type": "markdown",
 				"metadata": {
 					"nteract": {
@@ -322,7 +299,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 74
+				"execution_count": 146
 			},
 			{
 				"cell_type": "code",
@@ -389,30 +366,7 @@
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\\n",
 					""
 				],
-				"execution_count": 75
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select * from fullJoin"
-				],
-				"execution_count": null
+				"execution_count": 147
 			},
 			{
 				"cell_type": "markdown",
@@ -512,7 +466,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 76
+				"execution_count": 148
 			},
 			{
 				"cell_type": "code",
@@ -591,7 +545,7 @@
 					"\"\"\"\n",
 					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))"
 				],
-				"execution_count": 77
+				"execution_count": 149
 			},
 			{
 				"cell_type": "code",
@@ -673,7 +627,7 @@
 					",'Y'\n",
 					",CURRENT_TIMESTAMP \n",
 					",CURRENT_TIMESTAMP\n",
-					",to_timestamp('9999-12-31 00:00:00')  -- 'yyyy-MM-dd hh:mm:ss')\n",
+					",'9999-12-31 00:00:00'  \n",
 					",'Tririga'\n",
 					",column_hash\n",
 					",CURRENT_TIMESTAMP\n",
@@ -690,29 +644,6 @@
 					"\n",
 					"--dfIns=spark.sql(qry_ins_new_rows.format(extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
-				],
-				"execution_count": 140
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "sparksql"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%sql\r\n",
-					"select column_hash,to_timestamp('9999-12-31 00:00:00') from dhts_campus"
 				],
 				"execution_count": null
 			},
@@ -735,58 +666,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select \r\n",
-					"cast(COALESCE(A.existing_MAX_KEY,0)+ \r\n",
-					"ROW_NUMBER()OVER(ORDER BY CAMPUS_ID) AS INTEGER) AS CAMPUS_KEY,1 AS VERSION\r\n",
-					",GEOGRAPHY_ID\r\n",
-					",GEOGRAPHY_NAME\r\n",
-					",REGION_ID\r\n",
-					",REGION_NAME\r\n",
-					",SITE_ID\r\n",
-					",SITE_NAME\r\n",
-					",WORLD_REGION_CODE\r\n",
-					",WORLD_REGION_NAME\r\n",
-					",MARKET_TEAM_REGION_CODE\r\n",
-					",MARKET_TEAM_REGION_NAME\r\n",
-					",COUNTRY_CODE\r\n",
-					",COUNTRY_NAME\r\n",
-					",CAMPUS_ID\r\n",
-					",CAMPUS_NAME\r\n",
-					",CAMPUS_STATUS\r\n",
-					",WORK_LOCATION_CODE\r\n",
-					",ADDRESS\r\n",
-					",CITY\r\n",
-					",STATE_PROVINCE_ID\r\n",
-					",STATE_PROVINCE_NAME\r\n",
-					",POSTAL_CODE\r\n",
-					",LATITUDE\r\n",
-					",LONGITUDE\r\n",
-					",UTC_OFFSET\r\n",
-					",ICU_TIME_ZONE\r\n",
-					",PEOPLE_HOUSED_FLAG\r\n",
-					",REMOTE_SUPPORT_FLAG\r\n",
-					",PRIMARY_CAMPUS_USE_NAME\r\n",
-					",PRIMARY_CAMPUS_USE_DESCR\r\n",
-					",CAMPUS_OWNERSHIP\r\n",
-					",CAMPUS_ACTIVATION_YEAR\r\n",
-					",CAMPUS_INACTIVATION_YEAR\r\n",
-					",   'Y' AS CURRENT_IND\r\n",
-					",   '2022-08-18 07:17:57' AS EXTRACT_DT\r\n",
-					",   '2022-08-18 07:17:57' AS REC_START_DT\r\n",
-					",   '9999-12-31 00:00:00' as REC_END_DT\r\n",
-					",   'Tririga' AS SOURCE_SYSTEM\r\n",
-					",    column_hash as REC_CHECKSUM\r\n",
-					",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\r\n",
-					",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
-					"    from DHTS_CAMPUS A \r\n",
-					"WHERE existing_REC_CHECKSUM is null\r\n",
-					"AND NOT EXISTS\r\n",
-					"(SELECT 1 FROM etlhubConfirmed.dht_campus B\r\n",
-					"WHERE A.CAMPUS_ID=B.CAMPUS_ID\r\n",
-					"and b.CURRENT_IND='Y'\r\n",
-					"AND A.column_hash=B.REC_CHECKSUM)"
+					"select * from etlhubconfirmed.dht_campus"
 				],
-				"execution_count": 119
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -819,7 +701,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
 					""
 				],
-				"execution_count": 10
+				"execution_count": 154
 			},
 			{
 				"cell_type": "code",
@@ -895,7 +777,7 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"execution_count": 11
+				"execution_count": 155
 			},
 			{
 				"cell_type": "code",
@@ -929,7 +811,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 				],
-				"execution_count": 12
+				"execution_count": 156
 			},
 			{
 				"cell_type": "code",
@@ -974,7 +856,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 13
+				"execution_count": 157
 			}
 		]
 	}
