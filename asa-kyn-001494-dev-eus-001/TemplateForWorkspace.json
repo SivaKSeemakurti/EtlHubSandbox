@@ -1048,7 +1048,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_CAMPUS_SFTP_PULL')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
 				"[concat(variables('workspaceId'), '/notebooks/nb_dht_campus')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/sPool001494New')]"
 			]
@@ -24377,7 +24376,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "bd4537c6-f128-4db4-8a32-b41bab8239cb"
+						"spark.autotune.trackingId": "e3eba01c-d437-4f18-9dda-1d51b5e03665"
 					}
 				},
 				"metadata": {
@@ -24402,8 +24401,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -24587,7 +24585,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "86b8bbb8-30b1-4359-a688-7efad9fa37af"
+						"spark.autotune.trackingId": "764020aa-d2d4-4459-8c22-5a892766fd8b"
 					}
 				},
 				"metadata": {
@@ -24607,14 +24605,14 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
 						"memory": 472,
-						"extraHeader": null
+						"extraHeader": {},
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -24679,7 +24677,6 @@
 							"-- specify data lake folder location\r\n",
 							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS' "
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 11
 					},
@@ -24704,7 +24701,6 @@
 							"%%sql\r\n",
 							"select * from etlhubConfirmed.dht_campus"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 12
 					},
@@ -24729,7 +24725,6 @@
 							"%%sql\n",
 							"DROP TABLE etlhubConfirmed.DHT_CAMPUS"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 9
 					},
@@ -24754,7 +24749,6 @@
 							"%%sql\n",
 							"DELETE FROM etlhubConfirmed.DHT_CAMPUS"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					}
@@ -46123,7 +46117,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8eb78123-a39b-4d10-88db-c1fbbe61ee32"
+						"spark.autotune.trackingId": "a9709f55-4a3b-4133-99b3-45e79edd0e5a"
 					}
 				},
 				"metadata": {
@@ -46218,7 +46212,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 19
 					},
 					{
 						"cell_type": "markdown",
@@ -46268,7 +46262,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 20
 					},
 					{
 						"cell_type": "markdown",
@@ -46400,7 +46394,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 12
+						"execution_count": 21
 					},
 					{
 						"cell_type": "code",
@@ -46444,11 +46438,8 @@
 							"#Create a dataframe with target deltalake table data with necessary columns\n",
 							"\n",
 							"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\n",
-							"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
 							"\n",
-							"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
-							"\n",
-							"#existingMaxKeyDF=spark.sql(\"SELECT MAX(EMPLOYEE_KEY) existing_MAX_KEY from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\n",
+							"existingMaxKeyDF=spark.sql(\"SELECT cast(MAX({}) as integer) as existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\n",
 							"\n",
 							"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\n",
 							"\n",
@@ -46468,10 +46459,36 @@
 							"  .option(\"overwriteSchema\", \"true\") \\\n",
 							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/{}\".format(stagingtable)) \\\n",
 							"  .saveAsTable(stagingtable)\n",
-							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
+							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\\n",
+							"   \n",
+							"   print(existing_MAX_KEY)"
 						],
 						"outputs": [],
-						"execution_count": 14
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from fullJoin"
+						],
+						"outputs": [],
+						"execution_count": 28
 					},
 					{
 						"cell_type": "markdown",
@@ -46572,7 +46589,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 15
+						"execution_count": 23
 					},
 					{
 						"cell_type": "code",
@@ -46634,10 +46651,49 @@
 							"\n",
 							"df_4_recon3=spark.sql(qry_4_recon3.format(tablename,natural_key,natural_key,natural_key))\n",
 							"print('Soft Deletes are:') \n",
-							"df_4_recon3.show()"
+							"df_4_recon3.show()\n",
+							"\n",
+							"\n",
+							"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
+							"\n",
+							"qry_4_recon1=\"\"\"\n",
+							"SELECT COUNT(*) from {} A \n",
+							"WHERE existing_REC_CHECKSUM is null\n",
+							"AND NOT EXISTS\n",
+							"(SELECT 1 FROM {} B\n",
+							"WHERE A.{}=B.{}\n",
+							"and b.CURRENT_IND='Y'\n",
+							"AND A.column_hash=B.REC_CHECKSUM)\n",
+							"\n",
+							"\"\"\"\n",
+							"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 16
+						"execution_count": 24
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from DHTS_CAMPUS "
+						],
+						"outputs": [],
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -46654,66 +46710,49 @@
 							"collapsed": false
 						},
 						"source": [
-							"\n",
-							"#Insert for New rows which are missing in target and present in source based on Natural Key.\n",
-							"\n",
-							"qry_4_recon1=\"\"\"\n",
-							"SELECT COUNT(*) from {} A \n",
-							"WHERE existing_REC_CHECKSUM is null\n",
-							"AND NOT EXISTS\n",
-							"(SELECT 1 FROM {} B\n",
-							"WHERE A.{}=B.{}\n",
-							"and b.CURRENT_IND='Y'\n",
-							"AND A.column_hash=B.REC_CHECKSUM)\n",
-							"\n",
-							"\"\"\"\n",
-							"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))\n",
-							"\n",
 							"qry_ins_new_rows=\"\"\"\n",
 							"INSERT INTO {}\n",
-							"select \n",
-							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
-							",1 AS CAMPUS_VERSION\n",
-							",CAMPUS_ID\n",
-							",CAMPUS_NAME\n",
-							",CAMPUS_STATUS\n",
+							"select cast(COALESCE(A.existing_MAX_KEY,0)+ ROW_NUMBER()OVER(ORDER BY CAMPUS_ID) AS INTEGER) AS {},1 AS VERSION\n",
+							",GEOGRAPHY_ID\n",
+							",GEOGRAPHY_NAME\n",
+							",REGION_ID\n",
+							",REGION_NAME\n",
 							",SITE_ID\n",
-							",' ' AS CAMPUS_GROUP\n",
-							",' ' AS PHYSICAL_GEO\n",
+							",SITE_NAME\n",
 							",WORLD_REGION_CODE\n",
 							",WORLD_REGION_NAME\n",
 							",MARKET_TEAM_REGION_CODE\n",
 							",MARKET_TEAM_REGION_NAME\n",
-							",WORK_LOCATION_CODE\n",
-							", ADDRESS\n",
-							", CITY\n",
-							",STATE_PROVINCE_ID\n",
-							",POSTAL_CODE\n",
 							",COUNTRY_CODE\n",
+							",COUNTRY_NAME\n",
+							",CAMPUS_ID\n",
+							",CAMPUS_NAME\n",
+							",CAMPUS_STATUS\n",
+							",WORK_LOCATION_CODE\n",
+							",ADDRESS\n",
+							",CITY\n",
+							",STATE_PROVINCE_ID\n",
+							",STATE_PROVINCE_NAME\n",
+							",POSTAL_CODE\n",
 							",LATITUDE\n",
 							",LONGITUDE\n",
 							",UTC_OFFSET\n",
 							",ICU_TIME_ZONE\n",
 							",PEOPLE_HOUSED_FLAG\n",
 							",REMOTE_SUPPORT_FLAG\n",
-							", ' ' AS PRIMARY_CAMPUS_USE_ID\n",
 							",PRIMARY_CAMPUS_USE_NAME\n",
 							",PRIMARY_CAMPUS_USE_DESCR\n",
 							",CAMPUS_OWNERSHIP\n",
 							",CAMPUS_ACTIVATION_YEAR\n",
 							",CAMPUS_INACTIVATION_YEAR\n",
-							" ,   '{}' AS SOURCE_SYS_MODIFIED_DT\n",
-							" ,   '{}' AS PROCESSED_DT\n",
 							",   'Y' AS CURRENT_IND\n",
 							",   '{}' AS EXTRACT_DT\n",
 							",   '{}' AS REC_START_DT\n",
 							",   '9999-12-31 00:00:00' as REC_END_DT\n",
 							",   'Tririga' AS SOURCE_SYSTEM\n",
 							",    column_hash as REC_CHECKSUM\n",
-							",'I' AS REC_STATUS\n",
 							",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
 							",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-							",'Y' as ACTIVE_IN_SOURCE_IND\n",
 							"    from {} A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
@@ -46724,11 +46763,82 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,extract_dt,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+							"dfIns=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": 44
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select cast(COALESCE(A.existing_MAX_KEY,0)+ ROW_NUMBER()OVER(ORDER BY CAMPUS_ID) AS INTEGER) AS CAMPUS_KEY,1 AS VERSION\r\n",
+							",GEOGRAPHY_ID\r\n",
+							",GEOGRAPHY_NAME\r\n",
+							",REGION_ID\r\n",
+							",REGION_NAME\r\n",
+							",SITE_ID\r\n",
+							",SITE_NAME\r\n",
+							",WORLD_REGION_CODE\r\n",
+							",WORLD_REGION_NAME\r\n",
+							",MARKET_TEAM_REGION_CODE\r\n",
+							",MARKET_TEAM_REGION_NAME\r\n",
+							",COUNTRY_CODE\r\n",
+							",COUNTRY_NAME\r\n",
+							",CAMPUS_ID\r\n",
+							",CAMPUS_NAME\r\n",
+							",CAMPUS_STATUS\r\n",
+							",WORK_LOCATION_CODE\r\n",
+							",ADDRESS\r\n",
+							",CITY\r\n",
+							",STATE_PROVINCE_ID\r\n",
+							",STATE_PROVINCE_NAME\r\n",
+							",POSTAL_CODE\r\n",
+							",LATITUDE\r\n",
+							",LONGITUDE\r\n",
+							",UTC_OFFSET\r\n",
+							",ICU_TIME_ZONE\r\n",
+							",PEOPLE_HOUSED_FLAG\r\n",
+							",REMOTE_SUPPORT_FLAG\r\n",
+							",PRIMARY_CAMPUS_USE_NAME\r\n",
+							",PRIMARY_CAMPUS_USE_DESCR\r\n",
+							",CAMPUS_OWNERSHIP\r\n",
+							",CAMPUS_ACTIVATION_YEAR\r\n",
+							",CAMPUS_INACTIVATION_YEAR\r\n",
+							",   'Y' AS CURRENT_IND\r\n",
+							",   '2022-08-18 07:17:57' AS EXTRACT_DT\r\n",
+							",   '2022-08-18 07:17:57' AS REC_START_DT\r\n",
+							",   '9999-12-31 00:00:00' as REC_END_DT\r\n",
+							",   'Tririga' AS SOURCE_SYSTEM\r\n",
+							",    column_hash as REC_CHECKSUM\r\n",
+							",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\r\n",
+							",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
+							"    from DHTS_CAMPUS A \r\n",
+							"WHERE existing_REC_CHECKSUM is null\r\n",
+							"AND NOT EXISTS\r\n",
+							"(SELECT 1 FROM etlhubConfirmed.dht_campus B\r\n",
+							"WHERE A.CAMPUS_ID=B.CAMPUS_ID\r\n",
+							"and b.CURRENT_IND='Y'\r\n",
+							"AND A.column_hash=B.REC_CHECKSUM)"
+						],
+						"outputs": [],
+						"execution_count": 42
 					},
 					{
 						"cell_type": "code",
