@@ -46090,7 +46090,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "680b5b23-276a-4871-9679-fe4a916f5c90"
+						"spark.autotune.trackingId": "e0e5dba3-bc5e-424b-bdea-58de80560f6f"
 					}
 				},
 				"metadata": {
@@ -46848,7 +46848,7 @@
 							"%%sql\r\n",
 							"INSERT INTO etlhubConfirmed.dht_campus\r\n",
 							"select existing_CAMPUS_KEY\r\n",
-							",\t1 + existing_VERSION as \r\n",
+							",\t1 + existing_VERSION as VERSION\r\n",
 							",GEOGRAPHY_ID\r\n",
 							",GEOGRAPHY_NAME\r\n",
 							",REGION_ID\r\n",
@@ -48547,7 +48547,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3a3905bc-8286-4135-97df-5d7feec3c420"
+						"spark.autotune.trackingId": "b8171c79-15a4-47e4-b32d-a59814bea3ae"
 					}
 				},
 				"metadata": {
