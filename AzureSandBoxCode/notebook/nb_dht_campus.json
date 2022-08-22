@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6c9a7839-fdee-4b49-ab8d-9a5c3af4b5e5"
+				"spark.autotune.trackingId": "c0f252cd-457b-4787-8433-67ff53e12673"
 			}
 		},
 		"metadata": {
@@ -220,15 +220,17 @@
 					"print('Primary storage account path: ' + adls_path) \n",
 					"\n",
 					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
+					"\n",
+					"adls_reject_path='abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_reject_path) \n",
+					"\n",
 					"print('Primary archive path: ' + adls_arch_path) \n",
 					"\n",
-					"print(natural_key)\n",
+					"print(adls_reject_path)\n",
 					"\n",
 					"relative_archive_path\n",
 					"# Read a csv file \n",
 					"csv_path = adls_path + file_name\n",
 					"csv_path1= adls_path1 + 'IWTRIRIGASiteQuery.csv'\n",
-					"csv_reject_path='abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_reject_path) \n",
 					"\n",
 					"arch_fil_name=file_name.rsplit(\".\")\n",
 					"arch_fil_name1='IWTRIRIGASiteQuery.csv'.rsplit(\".\")\n",
@@ -236,7 +238,8 @@
 					"csv_archive_path1 = adls_arch_path + arch_fil_name1[0] + '_' + date + '.' + arch_fil_name1[1]\n",
 					"\n",
 					"reject_fil_name='IWTRIRIGACampusRej.csv'.rsplit(\".\")\n",
-					"csv_reject_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
+					"csv_reject_path = adls_reject_path + reject_fil_name[0] + '_' + date + '.' + reject_fil_name[1]\n",
+					"print(csv_reject_path)\n",
 					"\n",
 					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 					"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
@@ -363,7 +366,7 @@
 					"else:\r\n",
 					"    #print(\"Below are the duplicates in target delta lake table:\")\r\n",
 					"    RejDataDF.show()\r\n",
-					"  RejDataDF.write.csv(csv_archive_path, header = 'true')\r\n",
+					"  RejDataDF.write.csv(csv_reject_path, header = 'true')\r\n",
 					"   "
 				],
 				"execution_count": 25
