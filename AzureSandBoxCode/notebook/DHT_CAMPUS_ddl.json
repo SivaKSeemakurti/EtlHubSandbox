@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f7cf8a7d-e28b-4ae0-b8eb-db5c210d0b64"
+				"spark.autotune.trackingId": "e1db17dc-145b-4379-b986-9cc3ae02e41e"
 			}
 		},
 		"metadata": {
@@ -66,36 +66,36 @@
 					"CREATE TABLE etlhubConfirmed.dht_campus (\t\r\n",
 					"CAMPUS_KEY INTEGER NOT NULL,\r\n",
 					"VERSION INTEGER NOT NULL ,\r\n",
-					"GEOGRAPHY_ID VARCHAR(5),\r\n",
+					"GEOGRAPHY_ID VARCHAR(50),\r\n",
 					"GEOGRAPHY_NAME VARCHAR(64),\r\n",
-					"REGION_ID VARCHAR(8),\r\n",
+					"REGION_ID VARCHAR(80),\r\n",
 					"REGION_NAME VARCHAR(64),\r\n",
 					"SITE_ID VARCHAR(50),\r\n",
 					"SITE_NAME VARCHAR(64),\r\n",
-					"WORLD_REGION_CODE VARCHAR(2),\r\n",
+					"WORLD_REGION_CODE VARCHAR(20),\r\n",
 					"WORLD_REGION_NAME VARCHAR(64),\r\n",
 					"MARKET_TEAM_REGION_CODE VARCHAR(3),\r\n",
 					"MARKET_TEAM_REGION_NAME VARCHAR(64),\r\n",
-					"COUNTRY_CODE VARCHAR(2),\r\n",
+					"COUNTRY_CODE VARCHAR(20),\r\n",
 					"COUNTRY_NAME VARCHAR(64),\r\n",
-					"CAMPUS_ID VARCHAR(8),\r\n",
+					"CAMPUS_ID VARCHAR(80),\r\n",
 					"CAMPUS_NAME VARCHAR(64),\r\n",
 					"CAMPUS_STATUS VARCHAR(32),\r\n",
 					"WORK_LOCATION_CODE VARCHAR(3),\r\n",
 					"ADDRESS VARCHAR(256),\r\n",
 					"CITY VARCHAR(64),\r\n",
-					"STATE_PROVINCE_ID VARCHAR(3),\r\n",
+					"STATE_PROVINCE_ID VARCHAR(30),\r\n",
 					"STATE_PROVINCE_NAME VARCHAR(64),\r\n",
 					"POSTAL_CODE VARCHAR(16),\r\n",
 					"LATITUDE DECIMAL(11,8),\r\n",
 					"LONGITUDE DECIMAL(11,8),\r\n",
-					"UTC_OFFSET VARCHAR(16),\r\n",
+					"UTC_OFFSET VARCHAR(150),\r\n",
 					"ICU_TIME_ZONE VARCHAR(64),\r\n",
-					"PEOPLE_HOUSED_FLAG VARCHAR(1),\r\n",
-					"REMOTE_SUPPORT_FLAG VARCHAR(1),\r\n",
+					"PEOPLE_HOUSED_FLAG VARCHAR(10),\r\n",
+					"REMOTE_SUPPORT_FLAG VARCHAR(10),\r\n",
 					"PRIMARY_CAMPUS_USE_NAME VARCHAR(32),\r\n",
 					"PRIMARY_CAMPUS_USE_DESCR VARCHAR(128),\r\n",
-					"CAMPUS_OWNERSHIP VARCHAR(8),\r\n",
+					"CAMPUS_OWNERSHIP VARCHAR(80),\r\n",
 					"CAMPUS_ACTIVATION_YEAR INTEGER,\r\n",
 					"CAMPUS_INACTIVATION_YEAR INTEGER,\r\n",
 					"CURRENT_IND\tVARCHAR(1), -- Y for active row and N for all rows expired\r\n",
@@ -110,9 +110,9 @@
 					"USING DELTA\r\n",
 					"PARTITIONED BY (CURRENT_IND)\r\n",
 					"-- specify data lake folder location\r\n",
-					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS_new' "
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS_new1' "
 				],
-				"execution_count": 12
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -133,9 +133,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"DROP table etlhubConfirmed.dht_campus"
+					"select * from etlhubConfirmed.dht_campus"
 				],
-				"execution_count": 10
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
