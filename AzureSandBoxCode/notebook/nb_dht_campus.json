@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "dc8d90c0-7d0a-41b1-86ad-08aa85e5180f"
+				"spark.autotune.trackingId": "c7654a5e-d69a-496b-b102-d9472778f138"
 			}
 		},
 		"metadata": {
@@ -303,6 +303,20 @@
 					"RejStteProvDataDF=spark.sql(qry_RefIntegrityFailStteProvDF)\n",
 					"RejStteProvDataDF.createOrReplaceTempView('RejStteProvDataView')\n",
 					"\n",
+					"RejDataViewqry3=\"\"\"\n",
+					"SELECT COUNT(*) as CNT FROM RejStteProvDataView\n",
+					";\n",
+					"\"\"\"\n",
+					"RejDataViewdf3=spark.sql(RejDataViewqry3)\n",
+					"RejDataViewcnt3=RejDataViewdf3.count()\n",
+					"\n",
+					"print (RejDataViewcnt1)\n",
+					"if RejDataViewcnt3 == 0:\n",
+					"    #print(\"no duplicates in target delta lake table\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv',header='True', sep=',')\n",
+					"\n",
 					"qry_IncrementalDataDF=\"\"\"\n",
 					"select distinct B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,B.SITE_NAME,\n",
 					"A.WORLD_REGION_CODE, A.WORLD_REGION_NAME, A.MARKET_TEAM_REGION_CODE, A.MARKET_TEAM_REGION_NAME,A.COUNTRY_CODE ,\n",
@@ -333,7 +347,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 113
+				"execution_count": 117
 			},
 			{
 				"cell_type": "code",
@@ -358,9 +372,24 @@
 					"RejStteProvDataDF=spark.sql(qry_RefIntegrityFailStteProvDF)\r\n",
 					"RejStteProvDataDF.createOrReplaceTempView('RejStteProvDataView')\r\n",
 					"\r\n",
+					"RejDataViewqry3=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT FROM RejStteProvDataView\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"RejDataViewdf3=spark.sql(RejDataViewqry3)\r\n",
+					"RejDataViewcnt3=RejDataViewdf3.count()\r\n",
+					"\r\n",
+					"print (RejDataViewcnt1)\r\n",
+					"if RejDataViewcnt3 == 0:\r\n",
+					"    #print(\"no duplicates in target delta lake table\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv',header='True', sep=',')\r\n",
+					"\r\n",
+					"\r\n",
 					""
 				],
-				"execution_count": 114
+				"execution_count": 116
 			},
 			{
 				"cell_type": "code",
