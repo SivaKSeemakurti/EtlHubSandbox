@@ -1048,6 +1048,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_CAMPUS_SFTP_PULL')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
 				"[concat(variables('workspaceId'), '/notebooks/nb_dht_campus')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/sPool001494New')]"
 			]
@@ -46089,7 +46090,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "ae6013d1-e2da-452e-b0bc-5e826bc02f97"
+						"spark.autotune.trackingId": "6a794603-9773-4c85-aa8f-bf89fd8be9d6"
 					}
 				},
 				"metadata": {
@@ -46186,7 +46187,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 26
+						"execution_count": 48
 					},
 					{
 						"cell_type": "markdown",
@@ -46223,7 +46224,7 @@
 							"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 							"relative_path1 = 'extract/Tririga/Site/'\n",
 							"relative_archive_path='archive/'\n",
-							"relative_reject_path='reject/'\n",
+							"relative_reject_path='reject/campus/'\n",
 							"file_name='IWTRIRIGASCampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 							"natural_key=\"CAMPUS_ID\"\n",
 							"MinimumTririgaCampusCount=450\n",
@@ -46239,7 +46240,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 27
+						"execution_count": 49
 					},
 					{
 						"cell_type": "markdown",
@@ -46386,11 +46387,11 @@
 							"    #print(\"no duplicates in target delta lake table\")\n",
 							"    status = 'success'\n",
 							"else:\n",
-							"    RejDataDF.write.csv(csv_reject_path,header='True', sep=',') \n",
+							"    RejDataDF.write.csv(adls_reject_path + reject_fil_name[0] + '_' + date + '.' + reject_fil_name[1],header='True', sep=',') \n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 45
+						"execution_count": 50
 					},
 					{
 						"cell_type": "code",
@@ -46406,7 +46407,6 @@
 							}
 						},
 						"source": [
-							"\r\n",
 							"RejDataViewqry1=\"\"\"\r\n",
 							"SELECT COUNT(*) as CNT FROM RejDataView\r\n",
 							";\r\n",
@@ -46419,11 +46419,11 @@
 							"    #print(\"no duplicates in target delta lake table\")\r\n",
 							"    status = 'success'\r\n",
 							"else:\r\n",
-							"    RejDataDF.write.csv(csv_reject_path,header='True', sep=',',overwrite='True') \r\n",
-							""
+							"     RejDataDF.write.csv(adls_reject_path +'IWTRIRIGACampusRej',header='True', sep=',') \r\n",
+							"     mv adls_reject_path/IWTRIRIGACampusRej/*.csv /adls_reject_path/IWTRIRIGACampusRej.csv"
 						],
 						"outputs": [],
-						"execution_count": 44
+						"execution_count": 65
 					},
 					{
 						"cell_type": "code",
@@ -48536,7 +48536,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "cdd0da97-0b58-445d-8dab-63ed5c717e0d"
+						"spark.autotune.trackingId": "e34919f1-7ddc-4d77-aa63-71d30a242c69"
 					}
 				},
 				"metadata": {
