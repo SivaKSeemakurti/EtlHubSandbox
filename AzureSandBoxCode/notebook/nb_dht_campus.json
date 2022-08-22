@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c0f252cd-457b-4787-8433-67ff53e12673"
+				"spark.autotune.trackingId": "2f727eb1-0382-4fb4-9fe5-051b652190a0"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 9
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -169,7 +169,7 @@
 					"print(rec_end_dt)\n",
 					""
 				],
-				"execution_count": 10
+				"execution_count": 27
 			},
 			{
 				"cell_type": "markdown",
@@ -239,17 +239,12 @@
 					"\n",
 					"reject_fil_name='IWTRIRIGACampusRej.csv'.rsplit(\".\")\n",
 					"csv_reject_path = adls_reject_path + reject_fil_name[0] + '_' + date + '.' + reject_fil_name[1]\n",
-					"print(csv_reject_path)\n",
 					"\n",
 					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 					"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
 					"\n",
 					"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
 					"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
-					"\n",
-					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
-					"incrementalSiteData_DF.write.csv(csv_archive_path1, header = 'true')\n",
-					"\n",
 					"\n",
 					"# Capturing recods that are not available in parent table\n",
 					"qry_RefIntegrityFailDF=\"\"\"\n",
@@ -307,12 +302,30 @@
 					"incrementalData_DF1 = FinalIncrementalDataDF.withColumn(\"nk_hash\",md5(natural_key))\n",
 					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"\n",
-					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					"\n",
+					"\n",
+					"RejDataViewqry1=\"\"\"\n",
+					"SELECT COUNT(*) as CNT FROM RejDataView\n",
+					";\n",
+					"\"\"\"\n",
+					"RejDataViewdf=spark.sql(RejDataViewqry1)\n",
+					"RejDataViewcnt1=RejDataViewdf.count()\n",
+					"\n",
+					"print (RejDataViewcnt1)\n",
+					"if RejDataViewcnt1 == 0:\n",
+					"    #print(\"no duplicates in target delta lake table\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"    #print(\"Below are the duplicates in target delta lake table:\")\n",
+					"    RejDataDF.show()\n",
+					"    #RejDataDF.write.csv(csv_reject_path, header = 'true')\n",
+					"  RejDataDF.write.option(\"header\",True)\n",
+					"        .option(\"delimiter\",\",\")\n",
+					"        .csv(\"csv_reject_path\")\n",
 					""
 				],
-				"execution_count": 19
+				"execution_count": 34
 			},
 			{
 				"cell_type": "code",
@@ -336,7 +349,7 @@
 					"select * from RejDataView\r\n",
 					"--= 'MIDWDATA1'"
 				],
-				"execution_count": 20
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -369,7 +382,7 @@
 					"  RejDataDF.write.csv(csv_reject_path, header = 'true')\r\n",
 					"   "
 				],
-				"execution_count": 25
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
