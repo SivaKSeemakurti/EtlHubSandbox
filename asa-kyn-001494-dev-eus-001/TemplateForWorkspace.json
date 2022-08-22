@@ -46089,7 +46089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "8db37f07-911c-44f7-b2f3-8e05860dbcbc"
+						"spark.autotune.trackingId": "28518cac-c075-494e-8fa6-37ab4da519ec"
 					}
 				},
 				"metadata": {
@@ -46186,7 +46186,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 9
+						"execution_count": 26
 					},
 					{
 						"cell_type": "markdown",
@@ -46239,7 +46239,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 27
 					},
 					{
 						"cell_type": "markdown",
@@ -46309,17 +46309,12 @@
 							"\n",
 							"reject_fil_name='IWTRIRIGACampusRej.csv'.rsplit(\".\")\n",
 							"csv_reject_path = adls_reject_path + reject_fil_name[0] + '_' + date + '.' + reject_fil_name[1]\n",
-							"print(csv_reject_path)\n",
 							"\n",
 							"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 							"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
 							"\n",
 							"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
 							"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
-							"\n",
-							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
-							"incrementalSiteData_DF.write.csv(csv_archive_path1, header = 'true')\n",
-							"\n",
 							"\n",
 							"# Capturing recods that are not available in parent table\n",
 							"qry_RefIntegrityFailDF=\"\"\"\n",
@@ -46377,13 +46372,74 @@
 							"incrementalData_DF1 = FinalIncrementalDataDF.withColumn(\"nk_hash\",md5(natural_key))\n",
 							"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 							"\n",
-							"#sell_cyclecolhashDF.show()\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 							"\n",
+							"\n",
+							"RejDataViewqry1=\"\"\"\n",
+							"SELECT COUNT(*) as CNT FROM RejDataView\n",
+							";\n",
+							"\"\"\"\n",
+							"RejDataViewdf=spark.sql(RejDataViewqry1)\n",
+							"RejDataViewcnt1=RejDataViewdf.count()\n",
+							"\n",
+							"print (RejDataViewcnt1)\n",
+							"if RejDataViewcnt1 == 0:\n",
+							"    #print(\"no duplicates in target delta lake table\")\n",
+							"    status = 'success'\n",
+							"else:\n",
+							"    #print(\"Below are the duplicates in target delta lake table:\")\n",
+							"    RejDataDF.show()\n",
+							"    #RejDataDF.write.csv(csv_reject_path, header = 'true')\n",
+							"    #RejDataDF.write.csv(csv_reject_path,sep=',', header='true')\n",
+							"    #RejDataDF.write.options(header=True).csv(csv_reject_path)\n",
+							"    RejDataDF.write.options(header='True', delimiter=',').csv(csv_reject_path)\n",
+							"    #RejDataDF.write.option(\"header\",True)\n",
+							"    #.option(\"delimiter\",\",\")\n",
+							"    #.csv(\"csv_reject_path\")\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"\r\n",
+							"RejDataViewqry1=\"\"\"\r\n",
+							"SELECT COUNT(*) as CNT FROM RejDataView\r\n",
+							";\r\n",
+							"\"\"\"\r\n",
+							"RejDataViewdf=spark.sql(RejDataViewqry1)\r\n",
+							"RejDataViewcnt1=RejDataViewdf.count()\r\n",
+							"\r\n",
+							"print (RejDataViewcnt1)\r\n",
+							"if RejDataViewcnt1 == 0:\r\n",
+							"    #print(\"no duplicates in target delta lake table\")\r\n",
+							"    status = 'success'\r\n",
+							"else:\r\n",
+							"    #print(\"Below are the duplicates in target delta lake table:\")\r\n",
+							"    RejDataDF.show()\r\n",
+							"    #RejDataDF.write.csv(csv_reject_path, header = 'true')\r\n",
+							"    #RejDataDF.write.csv(csv_reject_path,sep=',', header='true')\r\n",
+							"    #RejDataDF.write.options(header=True).csv(csv_reject_path)\r\n",
+							"    RejDataDF.write.options(header='True', delimiter=',').csv(csv_reject_path)\r\n",
+							"    #RejDataDF.write.option(\"header\",True)\r\n",
+							"    #.option(\"delimiter\",\",\")\r\n",
+							"    #.csv(\"csv_reject_path\")"
+						],
+						"outputs": [],
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -46408,7 +46464,7 @@
 							"--= 'MIDWDATA1'"
 						],
 						"outputs": [],
-						"execution_count": 20
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -46442,7 +46498,7 @@
 							"   "
 						],
 						"outputs": [],
-						"execution_count": 25
+						"execution_count": 29
 					},
 					{
 						"cell_type": "code",
@@ -48496,7 +48552,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "79cdc02e-5f5d-42be-8bea-d86197745107"
+						"spark.autotune.trackingId": "84b0ed62-0217-43a5-9eca-a6846b6dbaa3"
 					}
 				},
 				"metadata": {
@@ -48516,14 +48572,13 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -48543,8 +48598,7 @@
 							"This notebook loads data to deltalake table etlhubconfirme.dht_deal_dim by sourceing data from DCA deal data.\n",
 							"Since DCA is not accessible from Azure, a datastage job src_DCA_DEAL_Azure is executed on datastage to push the DCA extract to adls.\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -48557,8 +48611,7 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -48589,7 +48642,6 @@
 							"#import os\n",
 							"import sys"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 10
 					},
@@ -48604,8 +48656,7 @@
 						},
 						"source": [
 							"Define Parameters"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -48631,7 +48682,6 @@
 							"tablename=\"etlhubConfirmed.dht_deal_dim\"\n",
 							"keycolumn=\"DEAL_KEY\""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 11
 					},
@@ -48648,8 +48698,7 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/DCA/DS_DEALS_DATA.csv"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -48714,7 +48763,6 @@
 							"fullJoin2.createOrReplaceTempView('fullJoin')\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 12
 					},
@@ -48733,8 +48781,7 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -48786,7 +48833,6 @@
 							"    sys.exit(2)\r\n",
 							"    print(\"This will not be printed\")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 14
 					},
@@ -48895,7 +48941,6 @@
 							"d=spark.sql(qry_insert)\r\n",
 							"#d.show(10)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 15
 					},
@@ -49031,7 +49076,6 @@
 							"\"\"\"\r\n",
 							"df3=spark.sql(softdelqry)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 16
 					},
@@ -49084,7 +49128,6 @@
 							";\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -49110,7 +49153,6 @@
 							" from etlhubConfirmed.dht_deal_dim1 where ACTIVE_IN_SOURCE_IND='N' \r\n",
 							"    --where DEAL_IDENTIFIER in (7840900,7840899)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 18
 					}
