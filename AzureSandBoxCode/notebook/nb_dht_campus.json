@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "875e043f-3898-4c7c-87cc-b3a2b226cc85"
+				"spark.autotune.trackingId": "6c9a7839-fdee-4b49-ab8d-9a5c3af4b5e5"
 			}
 		},
 		"metadata": {
@@ -154,6 +154,7 @@
 					"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 					"relative_path1 = 'extract/Tririga/Site/'\n",
 					"relative_archive_path='archive/'\n",
+					"relative_reject_path='reject/'\n",
 					"file_name='IWTRIRIGASCampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key=\"CAMPUS_ID\"\n",
 					"MinimumTririgaCampusCount=450\n",
@@ -227,16 +228,25 @@
 					"# Read a csv file \n",
 					"csv_path = adls_path + file_name\n",
 					"csv_path1= adls_path1 + 'IWTRIRIGASiteQuery.csv'\n",
+					"csv_reject_path='abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_reject_path) \n",
+					"\n",
 					"arch_fil_name=file_name.rsplit(\".\")\n",
 					"arch_fil_name1='IWTRIRIGASiteQuery.csv'.rsplit(\".\")\n",
 					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 					"csv_archive_path1 = adls_arch_path + arch_fil_name1[0] + '_' + date + '.' + arch_fil_name1[1]\n",
+					"\n",
+					"reject_fil_name='IWTRIRIGACampusRej.csv'.rsplit(\".\")\n",
+					"csv_reject_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 					"\n",
 					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 					"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
 					"\n",
 					"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
 					"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
+					"\n",
+					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+					"incrementalSiteData_DF.write.csv(csv_archive_path1, header = 'true')\n",
+					"\n",
 					"\n",
 					"# Capturing recods that are not available in parent table\n",
 					"qry_RefIntegrityFailDF=\"\"\"\n",
@@ -353,16 +363,10 @@
 					"else:\r\n",
 					"    #print(\"Below are the duplicates in target delta lake table:\")\r\n",
 					"    RejDataDF.show()\r\n",
-					"    status = 'fail'\r\n",
-					"  RejDataViewdf.write \\\r\n",
-					"  .format(\"delta\") \\\r\n",
-					"  .mode(\"overwrite\") \\\r\n",
-					"  .option(\"overwriteSchema\", \"true\") \\\r\n",
-					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/RejDataTable\") \\\r\n",
-					"  .saveAsTable(RejDataTable)\r\n",
+					"  RejDataDF.write.csv(csv_archive_path, header = 'true')\r\n",
 					"   "
 				],
-				"execution_count": 24
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
