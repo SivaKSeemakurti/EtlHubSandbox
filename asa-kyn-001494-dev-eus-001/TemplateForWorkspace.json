@@ -24586,7 +24586,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4be4e7ba-50e7-4903-b242-f8652341ab6d"
+						"spark.autotune.trackingId": "6ed09754-1fea-4d25-9673-57065123050e"
 					}
 				},
 				"metadata": {
@@ -46091,7 +46091,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "84102614-3cac-49ba-a21b-088573d7d580"
+						"spark.autotune.trackingId": "6883f646-642e-4cc3-bf54-6e761987adcb"
 					}
 				},
 				"metadata": {
@@ -46337,7 +46337,6 @@
 							"\n",
 							"print (RejDataViewcnt1)\n",
 							"if RejDataViewcnt1 == 0:\n",
-							"    #print(\"no duplicates in target delta lake table\")\n",
 							"    status = 'success'\n",
 							"else:\n",
 							"    RejDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithSiteID' + '_' + date + '.' + 'csv',header='True', sep=',') \n",
@@ -46360,7 +46359,6 @@
 							"\n",
 							"print (RejDataViewcnt1)\n",
 							"if RejDataViewcnt2 == 0:\n",
-							"    #print(\"no duplicates in target delta lake table\")\n",
 							"    status = 'success'\n",
 							"else:\n",
 							"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithCountryCd' + '_' + date + '.' + 'csv',header='True', sep=',')\n",
@@ -46384,7 +46382,6 @@
 							"\n",
 							"print (RejDataViewcnt1)\n",
 							"if RejDataViewcnt3 == 0:\n",
-							"    #print(\"no duplicates in target delta lake table\")\n",
 							"    status = 'success'\n",
 							"else:\n",
 							"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv',header='True', sep=',')\n",
@@ -46694,7 +46691,7 @@
 							"select  count(*) from DHTS_CAMPUS "
 						],
 						"outputs": [],
-						"execution_count": 166
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
