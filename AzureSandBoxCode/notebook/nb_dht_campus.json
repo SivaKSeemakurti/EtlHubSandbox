@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3e6bcf7c-6f5f-4e6f-8bed-dbc661afb780"
+				"spark.autotune.trackingId": "3f26207e-ae81-4c3a-96b6-55abffd0febf"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 128
+				"execution_count": 160
 			},
 			{
 				"cell_type": "markdown",
@@ -169,7 +169,7 @@
 					"print(rec_end_dt)\n",
 					""
 				],
-				"execution_count": 129
+				"execution_count": 161
 			},
 			{
 				"cell_type": "markdown",
@@ -347,7 +347,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 137
+				"execution_count": 162
 			},
 			{
 				"cell_type": "code",
@@ -414,7 +414,7 @@
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\\n",
 					""
 				],
-				"execution_count": 138
+				"execution_count": 163
 			},
 			{
 				"cell_type": "markdown",
@@ -514,7 +514,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 139
+				"execution_count": 164
 			},
 			{
 				"cell_type": "code",
@@ -593,7 +593,7 @@
 					"\"\"\"\n",
 					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))"
 				],
-				"execution_count": 140
+				"execution_count": 165
 			},
 			{
 				"cell_type": "code",
@@ -614,9 +614,9 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from DHTS_CAMPUS "
+					"select  count(*) from DHTS_CAMPUS "
 				],
-				"execution_count": null
+				"execution_count": 166
 			},
 			{
 				"cell_type": "code",
@@ -690,7 +690,7 @@
 					";\n",
 					""
 				],
-				"execution_count": 141
+				"execution_count": 167
 			},
 			{
 				"cell_type": "code",
@@ -713,7 +713,7 @@
 					"%%sql\r\n",
 					"select count(*) from etlhubconfirmed.dht_campus"
 				],
-				"execution_count": 142
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -746,7 +746,7 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
 					""
 				],
-				"execution_count": 143
+				"execution_count": 168
 			},
 			{
 				"cell_type": "code",
@@ -767,7 +767,7 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"--INSERT INTO etlhubConfirmed.dht_campus\r\n",
+					"INSERT INTO etlhubConfirmed.dht_campus\r\n",
 					"select existing_CAMPUS_KEY\r\n",
 					",\t1 + existing_VERSION as VERSION\r\n",
 					",GEOGRAPHY_ID\r\n",
@@ -820,7 +820,7 @@
 					"AND A.column_hash=B.REC_CHECKSUM\r\n",
 					");"
 				],
-				"execution_count": 144
+				"execution_count": 170
 			},
 			{
 				"cell_type": "code",
@@ -854,7 +854,7 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 				],
-				"execution_count": 145
+				"execution_count": 171
 			},
 			{
 				"cell_type": "code",
@@ -899,7 +899,7 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"execution_count": 146
+				"execution_count": 172
 			}
 		]
 	}
