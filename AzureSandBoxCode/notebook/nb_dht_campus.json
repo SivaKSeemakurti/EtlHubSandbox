@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3f26207e-ae81-4c3a-96b6-55abffd0febf"
+				"spark.autotune.trackingId": "5e506089-5aae-4366-b317-5011591a23fc"
 			}
 		},
 		"metadata": {
@@ -265,7 +265,6 @@
 					"\n",
 					"print (RejDataViewcnt1)\n",
 					"if RejDataViewcnt1 == 0:\n",
-					"    #print(\"no duplicates in target delta lake table\")\n",
 					"    status = 'success'\n",
 					"else:\n",
 					"    RejDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithSiteID' + '_' + date + '.' + 'csv',header='True', sep=',') \n",
@@ -288,7 +287,6 @@
 					"\n",
 					"print (RejDataViewcnt1)\n",
 					"if RejDataViewcnt2 == 0:\n",
-					"    #print(\"no duplicates in target delta lake table\")\n",
 					"    status = 'success'\n",
 					"else:\n",
 					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithCountryCd' + '_' + date + '.' + 'csv',header='True', sep=',')\n",
@@ -312,7 +310,6 @@
 					"\n",
 					"print (RejDataViewcnt1)\n",
 					"if RejDataViewcnt3 == 0:\n",
-					"    #print(\"no duplicates in target delta lake table\")\n",
 					"    status = 'success'\n",
 					"else:\n",
 					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv',header='True', sep=',')\n",
@@ -616,7 +613,7 @@
 					"%%sql\r\n",
 					"select  count(*) from DHTS_CAMPUS "
 				],
-				"execution_count": 166
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
