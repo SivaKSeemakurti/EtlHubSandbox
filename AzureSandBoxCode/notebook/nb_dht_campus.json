@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a01e06db-87f2-4edc-b658-0e2440a202b6"
+				"spark.autotune.trackingId": "5861b373-c1cc-4dab-9854-121171fde3ec"
 			}
 		},
 		"metadata": {
@@ -279,6 +279,20 @@
 					"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF)\n",
 					"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')\n",
 					"\n",
+					"RejDataViewqry2=\"\"\"\n",
+					"SELECT COUNT(*) as CNT FROM RejCntryDataView\n",
+					";\n",
+					"\"\"\"\n",
+					"RejDataViewdf2=spark.sql(RejDataViewqry2)\n",
+					"RejDataViewcnt2=RejDataViewdf2.count()\n",
+					"\n",
+					"print (RejDataViewcnt1)\n",
+					"if RejDataViewcnt2 == 0:\n",
+					"    #print(\"no duplicates in target delta lake table\")\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithCountryCd' + '_' + date + '.' + 'csv',header='True', sep=',')\n",
+					"\n",
 					"\n",
 					"qry_RefIntegrityFailStteProvDF=\"\"\"\n",
 					"select A.*\n",
@@ -356,9 +370,23 @@
 					"where C.CODE IS NULL;\r\n",
 					"\"\"\"\r\n",
 					"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF)\r\n",
-					"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')"
+					"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')\r\n",
+					"\r\n",
+					"RejDataViewqry2=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT FROM RejCntryDataView\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"RejDataViewdf2=spark.sql(RejDataViewqry2)\r\n",
+					"RejDataViewcnt2=RejDataViewdf2.count()\r\n",
+					"\r\n",
+					"print (RejDataViewcnt1)\r\n",
+					"if RejDataViewcnt2 == 0:\r\n",
+					"    #print(\"no duplicates in target delta lake table\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithCountryCd' + '_' + date + '.' + 'csv',header='True', sep=',') "
 				],
-				"execution_count": 96
+				"execution_count": 106
 			},
 			{
 				"cell_type": "code",
@@ -379,10 +407,10 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from RejDataView\r\n",
+					"select * from RejCntryDataView\r\n",
 					"--= 'MIDWDATA1'"
 				],
-				"execution_count": null
+				"execution_count": 104
 			},
 			{
 				"cell_type": "code",
