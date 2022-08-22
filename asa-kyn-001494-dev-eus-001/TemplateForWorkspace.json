@@ -46090,7 +46090,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "5d7eab07-67cc-49c5-b690-1ea6473f88a0"
+						"spark.autotune.trackingId": "c71a27fd-960f-41b4-8321-7e0b03d06f5f"
 					}
 				},
 				"metadata": {
@@ -46350,6 +46350,20 @@
 							"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF)\n",
 							"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')\n",
 							"\n",
+							"RejDataViewqry2=\"\"\"\n",
+							"SELECT COUNT(*) as CNT FROM RejCntryDataView\n",
+							";\n",
+							"\"\"\"\n",
+							"RejDataViewdf2=spark.sql(RejDataViewqry2)\n",
+							"RejDataViewcnt2=RejDataViewdf2.count()\n",
+							"\n",
+							"print (RejDataViewcnt1)\n",
+							"if RejDataViewcnt2 == 0:\n",
+							"    #print(\"no duplicates in target delta lake table\")\n",
+							"    status = 'success'\n",
+							"else:\n",
+							"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithCountryCd' + '_' + date + '.' + 'csv',header='True', sep=',')\n",
+							"\n",
 							"\n",
 							"qry_RefIntegrityFailStteProvDF=\"\"\"\n",
 							"select A.*\n",
@@ -46428,10 +46442,24 @@
 							"where C.CODE IS NULL;\r\n",
 							"\"\"\"\r\n",
 							"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF)\r\n",
-							"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')"
+							"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')\r\n",
+							"\r\n",
+							"RejDataViewqry2=\"\"\"\r\n",
+							"SELECT COUNT(*) as CNT FROM RejCntryDataView\r\n",
+							";\r\n",
+							"\"\"\"\r\n",
+							"RejDataViewdf2=spark.sql(RejDataViewqry2)\r\n",
+							"RejDataViewcnt2=RejDataViewdf2.count()\r\n",
+							"\r\n",
+							"print (RejDataViewcnt1)\r\n",
+							"if RejDataViewcnt2 == 0:\r\n",
+							"    #print(\"no duplicates in target delta lake table\")\r\n",
+							"    status = 'success'\r\n",
+							"else:\r\n",
+							"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithCountryCd' + '_' + date + '.' + 'csv',header='True', sep=',') "
 						],
 						"outputs": [],
-						"execution_count": 96
+						"execution_count": 106
 					},
 					{
 						"cell_type": "code",
@@ -46452,11 +46480,11 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from RejDataView\r\n",
+							"select * from RejCntryDataView\r\n",
 							"--= 'MIDWDATA1'"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 104
 					},
 					{
 						"cell_type": "code",
@@ -48544,7 +48572,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "82308fe5-8329-4b7f-9ac4-e8529cf75094"
+						"spark.autotune.trackingId": "403e8ddf-2932-4b6f-a297-f47bce0f7984"
 					}
 				},
 				"metadata": {
