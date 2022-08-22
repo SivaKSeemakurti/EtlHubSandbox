@@ -24585,7 +24585,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f041ae50-26b1-452f-9112-fb96909733db"
+						"spark.autotune.trackingId": "f7cf8a7d-e28b-4ae0-b8eb-db5c210d0b64"
 					}
 				},
 				"metadata": {
@@ -24610,8 +24610,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -46116,7 +46115,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f43874a2-74cd-45f2-8531-07781770ab7b"
+						"spark.autotune.trackingId": "e2899021-a550-4f24-b9ea-73998f30677b"
 					}
 				},
 				"metadata": {
@@ -46213,7 +46212,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 159
+						"execution_count": 9
 					},
 					{
 						"cell_type": "markdown",
@@ -46265,7 +46264,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 160
+						"execution_count": 10
 					},
 					{
 						"cell_type": "markdown",
@@ -46340,7 +46339,7 @@
 							"select A.*\n",
 							"from ChildTable A\n",
 							"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
-							"where A.SITE_ID IS NULL;\n",
+							"where B.SITE_ID IS NULL;\n",
 							"\"\"\"\n",
 							"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
 							"RejDataDF.createOrReplaceTempView('RejDataView')\n",
@@ -46397,7 +46396,72 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 146
+						"execution_count": 19
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from RejDataView\r\n",
+							"--= 'MIDWDATA1'"
+						],
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"RejDataViewqry1=\"\"\"\r\n",
+							"SELECT COUNT(*) as CNT FROM RejDataView\r\n",
+							";\r\n",
+							"\"\"\"\r\n",
+							"RejDataViewdf=spark.sql(RejDataViewqry1)\r\n",
+							"RejDataViewcnt1=RejDataViewdf.count()\r\n",
+							"\r\n",
+							"print (RejDataViewcnt1)\r\n",
+							"if RejDataViewcnt1 == 0:\r\n",
+							"    #print(\"no duplicates in target delta lake table\")\r\n",
+							"    status = 'success'\r\n",
+							"else:\r\n",
+							"    #print(\"Below are the duplicates in target delta lake table:\")\r\n",
+							"    RejDataDF.show()\r\n",
+							"    status = 'fail'\r\n",
+							"  RejDataViewdf.write \\\r\n",
+							"  .format(\"delta\") \\\r\n",
+							"  .mode(\"overwrite\") \\\r\n",
+							"  .option(\"overwriteSchema\", \"true\") \\\r\n",
+							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/RejDataTable\") \\\r\n",
+							"  .saveAsTable(RejDataTable)\r\n",
+							"   "
+						],
+						"outputs": [],
+						"execution_count": 24
 					},
 					{
 						"cell_type": "code",
@@ -49098,11 +49162,14 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "84bd16a6-5ab7-4dab-8bdc-4594822cce2c"
+						"spark.autotune.trackingId": "180bc052-304e-4cd8-92cb-86c06c1aeff9"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -49118,13 +49185,14 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"automaticScaleJobs": false
+						"extraHeader": null
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -49144,7 +49212,8 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_employee by sourceing data from BMSIW's EMF datamart.\n",
 							"Since BMSIW is not accessible from Azure, a datastage job src_BMSIW_Employee_Azure is executed on datastage to push the BMSIW extract to adls.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -49157,7 +49226,8 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -49188,6 +49258,7 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 51
 					},
@@ -49202,7 +49273,8 @@
 						},
 						"source": [
 							"Define Parameters"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -49230,6 +49302,7 @@
 							"keycolumn=\"EMPLOYEE_KEY\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 52
 					},
@@ -49244,7 +49317,8 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -49259,7 +49333,8 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/BMSIW/DS_EMPLOYEE_DATA.csv"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -49309,6 +49384,7 @@
 							"#sell_cyclecolhashDF.show()\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 53
 					},
@@ -49355,6 +49431,7 @@
 							"  .saveAsTable(\"DHTS_EMPLOYEE\")\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 54
 					},
@@ -49379,6 +49456,7 @@
 							"%%sql\n",
 							"select * from existingDataDF1 where EXISTING_employee_serial_num='001518' and EXISTING_employee_country_code='661'"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 55
 					},
@@ -49397,7 +49475,8 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -49456,6 +49535,7 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 56
 					},
@@ -49481,6 +49561,7 @@
 							"select * from etlhubconfirmed.dht_employee where EMPLOYEE_BUSINESS_CD='ZZ03FP~693~NEWIS'\n",
 							"    --AND CURRENT_IND='Y'"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 43
 					},
@@ -49546,6 +49627,7 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 66
 					},
@@ -49673,6 +49755,7 @@
 							"\n",
 							"#d.show(10)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 58
 					},
@@ -49707,6 +49790,7 @@
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,natural_key,natural_key,natural_key,natural_key))\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 60
 					},
@@ -49765,6 +49849,7 @@
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							";"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 61
 					},
@@ -49876,6 +49961,7 @@
 							"e=spark.sql(qry_ins_changed_rows)\n",
 							"#e.show(4)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 62
 					},
@@ -49910,6 +49996,7 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,natural_key,natural_key,natural_key))"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 63
 					},
@@ -49964,6 +50051,7 @@
 							";\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 64
 					},
@@ -50010,6 +50098,7 @@
 							"    and date(img_lst_upd_dt)='2022-06-30'\n",
 							"        ;  "
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 65
 					}
