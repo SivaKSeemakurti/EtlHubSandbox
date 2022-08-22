@@ -42388,14 +42388,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "79801970-eac0-4e30-afb3-794c8f7d18ab"
+						"spark.autotune.trackingId": "c3d7a50b-187d-4a54-b29b-5902cda0ed62"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -42411,14 +42408,13 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
 						"memory": 472,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -42438,8 +42434,7 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
 							"Since ESA is not accessible from Azure, a datastage job src_ESA_Sales_Stage_Azure is executed on datastage to push the ESA extract to adls.\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -42452,8 +42447,7 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -42484,7 +42478,6 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 51
 					},
@@ -42499,8 +42492,7 @@
 						},
 						"source": [
 							"Define Parameters"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -42529,7 +42521,6 @@
 							"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 							"print(date)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 36
 					},
@@ -42544,8 +42535,7 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "markdown",
@@ -42559,8 +42549,7 @@
 						"source": [
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_SALES_STAGE_DATA.csv"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -42603,7 +42592,6 @@
 							"incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 37
 					},
@@ -42648,7 +42636,6 @@
 							"  .saveAsTable(stagingtable)\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 38
 					},
@@ -42667,8 +42654,7 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -42727,7 +42713,6 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 39
 					},
@@ -42793,7 +42778,6 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 40
 					},
@@ -42817,7 +42801,6 @@
 							"%%sql\n",
 							"SELECT count(*) FROM etlhubconfirmed.dht_sales_stage where current_ind='Y'"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -42845,7 +42828,6 @@
 							"    from dhts_sales_stage A \r\n",
 							"WHERE existing_REC_CHECKSUM is null"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -42912,7 +42894,6 @@
 							"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 41
 					},
@@ -42937,7 +42918,6 @@
 							"%%sql\r\n",
 							"SELECT * from etlhubconfirmed.dht_sales_stage"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 44
 					},
@@ -42972,7 +42952,6 @@
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 45
 					},
@@ -43022,7 +43001,6 @@
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							";"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 46
 					},
@@ -43076,7 +43054,6 @@
 							"\n",
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 47
 					},
@@ -43111,7 +43088,6 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 48
 					},
@@ -43166,7 +43142,6 @@
 							";\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 49
 					},
@@ -43211,7 +43186,6 @@
 							"    and date(img_lst_upd_dt)=current_date\n",
 							"        ;  "
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 50
 					}
@@ -46115,7 +46089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e2899021-a550-4f24-b9ea-73998f30677b"
+						"spark.autotune.trackingId": "8db37f07-911c-44f7-b2f3-8e05860dbcbc"
 					}
 				},
 				"metadata": {
@@ -46249,6 +46223,7 @@
 							"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 							"relative_path1 = 'extract/Tririga/Site/'\n",
 							"relative_archive_path='archive/'\n",
+							"relative_reject_path='reject/'\n",
 							"file_name='IWTRIRIGASCampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 							"natural_key=\"CAMPUS_ID\"\n",
 							"MinimumTririgaCampusCount=450\n",
@@ -46315,24 +46290,36 @@
 							"print('Primary storage account path: ' + adls_path) \n",
 							"\n",
 							"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
+							"\n",
+							"adls_reject_path='abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_reject_path) \n",
+							"\n",
 							"print('Primary archive path: ' + adls_arch_path) \n",
 							"\n",
-							"print(natural_key)\n",
+							"print(adls_reject_path)\n",
 							"\n",
 							"relative_archive_path\n",
 							"# Read a csv file \n",
 							"csv_path = adls_path + file_name\n",
 							"csv_path1= adls_path1 + 'IWTRIRIGASiteQuery.csv'\n",
+							"\n",
 							"arch_fil_name=file_name.rsplit(\".\")\n",
 							"arch_fil_name1='IWTRIRIGASiteQuery.csv'.rsplit(\".\")\n",
 							"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\n",
 							"csv_archive_path1 = adls_arch_path + arch_fil_name1[0] + '_' + date + '.' + arch_fil_name1[1]\n",
+							"\n",
+							"reject_fil_name='IWTRIRIGACampusRej.csv'.rsplit(\".\")\n",
+							"csv_reject_path = adls_reject_path + reject_fil_name[0] + '_' + date + '.' + reject_fil_name[1]\n",
+							"print(csv_reject_path)\n",
 							"\n",
 							"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\n",
 							"incrementalSiteData_DF = spark.read.csv(csv_path1, header = 'true')\n",
 							"\n",
 							"incrementalSiteData_DF.createOrReplaceTempView('ParentTable')\n",
 							"incrementalData_DF.createOrReplaceTempView('ChildTable')\n",
+							"\n",
+							"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\n",
+							"incrementalSiteData_DF.write.csv(csv_archive_path1, header = 'true')\n",
+							"\n",
 							"\n",
 							"# Capturing recods that are not available in parent table\n",
 							"qry_RefIntegrityFailDF=\"\"\"\n",
@@ -46451,17 +46438,11 @@
 							"else:\r\n",
 							"    #print(\"Below are the duplicates in target delta lake table:\")\r\n",
 							"    RejDataDF.show()\r\n",
-							"    status = 'fail'\r\n",
-							"  RejDataViewdf.write \\\r\n",
-							"  .format(\"delta\") \\\r\n",
-							"  .mode(\"overwrite\") \\\r\n",
-							"  .option(\"overwriteSchema\", \"true\") \\\r\n",
-							"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/RejDataTable\") \\\r\n",
-							"  .saveAsTable(RejDataTable)\r\n",
+							"  RejDataDF.write.csv(csv_reject_path, header = 'true')\r\n",
 							"   "
 						],
 						"outputs": [],
-						"execution_count": 24
+						"execution_count": 25
 					},
 					{
 						"cell_type": "code",
