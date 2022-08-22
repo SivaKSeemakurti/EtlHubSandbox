@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5861b373-c1cc-4dab-9854-121171fde3ec"
+				"spark.autotune.trackingId": "0a8a7b12-79ac-4368-adae-a2098f421ef8"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 74
+				"execution_count": 108
 			},
 			{
 				"cell_type": "markdown",
@@ -169,7 +169,7 @@
 					"print(rec_end_dt)\n",
 					""
 				],
-				"execution_count": 75
+				"execution_count": 109
 			},
 			{
 				"cell_type": "markdown",
@@ -268,7 +268,7 @@
 					"    #print(\"no duplicates in target delta lake table\")\n",
 					"    status = 'success'\n",
 					"else:\n",
-					"RejDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithSiteID' + '_' + date + '.' + 'csv',header='True', sep=',') \n",
+					"    RejDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithSiteID' + '_' + date + '.' + 'csv',header='True', sep=',') \n",
 					"\n",
 					"qry_RefIntegrityFailCntryDF=\"\"\"\n",
 					"select A.*\n",
@@ -331,23 +331,9 @@
 					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 					"\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
-					"\n",
-					"RejDataViewqry1=\"\"\"\n",
-					"SELECT COUNT(*) as CNT FROM RejDataView\n",
-					";\n",
-					"\"\"\"\n",
-					"RejDataViewdf=spark.sql(RejDataViewqry1)\n",
-					"RejDataViewcnt1=RejDataViewdf.count()\n",
-					"\n",
-					"print (RejDataViewcnt1)\n",
-					"if RejDataViewcnt1 == 0:\n",
-					"    #print(\"no duplicates in target delta lake table\")\n",
-					"    status = 'success'\n",
-					"else:\n",
-					"      RejDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithSiteID' + '_' + date + '.' + 'csv',header='True', sep=',') \n",
 					""
 				],
-				"execution_count": 76
+				"execution_count": 111
 			},
 			{
 				"cell_type": "code",
@@ -363,30 +349,18 @@
 					}
 				},
 				"source": [
-					"qry_RefIntegrityFailCntryDF=\"\"\"\r\n",
+					"qry_RefIntegrityFailStteProvDF=\"\"\"\r\n",
 					"select A.*\r\n",
 					"from ChildTable A\r\n",
-					"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\r\n",
-					"where C.CODE IS NULL;\r\n",
+					"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD)\r\n",
+					"where d.STTE_PROV_CD IS NULL;\r\n",
 					"\"\"\"\r\n",
-					"RejCntryDataDF=spark.sql(qry_RefIntegrityFailCntryDF)\r\n",
-					"RejCntryDataDF.createOrReplaceTempView('RejCntryDataView')\r\n",
+					"RejStteProvDataDF=spark.sql(qry_RefIntegrityFailStteProvDF)\r\n",
+					"RejStteProvDataDF.createOrReplaceTempView('RejStteProvDataView')\r\n",
 					"\r\n",
-					"RejDataViewqry2=\"\"\"\r\n",
-					"SELECT COUNT(*) as CNT FROM RejCntryDataView\r\n",
-					";\r\n",
-					"\"\"\"\r\n",
-					"RejDataViewdf2=spark.sql(RejDataViewqry2)\r\n",
-					"RejDataViewcnt2=RejDataViewdf2.count()\r\n",
-					"\r\n",
-					"print (RejDataViewcnt1)\r\n",
-					"if RejDataViewcnt2 == 0:\r\n",
-					"    #print(\"no duplicates in target delta lake table\")\r\n",
-					"    status = 'success'\r\n",
-					"else:\r\n",
-					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithCountryCd' + '_' + date + '.' + 'csv',header='True', sep=',') "
+					""
 				],
-				"execution_count": 106
+				"execution_count": 107
 			},
 			{
 				"cell_type": "code",
