@@ -46090,7 +46090,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7ec295e1-cb5b-462a-8bc9-c05e3d2c902e"
+						"spark.autotune.trackingId": "680b5b23-276a-4871-9679-fe4a916f5c90"
 					}
 				},
 				"metadata": {
@@ -46432,108 +46432,6 @@
 								"transient": {
 									"deleting": false
 								}
-							}
-						},
-						"source": [
-							"qry_RefIntegrityFailStteProvDF=\"\"\"\r\n",
-							"select A.*\r\n",
-							"from ChildTable A\r\n",
-							"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD)\r\n",
-							"where d.STTE_PROV_CD IS NULL;\r\n",
-							"\"\"\"\r\n",
-							"RejStteProvDataDF=spark.sql(qry_RefIntegrityFailStteProvDF)\r\n",
-							"RejStteProvDataDF.createOrReplaceTempView('RejStteProvDataView')\r\n",
-							"\r\n",
-							"RejDataViewqry3=\"\"\"\r\n",
-							"SELECT COUNT(*) as CNT FROM RejStteProvDataView\r\n",
-							";\r\n",
-							"\"\"\"\r\n",
-							"RejDataViewdf3=spark.sql(RejDataViewqry3)\r\n",
-							"RejDataViewcnt3=RejDataViewdf3.count()\r\n",
-							"\r\n",
-							"print (RejDataViewcnt1)\r\n",
-							"if RejDataViewcnt3 == 0:\r\n",
-							"    #print(\"no duplicates in target delta lake table\")\r\n",
-							"    status = 'success'\r\n",
-							"else:\r\n",
-							"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv',header='True', sep=',')\r\n",
-							"\r\n",
-							"\r\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 116
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\r\n",
-							"select * from RejStteProvDataView\r\n",
-							"--= 'MIDWDATA1'"
-						],
-						"outputs": [],
-						"execution_count": 115
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"RejDataViewqry1=\"\"\"\r\n",
-							"SELECT COUNT(*) as CNT FROM RejDataView\r\n",
-							";\r\n",
-							"\"\"\"\r\n",
-							"RejDataViewdf=spark.sql(RejDataViewqry1)\r\n",
-							"RejDataViewcnt1=RejDataViewdf.count()\r\n",
-							"\r\n",
-							"print (RejDataViewcnt1)\r\n",
-							"if RejDataViewcnt1 == 0:\r\n",
-							"    #print(\"no duplicates in target delta lake table\")\r\n",
-							"    status = 'success'\r\n",
-							"else:\r\n",
-							"    #print(\"Below are the duplicates in target delta lake table:\")\r\n",
-							"    RejDataDF.show()\r\n",
-							"  RejDataDF.write.csv(csv_reject_path, header = 'true')\r\n",
-							"   "
-						],
-						"outputs": [],
-						"execution_count": 29
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
 							},
 							"microsoft": {
 								"language": "sparksql"
@@ -46590,7 +46488,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 147
+						"execution_count": 118
 					},
 					{
 						"cell_type": "markdown",
@@ -46691,7 +46589,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 148
+						"execution_count": 119
 					},
 					{
 						"cell_type": "code",
@@ -46771,7 +46669,7 @@
 							"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 149
+						"execution_count": 120
 					},
 					{
 						"cell_type": "code",
@@ -46870,7 +46768,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 121
 					},
 					{
 						"cell_type": "code",
@@ -46928,7 +46826,81 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 154
+						"execution_count": 124
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							}
+						},
+						"source": [
+							"%%sql\r\n",
+							"INSERT INTO etlhubConfirmed.dht_campus\r\n",
+							"select existing_CAMPUS_KEY\r\n",
+							",\t1 + existing_VERSION as \r\n",
+							",GEOGRAPHY_ID\r\n",
+							",GEOGRAPHY_NAME\r\n",
+							",REGION_ID\r\n",
+							",REGION_NAME\r\n",
+							",SITE_ID\r\n",
+							",SITE_NAME\r\n",
+							",WORLD_REGION_CODE\r\n",
+							",WORLD_REGION_NAME\r\n",
+							",MARKET_TEAM_REGION_CODE\r\n",
+							",MARKET_TEAM_REGION_NAME\r\n",
+							",COUNTRY_CODE\r\n",
+							",COUNTRY_NAME\r\n",
+							",CAMPUS_ID\r\n",
+							",CAMPUS_NAME\r\n",
+							",CAMPUS_STATUS\r\n",
+							",WORK_LOCATION_CODE\r\n",
+							",ADDRESS\r\n",
+							",CITY\r\n",
+							",STATE_PROVINCE_ID\r\n",
+							",STATE_PROVINCE_NAME\r\n",
+							",POSTAL_CODE\r\n",
+							",LATITUDE\r\n",
+							",LONGITUDE\r\n",
+							",UTC_OFFSET\r\n",
+							",ICU_TIME_ZONE\r\n",
+							",PEOPLE_HOUSED_FLAG\r\n",
+							",REMOTE_SUPPORT_FLAG\r\n",
+							",PRIMARY_CAMPUS_USE_NAME\r\n",
+							",PRIMARY_CAMPUS_USE_DESCR\r\n",
+							",CAMPUS_OWNERSHIP\r\n",
+							",CAMPUS_ACTIVATION_YEAR\r\n",
+							",CAMPUS_INACTIVATION_YEAR\r\n",
+							",'Y'\r\n",
+							",CURRENT_TIMESTAMP \r\n",
+							",CURRENT_TIMESTAMP\r\n",
+							",'9999-12-31 00:00:00'  \r\n",
+							",'Tririga'\r\n",
+							",column_hash\r\n",
+							",CURRENT_TIMESTAMP\r\n",
+							",CURRENT_TIMESTAMP \r\n",
+							"from dhts_campus A \r\n",
+							"WHERE CAMPUS_ID = existing_CAMPUS_ID\r\n",
+							"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\r\n",
+							"AND NOT EXISTS\r\n",
+							"(SELECT 1 FROM etlhubconfirmed.dht_campus  B\r\n",
+							"WHERE A.CAMPUS_ID=B.CAMPUS_ID\r\n",
+							"and b.CURRENT_IND='Y'\r\n",
+							"AND A.column_hash=B.REC_CHECKSUM\r\n",
+							");"
+						],
+						"outputs": [],
+						"execution_count": 126
 					},
 					{
 						"cell_type": "code",
@@ -47005,7 +46977,7 @@
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 155
+						"execution_count": 125
 					},
 					{
 						"cell_type": "code",
@@ -48575,7 +48547,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "71cf66cb-b397-428e-83ea-ba643f8bdc5f"
+						"spark.autotune.trackingId": "3a3905bc-8286-4135-97df-5d7feec3c420"
 					}
 				},
 				"metadata": {
