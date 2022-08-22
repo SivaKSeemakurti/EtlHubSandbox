@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0a8a7b12-79ac-4368-adae-a2098f421ef8"
+				"spark.autotune.trackingId": "dc8d90c0-7d0a-41b1-86ad-08aa85e5180f"
 			}
 		},
 		"metadata": {
@@ -333,7 +333,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 111
+				"execution_count": 113
 			},
 			{
 				"cell_type": "code",
@@ -360,7 +360,7 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 107
+				"execution_count": 114
 			},
 			{
 				"cell_type": "code",
@@ -381,10 +381,10 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"select * from RejCntryDataView\r\n",
+					"select * from RejStteProvDataView\r\n",
 					"--= 'MIDWDATA1'"
 				],
-				"execution_count": 104
+				"execution_count": 115
 			},
 			{
 				"cell_type": "code",
