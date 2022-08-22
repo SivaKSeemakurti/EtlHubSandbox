@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0a986748-36f0-42a5-8585-3b4231db9d21"
+				"spark.autotune.trackingId": "fb585bbf-ce27-406d-9e68-795be9e4df53"
 			}
 		},
 		"metadata": {
@@ -318,14 +318,7 @@
 					"    status = 'success'\n",
 					"else:\n",
 					"    #print(\"Below are the duplicates in target delta lake table:\")\n",
-					"    #RejDataDF.show()\n",
-					"    #RejDataDF.write.csv(csv_reject_path, header = 'true')\n",
-					"    #RejDataDF.write.csv(csv_reject_path,sep=',', header='true')\n",
-					"    #RejDataDF.write.options(header=True).csv(csv_reject_path)\n",
 					"    RejDataDF.write.csv(csv_reject_path,header='True', sep=',') \n",
-					"    #RejDataDF.write.option(\"header\",True)\n",
-					"    #.option(\"delimiter\",\",\")\n",
-					"    #.csv(\"csv_reject_path\")\n",
 					""
 				],
 				"execution_count": 45
