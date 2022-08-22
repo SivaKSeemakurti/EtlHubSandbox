@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1365f631-4f56-40cc-9890-891f25c5e7fa"
+				"spark.autotune.trackingId": "875e043f-3898-4c7c-87cc-b3a2b226cc85"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 159
+				"execution_count": 9
 			},
 			{
 				"cell_type": "markdown",
@@ -168,7 +168,7 @@
 					"print(rec_end_dt)\n",
 					""
 				],
-				"execution_count": 160
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
@@ -243,7 +243,7 @@
 					"select A.*\n",
 					"from ChildTable A\n",
 					"left outer join ParentTable B on trim(A.SITE_ID)=trim(B.SITE_ID) \n",
-					"where A.SITE_ID IS NULL;\n",
+					"where B.SITE_ID IS NULL;\n",
 					"\"\"\"\n",
 					"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
 					"RejDataDF.createOrReplaceTempView('RejDataView')\n",
@@ -299,7 +299,70 @@
 					"\n",
 					""
 				],
-				"execution_count": 146
+				"execution_count": 19
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from RejDataView\r\n",
+					"--= 'MIDWDATA1'"
+				],
+				"execution_count": 20
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"RejDataViewqry1=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT FROM RejDataView\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"RejDataViewdf=spark.sql(RejDataViewqry1)\r\n",
+					"RejDataViewcnt1=RejDataViewdf.count()\r\n",
+					"\r\n",
+					"print (RejDataViewcnt1)\r\n",
+					"if RejDataViewcnt1 == 0:\r\n",
+					"    #print(\"no duplicates in target delta lake table\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"    #print(\"Below are the duplicates in target delta lake table:\")\r\n",
+					"    RejDataDF.show()\r\n",
+					"    status = 'fail'\r\n",
+					"  RejDataViewdf.write \\\r\n",
+					"  .format(\"delta\") \\\r\n",
+					"  .mode(\"overwrite\") \\\r\n",
+					"  .option(\"overwriteSchema\", \"true\") \\\r\n",
+					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/RejDataTable\") \\\r\n",
+					"  .saveAsTable(RejDataTable)\r\n",
+					"   "
+				],
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
