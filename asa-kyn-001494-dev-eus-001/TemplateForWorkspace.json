@@ -24586,7 +24586,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f7cf8a7d-e28b-4ae0-b8eb-db5c210d0b64"
+						"spark.autotune.trackingId": "4be4e7ba-50e7-4903-b242-f8652341ab6d"
 					}
 				},
 				"metadata": {
@@ -24611,7 +24611,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472
+						"memory": 472,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -24630,36 +24631,36 @@
 							"CREATE TABLE etlhubConfirmed.dht_campus (\t\r\n",
 							"CAMPUS_KEY INTEGER NOT NULL,\r\n",
 							"VERSION INTEGER NOT NULL ,\r\n",
-							"GEOGRAPHY_ID VARCHAR(5),\r\n",
+							"GEOGRAPHY_ID VARCHAR(50),\r\n",
 							"GEOGRAPHY_NAME VARCHAR(64),\r\n",
-							"REGION_ID VARCHAR(8),\r\n",
+							"REGION_ID VARCHAR(80),\r\n",
 							"REGION_NAME VARCHAR(64),\r\n",
 							"SITE_ID VARCHAR(50),\r\n",
 							"SITE_NAME VARCHAR(64),\r\n",
-							"WORLD_REGION_CODE VARCHAR(2),\r\n",
+							"WORLD_REGION_CODE VARCHAR(20),\r\n",
 							"WORLD_REGION_NAME VARCHAR(64),\r\n",
 							"MARKET_TEAM_REGION_CODE VARCHAR(3),\r\n",
 							"MARKET_TEAM_REGION_NAME VARCHAR(64),\r\n",
-							"COUNTRY_CODE VARCHAR(2),\r\n",
+							"COUNTRY_CODE VARCHAR(20),\r\n",
 							"COUNTRY_NAME VARCHAR(64),\r\n",
-							"CAMPUS_ID VARCHAR(8),\r\n",
+							"CAMPUS_ID VARCHAR(80),\r\n",
 							"CAMPUS_NAME VARCHAR(64),\r\n",
 							"CAMPUS_STATUS VARCHAR(32),\r\n",
 							"WORK_LOCATION_CODE VARCHAR(3),\r\n",
 							"ADDRESS VARCHAR(256),\r\n",
 							"CITY VARCHAR(64),\r\n",
-							"STATE_PROVINCE_ID VARCHAR(3),\r\n",
+							"STATE_PROVINCE_ID VARCHAR(30),\r\n",
 							"STATE_PROVINCE_NAME VARCHAR(64),\r\n",
 							"POSTAL_CODE VARCHAR(16),\r\n",
 							"LATITUDE DECIMAL(11,8),\r\n",
 							"LONGITUDE DECIMAL(11,8),\r\n",
-							"UTC_OFFSET VARCHAR(16),\r\n",
+							"UTC_OFFSET VARCHAR(150),\r\n",
 							"ICU_TIME_ZONE VARCHAR(64),\r\n",
-							"PEOPLE_HOUSED_FLAG VARCHAR(1),\r\n",
-							"REMOTE_SUPPORT_FLAG VARCHAR(1),\r\n",
+							"PEOPLE_HOUSED_FLAG VARCHAR(10),\r\n",
+							"REMOTE_SUPPORT_FLAG VARCHAR(10),\r\n",
 							"PRIMARY_CAMPUS_USE_NAME VARCHAR(32),\r\n",
 							"PRIMARY_CAMPUS_USE_DESCR VARCHAR(128),\r\n",
-							"CAMPUS_OWNERSHIP VARCHAR(8),\r\n",
+							"CAMPUS_OWNERSHIP VARCHAR(80),\r\n",
 							"CAMPUS_ACTIVATION_YEAR INTEGER,\r\n",
 							"CAMPUS_INACTIVATION_YEAR INTEGER,\r\n",
 							"CURRENT_IND\tVARCHAR(1), -- Y for active row and N for all rows expired\r\n",
@@ -24674,10 +24675,10 @@
 							"USING DELTA\r\n",
 							"PARTITIONED BY (CURRENT_IND)\r\n",
 							"-- specify data lake folder location\r\n",
-							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS_new' "
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_CAMPUS_new1' "
 						],
 						"outputs": [],
-						"execution_count": 12
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -24698,10 +24699,10 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"DROP table etlhubConfirmed.dht_campus"
+							"select * from etlhubConfirmed.dht_campus"
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -46090,7 +46091,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e0e5dba3-bc5e-424b-bdea-58de80560f6f"
+						"spark.autotune.trackingId": "84102614-3cac-49ba-a21b-088573d7d580"
 					}
 				},
 				"metadata": {
@@ -46187,7 +46188,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 108
+						"execution_count": 160
 					},
 					{
 						"cell_type": "markdown",
@@ -46240,7 +46241,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 109
+						"execution_count": 161
 					},
 					{
 						"cell_type": "markdown",
@@ -46402,7 +46403,7 @@
 							"left outer join etlhubconfirmed.dhtr_country C ON trim(A.COUNTRY_CODE)=trim(C.CODE)\n",
 							"left outer join etlhubconfirmed.dhtr_stte_prov d ON trim(A.STATE_PROVINCE_ID)=trim(d.STTE_PROV_CD) \n",
 							"and trim(A.COUNTRY_CODE) = trim(D.CNTRY_CD)\n",
-							"where B.SITE_ID is not null  \n",
+							"where B.SITE_ID is not null AND C.CODE IS NOT NULL AND d.STTE_PROV_CD IS NOT NULL \n",
 							"\"\"\"\n",
 							"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\n",
 							"\n",
@@ -46419,7 +46420,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 117
+						"execution_count": 162
 					},
 					{
 						"cell_type": "code",
@@ -46488,7 +46489,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 118
+						"execution_count": 163
 					},
 					{
 						"cell_type": "markdown",
@@ -46589,7 +46590,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 119
+						"execution_count": 164
 					},
 					{
 						"cell_type": "code",
@@ -46669,7 +46670,7 @@
 							"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 120
+						"execution_count": 165
 					},
 					{
 						"cell_type": "code",
@@ -46690,10 +46691,10 @@
 						},
 						"source": [
 							"%%sql\r\n",
-							"select * from DHTS_CAMPUS "
+							"select  count(*) from DHTS_CAMPUS "
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 166
 					},
 					{
 						"cell_type": "code",
@@ -46768,7 +46769,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 121
+						"execution_count": 167
 					},
 					{
 						"cell_type": "code",
@@ -46826,7 +46827,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 124
+						"execution_count": 168
 					},
 					{
 						"cell_type": "code",
@@ -46842,7 +46843,8 @@
 							},
 							"microsoft": {
 								"language": "sparksql"
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"%%sql\r\n",
@@ -46900,84 +46902,7 @@
 							");"
 						],
 						"outputs": [],
-						"execution_count": 126
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"#Insert for changed rows which are missing in target and present in source based on Natural Key.\n",
-							"\n",
-							"qry_ins_changed_rows=\"\"\"\n",
-							"INSERT INTO {}\n",
-							"\tselect \n",
-							"    existing_CAMPUS_KEY\n",
-							",\t1 + existing_VERSION\n",
-							",GEOGRAPHY_ID\n",
-							",GEOGRAPHY_NAME\n",
-							",REGION_ID\n",
-							",REGION_NAME\n",
-							",SITE_ID\n",
-							",SITE_NAME\n",
-							",WORLD_REGION_CODE\n",
-							",WORLD_REGION_NAME\n",
-							",MARKET_TEAM_REGION_CODE\n",
-							",MARKET_TEAM_REGION_NAME\n",
-							",COUNTRY_CODE\n",
-							",COUNTRY_NAME\n",
-							",CAMPUS_ID\n",
-							",CAMPUS_NAME\n",
-							",CAMPUS_STATUS\n",
-							",WORK_LOCATION_CODE\n",
-							",ADDRESS, CITY\n",
-							",STATE_PROVINCE_ID\n",
-							",STATE_PROVINCE_NAME\n",
-							",POSTAL_CODE\n",
-							",LATITUDE\n",
-							",LONGITUDE\n",
-							",UTC_OFFSET\n",
-							",ICU_TIME_ZONE\n",
-							",PEOPLE_HOUSED_FLAG\n",
-							",REMOTE_SUPPORT_FLAG\n",
-							",PRIMARY_CAMPUS_USE_NAME\n",
-							",PRIMARY_CAMPUS_USE_DESCR\n",
-							",CAMPUS_OWNERSHIP\n",
-							",CAMPUS_ACTIVATION_YEAR\n",
-							",CAMPUS_INACTIVATION_YEAR\n",
-							",   'Y' AS CURRENT_IND\n",
-							",   '{}' AS EXTRACT_DT\n",
-							",   '{}' AS REC_START_DT\n",
-							",   '9999-12-31 00:00:00' as REC_END_DT\n",
-							",   'Tririga' AS SOURCE_SYSTEM\n",
-							",    column_hash as REC_CHECKSUM\n",
-							",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
-							",    existing_IMG_CREATED_DT\n",
-							"from {} A \n",
-							"WHERE LOWER({}) = LOWER(existing_{}) \n",
-							"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
-							"AND NOT EXISTS\n",
-							"(SELECT 1 FROM {} B\n",
-							"WHERE LOWER(A.{})=LOWER(B.{})\n",
-							"and b.CURRENT_IND='Y'\n",
-							"AND A.column_hash=B.REC_CHECKSUM\n",
-							")\n",
-							";\n",
-							"\"\"\"\n",
-							"\n",
-							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
-						],
-						"outputs": [],
-						"execution_count": 125
+						"execution_count": 170
 					},
 					{
 						"cell_type": "code",
@@ -47012,7 +46937,7 @@
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 						],
 						"outputs": [],
-						"execution_count": 156
+						"execution_count": 171
 					},
 					{
 						"cell_type": "code",
@@ -47058,7 +46983,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 157
+						"execution_count": 172
 					}
 				]
 			},
