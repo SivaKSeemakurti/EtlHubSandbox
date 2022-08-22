@@ -46089,7 +46089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "61c6511c-f176-4249-8b21-f7989bc33b69"
+						"spark.autotune.trackingId": "ae6013d1-e2da-452e-b0bc-5e826bc02f97"
 					}
 				},
 				"metadata": {
@@ -46382,12 +46382,10 @@
 							"RejDataViewdf=spark.sql(RejDataViewqry1)\n",
 							"RejDataViewcnt1=RejDataViewdf.count()\n",
 							"\n",
-							"print (RejDataViewcnt1)\n",
 							"if RejDataViewcnt1 == 0:\n",
 							"    #print(\"no duplicates in target delta lake table\")\n",
 							"    status = 'success'\n",
 							"else:\n",
-							"    #print(\"Below are the duplicates in target delta lake table:\")\n",
 							"    RejDataDF.write.csv(csv_reject_path,header='True', sep=',') \n",
 							""
 						],
@@ -48538,7 +48536,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "83994a78-4ed0-4391-b10e-445217b9c54e"
+						"spark.autotune.trackingId": "cdd0da97-0b58-445d-8dab-63ed5c717e0d"
 					}
 				},
 				"metadata": {
