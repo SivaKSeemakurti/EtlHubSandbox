@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b2238495-46c7-47f0-af38-f3eed6591737"
+				"spark.autotune.trackingId": "0cf90b4f-0bec-413c-bd53-5052cb8edf40"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 26
+				"execution_count": 48
 			},
 			{
 				"cell_type": "markdown",
@@ -154,7 +154,7 @@
 					"relative_path = 'extract/Tririga/campus/' # fill in your relative folder path \n",
 					"relative_path1 = 'extract/Tririga/Site/'\n",
 					"relative_archive_path='archive/'\n",
-					"relative_reject_path='reject/'\n",
+					"relative_reject_path='reject/campus/'\n",
 					"file_name='IWTRIRIGASCampusQuery.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key=\"CAMPUS_ID\"\n",
 					"MinimumTririgaCampusCount=450\n",
@@ -169,7 +169,7 @@
 					"print(rec_end_dt)\n",
 					""
 				],
-				"execution_count": 27
+				"execution_count": 49
 			},
 			{
 				"cell_type": "markdown",
@@ -316,10 +316,10 @@
 					"    #print(\"no duplicates in target delta lake table\")\n",
 					"    status = 'success'\n",
 					"else:\n",
-					"    RejDataDF.write.csv(csv_reject_path,header='True', sep=',') \n",
+					"    RejDataDF.write.csv(adls_reject_path + reject_fil_name[0] + '_' + date + '.' + reject_fil_name[1],header='True', sep=',') \n",
 					""
 				],
-				"execution_count": 45
+				"execution_count": 50
 			},
 			{
 				"cell_type": "code",
@@ -335,7 +335,6 @@
 					}
 				},
 				"source": [
-					"\r\n",
 					"RejDataViewqry1=\"\"\"\r\n",
 					"SELECT COUNT(*) as CNT FROM RejDataView\r\n",
 					";\r\n",
@@ -348,10 +347,10 @@
 					"    #print(\"no duplicates in target delta lake table\")\r\n",
 					"    status = 'success'\r\n",
 					"else:\r\n",
-					"    RejDataDF.write.csv(csv_reject_path,header='True', sep=',',overwrite='True') \r\n",
-					""
+					"     RejDataDF.write.csv(adls_reject_path +'IWTRIRIGACampusRej',header='True', sep=',') \r\n",
+					"     mv adls_reject_path/IWTRIRIGACampusRej/*.csv /adls_reject_path/IWTRIRIGACampusRej.csv"
 				],
-				"execution_count": 44
+				"execution_count": 65
 			},
 			{
 				"cell_type": "code",
