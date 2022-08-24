@@ -87,7 +87,7 @@
 						"Content-Type": "Application/Json"
 					},
 					"body": {
-						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilata.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_campus_load').output},\n        \"JobStatus\" : \"Success\"\n}",
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilatha.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_campus_load').output},\n        \"JobStatus\" : \"Success\"\n}",
 						"type": "Expression"
 					}
 				}
