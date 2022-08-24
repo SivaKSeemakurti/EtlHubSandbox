@@ -1005,7 +1005,7 @@
 						}
 					},
 					{
-						"name": "Notebook1",
+						"name": "nb_campus_load",
 						"type": "SynapseNotebook",
 						"dependsOn": [
 							{
@@ -1032,6 +1032,76 @@
 							"sparkPool": {
 								"referenceName": "sPool001494New",
 								"type": "BigDataPoolReference"
+							}
+						}
+					},
+					{
+						"name": "Campus_Load_Success_Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "nb_campus_load",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+							"connectVia": {
+								"referenceName": "AutoResolveIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "Application/Json"
+							},
+							"body": {
+								"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilata.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_campus_load').output},\n        \"JobStatus\" : \"Success\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Campus_Load_Failure_Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "nb_campus_load",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+							"connectVia": {
+								"referenceName": "AutoResolveIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "Application/Json"
+							},
+							"body": {
+								"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilatha.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_campus_Load').output}\n}",
+								"type": "Expression"
 							}
 						}
 					}
@@ -24586,7 +24656,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6ed09754-1fea-4d25-9673-57065123050e"
+						"spark.autotune.trackingId": "e1db17dc-145b-4379-b986-9cc3ae02e41e"
 					}
 				},
 				"metadata": {
@@ -24611,8 +24681,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -42390,11 +42459,14 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c3d7a50b-187d-4a54-b29b-5902cda0ed62"
+						"spark.autotune.trackingId": "79801970-eac0-4e30-afb3-794c8f7d18ab"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -42410,13 +42482,14 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
 						},
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
 						"memory": 472,
-						"automaticScaleJobs": false
+						"extraHeader": null
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -42436,7 +42509,8 @@
 							"This notebook loads data to deltalake table etlhubconfirmed.dht_market by sourceing data from ESA Kyndryl.\n",
 							"Since ESA is not accessible from Azure, a datastage job src_ESA_Sales_Stage_Azure is executed on datastage to push the ESA extract to adls.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -42449,7 +42523,8 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -42480,6 +42555,7 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 51
 					},
@@ -42494,7 +42570,8 @@
 						},
 						"source": [
 							"Define Parameters"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -42523,6 +42600,7 @@
 							"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 							"print(date)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 36
 					},
@@ -42537,7 +42615,8 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -42551,7 +42630,8 @@
 						"source": [
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/ESA/DS_SALES_STAGE_DATA.csv"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -42594,6 +42674,7 @@
 							"incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\n",
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 37
 					},
@@ -42638,6 +42719,7 @@
 							"  .saveAsTable(stagingtable)\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 38
 					},
@@ -42656,7 +42738,8 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -42715,6 +42798,7 @@
 							"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 39
 					},
@@ -42780,6 +42864,7 @@
 							"print('Soft Deletes are:') \n",
 							"df_4_recon3.show()"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 40
 					},
@@ -42803,6 +42888,7 @@
 							"%%sql\n",
 							"SELECT count(*) FROM etlhubconfirmed.dht_sales_stage where current_ind='Y'"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -42830,6 +42916,7 @@
 							"    from dhts_sales_stage A \r\n",
 							"WHERE existing_REC_CHECKSUM is null"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -42896,6 +42983,7 @@
 							"d=spark.sql(qry_ins_new_rows.format(tablename,keycolumn,stagingtable,tablename,natural_key, natural_key ))\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 41
 					},
@@ -42920,6 +43008,7 @@
 							"%%sql\r\n",
 							"SELECT * from etlhubconfirmed.dht_sales_stage"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 44
 					},
@@ -42954,6 +43043,7 @@
 							"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key))\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 45
 					},
@@ -43003,6 +43093,7 @@
 							"AND A.CURRENT_IND='Y' AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							";"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 46
 					},
@@ -43056,6 +43147,7 @@
 							"\n",
 							"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 47
 					},
@@ -43090,6 +43182,7 @@
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key))"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 48
 					},
@@ -43144,6 +43237,7 @@
 							";\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 49
 					},
@@ -43188,6 +43282,7 @@
 							"    and date(img_lst_upd_dt)=current_date\n",
 							"        ;  "
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 50
 					}
@@ -46091,7 +46186,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6883f646-642e-4cc3-bf54-6e761987adcb"
+						"spark.autotune.trackingId": "7e3cca13-015c-4618-a85d-5c60bab55d5d"
 					}
 				},
 				"metadata": {
@@ -46188,7 +46283,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 160
+						"execution_count": 18
 					},
 					{
 						"cell_type": "markdown",
@@ -46237,11 +46332,10 @@
 							"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 							"rec_end_dt='9999-12-31 00:00:00'\n",
 							"print(extract_dt)\n",
-							"print(rec_end_dt)\n",
-							""
+							"print(rec_end_dt)"
 						],
 						"outputs": [],
-						"execution_count": 161
+						"execution_count": 19
 					},
 					{
 						"cell_type": "markdown",
@@ -46417,7 +46511,34 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 162
+						"execution_count": 20
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import org.apache.hadoop.fs.\r\n",
+							"\r\n",
+							"hdfs_dir = adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv'\r\n",
+							"new_filename='IWTRIRIGACampusRejWithStteProvCSV.csv'\r\n",
+							"df.coalesce(1).write.format(\"csv\").option(\"header\", \"true\").mode(\"append\").save(hdfs_dir)\r\n",
+							"fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())\r\n",
+							"list_status = fs.listStatus(spark._jvm.org.apache.hadoop.fs.Path(hdfs_dir))\r\n",
+							"file_name = [file.getPath().getName() for file in list_status if file.getPath().getName().startswith('part-')][0]\r\n",
+							"fs.rename(Path(hdfs_dir+''+file_name),Path(hdfs_dir+''+new_filename))"
+						],
+						"outputs": [],
+						"execution_count": 22
 					},
 					{
 						"cell_type": "code",
@@ -48469,7 +48590,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b8171c79-15a4-47e4-b32d-a59814bea3ae"
+						"spark.autotune.trackingId": "79cdc02e-5f5d-42be-8bea-d86197745107"
 					}
 				},
 				"metadata": {
@@ -48489,13 +48610,14 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"automaticScaleJobs": false
+						"extraHeader": null
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -48515,7 +48637,8 @@
 							"This notebook loads data to deltalake table etlhubconfirme.dht_deal_dim by sourceing data from DCA deal data.\n",
 							"Since DCA is not accessible from Azure, a datastage job src_DCA_DEAL_Azure is executed on datastage to push the DCA extract to adls.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -48528,7 +48651,8 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -48559,6 +48683,7 @@
 							"#import os\n",
 							"import sys"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 10
 					},
@@ -48573,7 +48698,8 @@
 						},
 						"source": [
 							"Define Parameters"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -48599,6 +48725,7 @@
 							"tablename=\"etlhubConfirmed.dht_deal_dim\"\n",
 							"keycolumn=\"DEAL_KEY\""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 11
 					},
@@ -48615,7 +48742,8 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/DCA/DS_DEALS_DATA.csv"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -48680,6 +48808,7 @@
 							"fullJoin2.createOrReplaceTempView('fullJoin')\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 12
 					},
@@ -48698,7 +48827,8 @@
 							"- Check for duplicates in Source data based on natural key\n",
 							"- Check for duplicates in target delta lake table based on natural key\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -48750,6 +48880,7 @@
 							"    sys.exit(2)\r\n",
 							"    print(\"This will not be printed\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 14
 					},
@@ -48858,6 +48989,7 @@
 							"d=spark.sql(qry_insert)\r\n",
 							"#d.show(10)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 15
 					},
@@ -48993,6 +49125,7 @@
 							"\"\"\"\r\n",
 							"df3=spark.sql(softdelqry)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 16
 					},
@@ -49045,6 +49178,7 @@
 							";\r\n",
 							""
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -49070,6 +49204,7 @@
 							" from etlhubConfirmed.dht_deal_dim1 where ACTIVE_IN_SOURCE_IND='N' \r\n",
 							"    --where DEAL_IDENTIFIER in (7840900,7840899)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 18
 					}
