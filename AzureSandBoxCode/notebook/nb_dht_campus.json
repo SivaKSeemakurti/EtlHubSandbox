@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "16ddba4e-ab07-4114-953d-197577eea706"
+				"spark.autotune.trackingId": "8ef2c224-8b77-48c6-981e-d45c8a909056"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 18
+				"execution_count": 25
 			},
 			{
 				"cell_type": "markdown",
@@ -168,7 +168,7 @@
 					"print(extract_dt)\n",
 					"print(rec_end_dt)"
 				],
-				"execution_count": 19
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -343,7 +343,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 20
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
