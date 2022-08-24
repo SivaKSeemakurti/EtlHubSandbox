@@ -46186,7 +46186,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7e3cca13-015c-4618-a85d-5c60bab55d5d"
+						"spark.autotune.trackingId": "1341ba46-a136-49ea-a2c2-7db73b191f8f"
 					}
 				},
 				"metadata": {
@@ -46512,33 +46512,6 @@
 						],
 						"outputs": [],
 						"execution_count": 20
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"import org.apache.hadoop.fs.\r\n",
-							"\r\n",
-							"hdfs_dir = adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv'\r\n",
-							"new_filename='IWTRIRIGACampusRejWithStteProvCSV.csv'\r\n",
-							"df.coalesce(1).write.format(\"csv\").option(\"header\", \"true\").mode(\"append\").save(hdfs_dir)\r\n",
-							"fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())\r\n",
-							"list_status = fs.listStatus(spark._jvm.org.apache.hadoop.fs.Path(hdfs_dir))\r\n",
-							"file_name = [file.getPath().getName() for file in list_status if file.getPath().getName().startswith('part-')][0]\r\n",
-							"fs.rename(Path(hdfs_dir+''+file_name),Path(hdfs_dir+''+new_filename))"
-						],
-						"outputs": [],
-						"execution_count": 22
 					},
 					{
 						"cell_type": "code",
