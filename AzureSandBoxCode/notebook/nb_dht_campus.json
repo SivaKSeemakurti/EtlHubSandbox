@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5e506089-5aae-4366-b317-5011591a23fc"
+				"spark.autotune.trackingId": "0fedb834-7145-457e-8ab0-80d99fdedd65"
 			}
 		},
 		"metadata": {
@@ -117,7 +117,7 @@
 					"from pyspark.sql.functions import *\n",
 					""
 				],
-				"execution_count": 160
+				"execution_count": 18
 			},
 			{
 				"cell_type": "markdown",
@@ -166,10 +166,9 @@
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 					"rec_end_dt='9999-12-31 00:00:00'\n",
 					"print(extract_dt)\n",
-					"print(rec_end_dt)\n",
-					""
+					"print(rec_end_dt)"
 				],
-				"execution_count": 161
+				"execution_count": 19
 			},
 			{
 				"cell_type": "markdown",
@@ -344,7 +343,33 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 162
+				"execution_count": 20
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import org.apache.hadoop.fs.\r\n",
+					"\r\n",
+					"hdfs_dir = adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + date + '.' + 'csv'\r\n",
+					"new_filename='IWTRIRIGACampusRejWithStteProvCSV.csv'\r\n",
+					"df.coalesce(1).write.format(\"csv\").option(\"header\", \"true\").mode(\"append\").save(hdfs_dir)\r\n",
+					"fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())\r\n",
+					"list_status = fs.listStatus(spark._jvm.org.apache.hadoop.fs.Path(hdfs_dir))\r\n",
+					"file_name = [file.getPath().getName() for file in list_status if file.getPath().getName().startswith('part-')][0]\r\n",
+					"fs.rename(Path(hdfs_dir+''+file_name),Path(hdfs_dir+''+new_filename))"
+				],
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",

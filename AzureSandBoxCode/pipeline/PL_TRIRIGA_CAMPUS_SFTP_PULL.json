@@ -27,7 +27,7 @@
 				}
 			},
 			{
-				"name": "Notebook1",
+				"name": "nb_campus_load",
 				"type": "SynapseNotebook",
 				"dependsOn": [
 					{
@@ -54,6 +54,76 @@
 					"sparkPool": {
 						"referenceName": "sPool001494New",
 						"type": "BigDataPoolReference"
+					}
+				}
+			},
+			{
+				"name": "Campus_Load_Success_Notification",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "nb_campus_load",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "Application/Json"
+					},
+					"body": {
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilata.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_campus_load').output},\n        \"JobStatus\" : \"Success\"\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Campus_Load_Failure_Notification",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "nb_campus_load",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "Application/Json"
+					},
+					"body": {
+						"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilatha.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('nb_campus_Load').output}\n}",
+						"type": "Expression"
 					}
 				}
 			}
