@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d4474650-cef4-43b8-a646-4d01d329777c"
+				"spark.autotune.trackingId": "674e9afb-9cd1-4c8e-b095-e221aae35883"
 			}
 		},
 		"metadata": {
@@ -185,7 +185,7 @@
 					"        sc_path = sc._gateway.jvm.org.apache.hadoop.fs.Path\r\n",
 					"        file_system = sc._gateway.jvm.org.apache.hadoop.fs.FileSystem\r\n",
 					"        configuration = sc._gateway.jvm.org.apache.hadoop.conf.Configuration\r\n",
-					"        fs = file_system.get(sc_uri(\"hdfs://{HDFS_IP/NAME}\"), configuration())\r\n",
+					"        fs = file_system.get(sc_uri(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net\"), configuration())\r\n",
 					"        src_path = None\r\n",
 					"        status = fs.listStatus(sc_path(path))\r\n",
 					"        for fileStatus in status:\r\n",
@@ -219,10 +219,10 @@
 					"if __name__ == '__main__':\r\n",
 					"    spark = SparkSession.builder.getOrCreate()\r\n",
 					"    df = create_dataframe(spark)\r\n",
-					"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus\", \"/OUTPUT_FILE_NAME\")\r\n",
+					"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus1\", \"/OUTPUT_FILE_NAME\")\r\n",
 					""
 				],
-				"execution_count": 1
+				"execution_count": 3
 			}
 		]
 	}

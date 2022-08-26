@@ -1,5 +1,5 @@
 {
-	"name": "nb_dht_campus",
+	"name": "bkp_nb_dht_campus",
 	"properties": {
 		"folder": {
 			"name": "ETLHub/Dimensions&Facts/GREIW"
@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "53b7403d-309b-41ab-ab00-ee48be5c9cc6"
+				"spark.autotune.trackingId": "2ac74889-2183-4ddb-886b-95cb2f19a98f"
 			}
 		},
 		"metadata": {
@@ -346,6 +346,66 @@
 					""
 				],
 				"execution_count": 30
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import sys\r\n",
+					"import os\r\n",
+					"from pyspark import SparkContext\r\n",
+					"from pyspark import SparkConf\r\n",
+					"from pyspark.sql import SparkSession\r\n",
+					"#write_csv_with_specific_file_name(spark.sparkContext, df, \"OUTPUT_PATH\", \"/OUTPUT_FILE_NAME\")\r\n",
+					"def write_csv_with_specific_file_name(sc, df, path, filename):\r\n",
+					"    df.repartition(1).write.option(\"header\", \"true\").format(\"csv\").save(path)\r\n",
+					"    try:\r\n",
+					"        sc_uri = sc._gateway.jvm.java.net.URI\r\n",
+					"        sc_path = sc._gateway.jvm.org.apache.hadoop.fs.Path\r\n",
+					"        file_system = sc._gateway.jvm.org.apache.hadoop.fs.FileSystem\r\n",
+					"        configuration = sc._gateway.jvm.org.apache.hadoop.conf.Configuration\r\n",
+					"        fs = file_system.get(sc_uri(\"hdfs://{HDFS_IP/NAME}\"), configuration())\r\n",
+					"        src_path = None\r\n",
+					"        status = fs.listStatus(sc_path(path))\r\n",
+					"        for fileStatus in status:\r\n",
+					"            temp = fileStatus.getPath().toString()\r\n",
+					"            if \"part\" in temp:\r\n",
+					"                src_path = sc_path(temp)\r\n",
+					"        dest_path = sc_path(path + filename)\r\n",
+					"        if fs.exists(src_path) and fs.isFile(src_path):\r\n",
+					"            fs.rename(src_path, dest_path)\r\n",
+					"            fs.delete(src_path, True)\r\n",
+					"    except Exception as e:\r\n",
+					"        raise Exception(\"Error renaming the part file to {}:\".format(filename, e))\r\n",
+					"\r\n",
+					"\r\n",
+					"RejDataViewqry3=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT FROM RejStteProvDataView\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"RejDataViewdf3=spark.sql(RejDataViewqry3)\r\n",
+					"RejDataViewcnt3=RejDataViewdf3.count()\r\n",
+					"\r\n",
+					"print (RejDataViewcnt1)\r\n",
+					"if RejDataViewcnt3 == 0:\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"      #RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + dateonly,header='True', sep=',')\r\n",
+					"      write_csv_with_specific_file_name(spark.sparkContext, RejCntryDataDF, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus\", \"/IWTRIRIGACampusRejWithStteProv_CSV.csv\")\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": 39
 			},
 			{
 				"cell_type": "code",
