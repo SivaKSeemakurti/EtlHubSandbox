@@ -28436,7 +28436,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "222c6044-5698-4048-bbab-0e89b25787a0"
+						"spark.autotune.trackingId": "3425eaeb-706b-4ffb-a983-579e501be2cc"
 					}
 				},
 				"metadata": {
@@ -28638,11 +28638,11 @@
 							"if __name__ == '__main__':\r\n",
 							"    spark = SparkSession.builder.getOrCreate()\r\n",
 							"    df = create_dataframe(spark)\r\n",
-							"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus1\", \"/OUTPUT_FILE_NAME\")\r\n",
+							"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus2\", \"/OUTPUT_FILE_NAME\")\r\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 5
 					}
 				]
 			},
@@ -63523,7 +63523,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "791b8719-d690-4835-97f9-00281fc7acaf"
+						"spark.autotune.trackingId": "1e96f944-927e-4ec7-a258-51dcd8c1af2b"
 					}
 				},
 				"metadata": {
@@ -63866,12 +63866,9 @@
 							}
 						},
 						"source": [
-							"import sys\r\n",
-							"import os\r\n",
-							"from pyspark import SparkContext\r\n",
-							"from pyspark import SparkConf\r\n",
 							"from pyspark.sql import SparkSession\r\n",
-							"#write_csv_with_specific_file_name(spark.sparkContext, df, \"OUTPUT_PATH\", \"/OUTPUT_FILE_NAME\")\r\n",
+							"\r\n",
+							"\r\n",
 							"def write_csv_with_specific_file_name(sc, df, path, filename):\r\n",
 							"    df.repartition(1).write.option(\"header\", \"true\").format(\"csv\").save(path)\r\n",
 							"    try:\r\n",
@@ -63879,7 +63876,7 @@
 							"        sc_path = sc._gateway.jvm.org.apache.hadoop.fs.Path\r\n",
 							"        file_system = sc._gateway.jvm.org.apache.hadoop.fs.FileSystem\r\n",
 							"        configuration = sc._gateway.jvm.org.apache.hadoop.conf.Configuration\r\n",
-							"        fs = file_system.get(sc_uri(\"hdfs://{HDFS_IP/NAME}\"), configuration())\r\n",
+							"        fs = file_system.get(sc_uri(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net\"), configuration())\r\n",
 							"        src_path = None\r\n",
 							"        status = fs.listStatus(sc_path(path))\r\n",
 							"        for fileStatus in status:\r\n",
@@ -63894,20 +63891,26 @@
 							"        raise Exception(\"Error renaming the part file to {}:\".format(filename, e))\r\n",
 							"\r\n",
 							"\r\n",
-							"RejDataViewqry3=\"\"\"\r\n",
-							"SELECT COUNT(*) as CNT FROM RejStteProvDataView\r\n",
-							";\r\n",
-							"\"\"\"\r\n",
-							"RejDataViewdf3=spark.sql(RejDataViewqry3)\r\n",
-							"RejDataViewcnt3=RejDataViewdf3.count()\r\n",
+							"def create_dataframe(spark):\r\n",
+							"    simple_data = [(\"James\", \"Sales\", \"NY\", 90000),\r\n",
+							"                   (\"Michael\", \"Sales\", \"NY\", 86000),\r\n",
+							"                   (\"Robert\", \"Sales\", \"CA\", 81000),\r\n",
+							"                   (\"Maria\", \"Finance\", \"CA\", 90000),\r\n",
+							"                   (\"Raman\", \"Finance\", \"CA\", 99000),\r\n",
+							"                   (\"Scott\", \"Finance\", \"NY\", 83000),\r\n",
+							"                   (\"Jen\", \"Finance\", \"NY\", 79000),\r\n",
+							"                   (\"Jeff\", \"Marketing\", \"CA\", 80000),\r\n",
+							"                   (\"Kumar\", \"Marketing\", \"NY\", 91000)\r\n",
+							"                   ]\r\n",
 							"\r\n",
-							"print (RejDataViewcnt1)\r\n",
-							"if RejDataViewcnt3 == 0:\r\n",
-							"    status = 'success'\r\n",
-							"else:\r\n",
-							"      #RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + dateonly,header='True', sep=',')\r\n",
-							"      write_csv_with_specific_file_name(spark.sparkContext, RejCntryDataDF, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus\", \"/IWTRIRIGACampusRejWithStteProv_CSV.csv\")\r\n",
+							"    schema = [\"employee_name\", \"department\", \"state\", \"salary\"]\r\n",
+							"    return spark.createDataFrame(data=simple_data, schema=schema)\r\n",
 							"\r\n",
+							"\r\n",
+							"if __name__ == '__main__':\r\n",
+							"    spark = SparkSession.builder.getOrCreate()\r\n",
+							"    df = create_dataframe(spark)\r\n",
+							"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus2\", \"/OUTPUT_FILE_NAME\")\r\n",
 							""
 						],
 						"outputs": [],
