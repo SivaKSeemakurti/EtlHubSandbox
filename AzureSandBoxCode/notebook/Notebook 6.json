@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "674e9afb-9cd1-4c8e-b095-e221aae35883"
+				"spark.autotune.trackingId": "22663c6c-9669-4309-8fa8-1e8e9fc2e208"
 			}
 		},
 		"metadata": {
@@ -219,10 +219,10 @@
 					"if __name__ == '__main__':\r\n",
 					"    spark = SparkSession.builder.getOrCreate()\r\n",
 					"    df = create_dataframe(spark)\r\n",
-					"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus1\", \"/OUTPUT_FILE_NAME\")\r\n",
+					"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus2\", \"/OUTPUT_FILE_NAME\")\r\n",
 					""
 				],
-				"execution_count": 3
+				"execution_count": 5
 			}
 		]
 	}
