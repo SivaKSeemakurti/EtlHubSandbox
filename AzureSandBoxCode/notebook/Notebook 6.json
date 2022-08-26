@@ -21,14 +21,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d675b475-c43e-4a62-9394-92c8c1ab17a0"
+				"spark.autotune.trackingId": "d4474650-cef4-43b8-a646-4d01d329777c"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -44,14 +41,13 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -73,7 +69,6 @@
 					"\r\n",
 					"df.printSchema()"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -106,7 +101,6 @@
 					"\r\n",
 					"df.printSchema()"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -144,7 +138,6 @@
 					"      SSM_STEP_NO string,  \r\n",
 					"      SSM_STEP_NAME string)"
 				],
-				"attachments": null,
 				"execution_count": 12
 			},
 			{
@@ -166,8 +159,70 @@
 					"USING CSV\r\n",
 					"LOCATION 'abfss://project@adls4fsoetlhubdevuseast.dfs.core.windows.net/sell_cycle_2022.csv'"
 				],
-				"attachments": null,
 				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"\r\n",
+					"def write_csv_with_specific_file_name(sc, df, path, filename):\r\n",
+					"    df.repartition(1).write.option(\"header\", \"true\").format(\"csv\").save(path)\r\n",
+					"    try:\r\n",
+					"        sc_uri = sc._gateway.jvm.java.net.URI\r\n",
+					"        sc_path = sc._gateway.jvm.org.apache.hadoop.fs.Path\r\n",
+					"        file_system = sc._gateway.jvm.org.apache.hadoop.fs.FileSystem\r\n",
+					"        configuration = sc._gateway.jvm.org.apache.hadoop.conf.Configuration\r\n",
+					"        fs = file_system.get(sc_uri(\"hdfs://{HDFS_IP/NAME}\"), configuration())\r\n",
+					"        src_path = None\r\n",
+					"        status = fs.listStatus(sc_path(path))\r\n",
+					"        for fileStatus in status:\r\n",
+					"            temp = fileStatus.getPath().toString()\r\n",
+					"            if \"part\" in temp:\r\n",
+					"                src_path = sc_path(temp)\r\n",
+					"        dest_path = sc_path(path + filename)\r\n",
+					"        if fs.exists(src_path) and fs.isFile(src_path):\r\n",
+					"            fs.rename(src_path, dest_path)\r\n",
+					"            fs.delete(src_path, True)\r\n",
+					"    except Exception as e:\r\n",
+					"        raise Exception(\"Error renaming the part file to {}:\".format(filename, e))\r\n",
+					"\r\n",
+					"\r\n",
+					"def create_dataframe(spark):\r\n",
+					"    simple_data = [(\"James\", \"Sales\", \"NY\", 90000),\r\n",
+					"                   (\"Michael\", \"Sales\", \"NY\", 86000),\r\n",
+					"                   (\"Robert\", \"Sales\", \"CA\", 81000),\r\n",
+					"                   (\"Maria\", \"Finance\", \"CA\", 90000),\r\n",
+					"                   (\"Raman\", \"Finance\", \"CA\", 99000),\r\n",
+					"                   (\"Scott\", \"Finance\", \"NY\", 83000),\r\n",
+					"                   (\"Jen\", \"Finance\", \"NY\", 79000),\r\n",
+					"                   (\"Jeff\", \"Marketing\", \"CA\", 80000),\r\n",
+					"                   (\"Kumar\", \"Marketing\", \"NY\", 91000)\r\n",
+					"                   ]\r\n",
+					"\r\n",
+					"    schema = [\"employee_name\", \"department\", \"state\", \"salary\"]\r\n",
+					"    return spark.createDataFrame(data=simple_data, schema=schema)\r\n",
+					"\r\n",
+					"\r\n",
+					"if __name__ == '__main__':\r\n",
+					"    spark = SparkSession.builder.getOrCreate()\r\n",
+					"    df = create_dataframe(spark)\r\n",
+					"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus\", \"/OUTPUT_FILE_NAME\")\r\n",
+					""
+				],
+				"execution_count": 1
 			}
 		]
 	}
