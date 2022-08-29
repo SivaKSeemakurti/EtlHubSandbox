@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0a01d438-629f-4f82-bcd9-d2fede7a2e93"
+				"spark.autotune.trackingId": "b8a79954-83e3-4da4-ac89-d1f867c88724"
 			}
 		},
 		"metadata": {
@@ -118,7 +118,7 @@
 					"from pathlib import Path\n",
 					""
 				],
-				"execution_count": 35
+				"execution_count": 68
 			},
 			{
 				"cell_type": "code",
@@ -145,7 +145,7 @@
 					"#print(home)\r\n",
 					"df.toPandas().to_csv(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/mydata-from-pyspark.csv\", sep=',', header=True, index=False)"
 				],
-				"execution_count": 38
+				"execution_count": 69
 			},
 			{
 				"cell_type": "markdown",
@@ -198,7 +198,7 @@
 					"print(rec_end_dt)\n",
 					"print(dateonly)"
 				],
-				"execution_count": 6
+				"execution_count": 70
 			},
 			{
 				"cell_type": "markdown",
@@ -373,7 +373,7 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 67
+				"execution_count": 71
 			},
 			{
 				"cell_type": "code",
