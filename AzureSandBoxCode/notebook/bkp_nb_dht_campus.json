@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "61094b06-3f8d-482f-98c7-cda1bbd07752"
+				"spark.autotune.trackingId": "94d013e4-752f-4365-8c64-72ec1fbf822e"
 			}
 		},
 		"metadata": {
@@ -296,8 +296,7 @@
 					"if RejDataViewcnt1 == 0:\n",
 					"    status = 'success'\n",
 					"else:\n",
-					"    RejDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithSiteID' + '_' + dateonly,header='True', sep=',') \n",
-					"\n",
+					"    RejDataDF.toPandas().to_csv(adls_reject_path+dateonly + '/' + 'IWTRIRIGACampusRejWithSiteID.csv', sep=',', header=True, index=False)\n",
 					"qry_RefIntegrityFailCntryDF=\"\"\"\n",
 					"select A.*\n",
 					"from ChildTable A\n",
@@ -395,10 +394,10 @@
 					"print(schema1)\r\n",
 					"#df = spark.createDataFrame(data, [\"word\", \"expected\"])\r\n",
 					"#df = incrementalData_DF2.copy()\r\n",
-					"\r\n",
+					"RejDataDF.toPandas().to_csv(adls_reject_path+dateonly + '/' + 'IWTRIRIGACampusRejWithSiteID.csv', sep=',', header=True, index=False)\r\n",
 					"incrementalData_DF2.toPandas().to_csv(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/mydata-from-pyspark.csv\", sep=',', header=True, index=False)"
 				],
-				"execution_count": 63
+				"execution_count": 66
 			},
 			{
 				"cell_type": "code",
