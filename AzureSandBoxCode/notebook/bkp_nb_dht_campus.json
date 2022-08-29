@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1d81d2f7-c78d-4032-a03f-252c7fbc9d17"
+				"spark.autotune.trackingId": "61094b06-3f8d-482f-98c7-cda1bbd07752"
 			}
 		},
 		"metadata": {
@@ -115,9 +115,37 @@
 					"import sys\n",
 					"from datetime import datetime,date\n",
 					"from pyspark.sql.functions import *\n",
+					"from pathlib import Path\n",
 					""
 				],
-				"execution_count": 22
+				"execution_count": 35
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"home = str(Path.home())\r\n",
+					"data = [\r\n",
+					"    (\"jellyfish\", \"JALYF\"),\r\n",
+					"    (\"li\", \"L\"),\r\n",
+					"    (\"luisa\", \"LAS\"),\r\n",
+					"    (None, None)\r\n",
+					"]\r\n",
+					"df = spark.createDataFrame(data, [\"word\", \"expected\"])\r\n",
+					"#print(home)\r\n",
+					"df.toPandas().to_csv(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/mydata-from-pyspark.csv\", sep=',', header=True, index=False)"
+				],
+				"execution_count": 38
 			},
 			{
 				"cell_type": "markdown",
@@ -170,7 +198,7 @@
 					"print(rec_end_dt)\n",
 					"print(dateonly)"
 				],
-				"execution_count": 26
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -313,7 +341,7 @@
 					"if RejDataViewcnt3 == 0:\n",
 					"    status = 'success'\n",
 					"else:\n",
-					"      RejCntryDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + dateonly,header='True', sep=',')\n",
+					"      RejStteProvDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithStteProv' + '_' + dateonly,header='True', sep=',')\n",
 					"\n",
 					"qry_IncrementalDataDF=\"\"\"\n",
 					"select distinct B.GEOGRAPHY_ID, B.GEOGRAPHY_NAME,B.REGION_ID,B.REGION_NAME,B.SITE_ID,B.SITE_NAME,\n",
@@ -345,7 +373,32 @@
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\n",
 					""
 				],
-				"execution_count": 30
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"home = str(Path.home())\r\n",
+					"schema1 = [incrementalData_DF2.columns]\r\n",
+					"data = [incrementalData_DF2.show]\r\n",
+					"print(schema1)\r\n",
+					"#df = spark.createDataFrame(data, [\"word\", \"expected\"])\r\n",
+					"#df = incrementalData_DF2.copy()\r\n",
+					"\r\n",
+					"incrementalData_DF2.toPandas().to_csv(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/mydata-from-pyspark.csv\", sep=',', header=True, index=False)"
+				],
+				"execution_count": 63
 			},
 			{
 				"cell_type": "code",
@@ -362,8 +415,6 @@
 				},
 				"source": [
 					"from pyspark.sql import SparkSession\r\n",
-					"\r\n",
-					"\r\n",
 					"def write_csv_with_specific_file_name(sc, df, path, filename):\r\n",
 					"    df.repartition(1).write.option(\"header\", \"true\").format(\"csv\").save(path)\r\n",
 					"    try:\r\n",
@@ -385,30 +436,44 @@
 					"    except Exception as e:\r\n",
 					"        raise Exception(\"Error renaming the part file to {}:\".format(filename, e))\r\n",
 					"\r\n",
+					"#RejStteProvDataDF.write.format(\"csv\").save(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus5.csv\")\r\n",
+					"RejStteProvDataDF.coalesce(1).write.option(\"header\", \"true\").csv(\"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus5/sample_file.csv\")\r\n",
+					"   #schema = RejStteProvDataDF.schema\r\n",
+					"   #return RejStteProvDataDF.createDataFrame(data=RejStteProvDataDF, schema=RejStteProvDataDF.schema)\r\n",
 					"\r\n",
-					"def create_dataframe(spark):\r\n",
-					"    simple_data = [(\"James\", \"Sales\", \"NY\", 90000),\r\n",
-					"                   (\"Michael\", \"Sales\", \"NY\", 86000),\r\n",
-					"                   (\"Robert\", \"Sales\", \"CA\", 81000),\r\n",
-					"                   (\"Maria\", \"Finance\", \"CA\", 90000),\r\n",
-					"                   (\"Raman\", \"Finance\", \"CA\", 99000),\r\n",
-					"                   (\"Scott\", \"Finance\", \"NY\", 83000),\r\n",
-					"                   (\"Jen\", \"Finance\", \"NY\", 79000),\r\n",
-					"                   (\"Jeff\", \"Marketing\", \"CA\", 80000),\r\n",
-					"                   (\"Kumar\", \"Marketing\", \"NY\", 91000)\r\n",
-					"                   ]\r\n",
-					"\r\n",
-					"    schema = [\"employee_name\", \"department\", \"state\", \"salary\"]\r\n",
-					"    return spark.createDataFrame(data=simple_data, schema=schema)\r\n",
-					"\r\n",
-					"\r\n",
-					"if __name__ == '__main__':\r\n",
-					"    spark = SparkSession.builder.getOrCreate()\r\n",
-					"    df = create_dataframe(spark)\r\n",
-					"    write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus2\", \"/OUTPUT_FILE_NAME\")\r\n",
+					"#if __name__ == '__main__':\r\n",
+					"#    spark = SparkSession.builder.getOrCreate()\r\n",
+					"#    df = create_dataframe(RejStteProvDataDF)\r\n",
+					" #   write_csv_with_specific_file_name(spark.sparkContext, df, \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/campus5\", \"/OUTPUT_FILE_NAME.csv\")\r\n",
 					""
 				],
-				"execution_count": 39
+				"execution_count": 18
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"save_location= \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/reject/\"\r\n",
+					"csv_location = save_location+\"temp.folder\"\r\n",
+					"file_location = save_location+'export.csv'\r\n",
+					"\r\n",
+					"RejStteProvDataDF.repartition(1).write.csv(path=csv_location, mode=\"append\", header=\"true\")\r\n",
+					"\r\n",
+					"file = dbutils.fs.ls(csv_location)[-1].path\r\n",
+					"dbutils.fs.cp(file, file_location)\r\n",
+					"dbutils.fs.rm(csv_location, recurse=True)"
+				],
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
