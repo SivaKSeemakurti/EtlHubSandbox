@@ -21,14 +21,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3026a383-6107-48c8-a118-7f11dc4e9ef9"
+				"spark.autotune.trackingId": "c2ab8916-c2b9-4e5c-a2b6-3759cd1738ee"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -44,14 +41,13 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -62,18 +58,18 @@
 					"from azure.storage.blob import BlobClient\r\n",
 					"import pandas as pd\r\n",
 					"from io import StringIO\r\n",
-					"from pyspark.sql.functions import md5, concat_ws\r\n",
+					"from pyspark.sql.functions import md5, concat_ws,trim\r\n",
 					"from sqlite3 import connect\r\n",
 					"from pyspark.sql import functions as F\r\n",
 					"#conn = connect(':memory:')\r\n",
-					"\r\n",
 					"from pyspark.sql import SparkSession \r\n",
+					"from pyspark.sql.functions import col\r\n",
 					"from pyspark.sql.types import * \r\n",
 					"from delta.tables import *\r\n",
-					"#import os\r\n",
-					"import sys"
+					"import os\r\n",
+					"import sys\r\n",
+					"from datetime import datetime"
 				],
-				"attachments": null,
 				"execution_count": 2
 			},
 			{
@@ -93,14 +89,16 @@
 					"account_name = 'adls4fsoetlhubdevuseast' # fill in your primary account name \r\n",
 					"container_name = 'etlhubfilestorage' # fill in your container name \r\n",
 					"relative_path = 'extract/BMSIW/' # fill in your relative folder path \r\n",
+					"relative_archive_path='archive/'\r\n",
 					"file_name='DS_COMPANY_DATA.csv' \r\n",
 					"natural_key=\"LEDGER_CODE\"\r\n",
-					"tablename=\"etlhubConfirmed.dht_company\"\r\n",
-					"#natural_key=\"BUSINESS_PARTNER_ID\"\r\n",
-					"keycolumn=\"COMPANY_KEY\""
+					"tablename=\"etlhubConfirmed.dht_company_ddl\"\r\n",
+					"stagingtable=\"DHT_COMPANY\"\r\n",
+					"keycolumn=\"COMPANY_COMPONENT_KEY\"\r\n",
+					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\r\n",
+					"print(date)"
 				],
-				"attachments": null,
-				"execution_count": 3
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -119,29 +117,30 @@
 					"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path) \r\n",
 					"print('Primary storage account path: ' + adls_path) \r\n",
 					"\r\n",
+					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \r\n",
+					"print('Primary storage account path: ' + adls_path) \r\n",
+					"\r\n",
+					"relative_archive_path\r\n",
 					"# Read a csv file \r\n",
 					"csv_path = adls_path + file_name\r\n",
-					"incrementalData_DF = spark.read.csv(csv_path, header = 'true')\r\n",
-					"\r\n",
+					"arch_fil_name=file_name.rsplit(\".\")\r\n",
+					"csv_archive_path = adls_arch_path + arch_fil_name[0] + '_' + date + '.' + arch_fil_name[1]\r\n",
+					"print (csv_archive_path)\r\n",
+					"incrementalData_DF = spark.read.load(csv_path,format=\"csv\", sep=\"||\", header=\"true\")\r\n",
+					"#incrementalData_DF.show()\r\n",
+					"incrementalData_DF.write.csv(csv_archive_path, header = 'true')\r\n",
 					"# Get column list for creating Rec_Checksum\r\n",
-					"\r\n",
-					"#Add checks for duplicate data, Check for 1. dups in source data based on natural Key and\r\n",
-					"# 2. Dups in target already\r\n",
 					"\r\n",
 					"col_list=[]\r\n",
 					"for i in incrementalData_DF.columns:\r\n",
 					"    col_list.append(i)\r\n",
 					"\r\n",
 					"# Add a checsum column to help identify the changed rows\r\n",
-					"\r\n",
-					"incrementalData_DF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\r\n",
-					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\r\n",
-					"\r\n",
-					"#sell_cyclecolhashDF.show()\r\n",
-					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")\r\n",
-					""
+					"print(col_list)\r\n",
+					"incrementalData_SDF1 = incrementalData_DF.withColumn(\"nk_hash\",md5(natural_key))\r\n",
+					"incrementalData_DF2 = incrementalData_SDF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\r\n",
+					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -158,14 +157,12 @@
 					}
 				},
 				"source": [
+					"\r\n",
 					"#Create a dataframe with target deltalake table data with necessary columns\r\n",
 					"\r\n",
 					"existingDataDF=spark.sql(\"SELECT * FROM {}  WHERE CURRENT_IND='Y'\".format(tablename))\r\n",
-					"#existingDataDF=spark.sql(\"SELECT tgt.* from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\r\n",
 					"\r\n",
 					"existingMaxKeyDF=spark.sql(\"SELECT MAX({}) existing_MAX_KEY from {} WHERE CURRENT_IND='Y'\".format(keycolumn,tablename))\r\n",
-					"\r\n",
-					"#existingMaxKeyDF=spark.sql(\"SELECT MAX(EMPLOYEE_KEY) existing_MAX_KEY from etlhubConfirmed.DHT_EMPLOYEE tgt WHERE CURRENT_IND='Y'\")\r\n",
 					"\r\n",
 					"# prefix all columns from target table with 'existing_'. This will help to differentiate columns when incremental and existing DF's are joined\r\n",
 					"\r\n",
@@ -173,12 +170,143 @@
 					"\r\n",
 					"existingDataDF1.createOrReplaceTempView('existingDataDF1')\r\n",
 					"\r\n",
-					"fullJoin1=incrementalData_DF2.join(existingDataDF1,incrementalData_DF2.EMPLOYEE_BUSINESS_CD == existingDataDF1.existing_EMPLOYEE_BUSINESS_CD, \"fullouter\") \r\n",
+					"fullJoin1=incrementalData_DF2.join(existingDataDF1, col(natural_key) == col(\"existing_\" + natural_key), \"fullouter\")\r\n",
+					"\r\n",
 					"fullJoin2=fullJoin1.join(existingMaxKeyDF,None,\"CROSS\")\r\n",
 					"\r\n",
-					"fullJoin2.createOrReplaceTempView('fullJoin')"
+					"fullJoin2.createOrReplaceTempView('fullJoin')\r\n",
+					"\r\n",
+					"fullJoin2.write \\\r\n",
+					"  .format(\"delta\") \\\r\n",
+					"  .mode(\"overwrite\") \\\r\n",
+					"  .option(\"overwriteSchema\", \"true\") \\\r\n",
+					"  .option(\"path\", \"abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/staging/{}\".format(stagingtable)) \\\r\n",
+					"  .saveAsTable(stagingtable)\r\n",
+					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry3=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT, {} FROM incrementalData_DF2 GROUP BY {} HAVING COUNT(*)>1\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"\r\n",
+					"qry4=\"\"\"\r\n",
+					"SELECT COUNT(*) as CNT, {} FROM {} WHERE CURRENT_IND='Y' GROUP BY {} HAVING COUNT(*)>1\r\n",
+					";\r\n",
+					"\"\"\"\r\n",
+					"\r\n",
+					"df3=spark.sql(qry3.format(natural_key,natural_key))\r\n",
+					"cnt1=df3.count()\r\n",
+					"\r\n",
+					"print (cnt1)\r\n",
+					"if cnt1 == 0:\r\n",
+					"    print(\"No Duplicates in source data\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"    print(\"Below are the duplicates in source:\")\r\n",
+					"    df3.show()\r\n",
+					"    status = 'fail'\r\n",
+					"    #os.abort() this will take the spark cluster also down\r\n",
+					"    sys.exit(1)\r\n",
+					"    print(\"This will not be printed\")\r\n",
+					"\r\n",
+					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\r\n",
+					"cnt2=df4.count()\r\n",
+					"\r\n",
+					"print (cnt2)\r\n",
+					"if cnt2 == 0:\r\n",
+					"    print(\"no duplicates in target delta lake table\")\r\n",
+					"    status = 'success'\r\n",
+					"else:\r\n",
+					"    print(\"Below are the duplicates in target delta lake table:\")\r\n",
+					"    df4.show()\r\n",
+					"    status = 'fail'\r\n",
+					"    #os.abort() this will take the spark cluster also down\r\n",
+					"    sys.exit(2)\r\n",
+					"    print(\"This will not be printed\")\r\n",
+					"\r\n",
+					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\r\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"qry_4_recon1=\"\"\"\r\n",
+					"\r\n",
+					"SELECT COUNT(*) from {} A \r\n",
+					"WHERE existing_REC_CHECKSUM is null\r\n",
+					"AND NOT EXISTS\r\n",
+					"(SELECT 1 FROM {} B\r\n",
+					"WHERE A.{}=B.{}\r\n",
+					"and b.CURRENT_IND='Y'\r\n",
+					"AND A.column_hash=B.REC_CHECKSUM)\r\n",
+					"\r\n",
+					"\"\"\"\r\n",
+					"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable,tablename,natural_key,natural_key))\r\n",
+					"print('New records or Inserts are:') \r\n",
+					"df_4_recon1.show()\r\n",
+					"\r\n",
+					"qry_4_recon2=\"\"\"\r\n",
+					"\r\n",
+					"SELECT COUNT(*) from {} A \r\n",
+					"WHERE LOWER({}) = LOWER(existing_{}) \r\n",
+					"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\r\n",
+					"AND NOT EXISTS\r\n",
+					"(SELECT 1 FROM {} B\r\n",
+					"WHERE LOWER(A.{})=LOWER(B.{})\r\n",
+					"and b.CURRENT_IND='Y'\r\n",
+					"AND A.column_hash=B.REC_CHECKSUM\r\n",
+					")\r\n",
+					";\r\n",
+					"\r\n",
+					"\"\"\"\r\n",
+					"df_4_recon2=spark.sql(qry_4_recon2.format(stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))\r\n",
+					"print('Changed records or Updates are:') \r\n",
+					"df_4_recon2.show()\r\n",
+					"\r\n",
+					"qry_4_recon3=\"\"\"\r\n",
+					"SELECT COUNT(*) from \r\n",
+					"{} A\r\n",
+					"join fullJoin B\r\n",
+					"ON A.{} = B.existing_{}\r\n",
+					"AND B.{} is NULL\r\n",
+					"AND A.CURRENT_IND='Y' AND A.ACTIVE_IN_SOURCE_IND='Y' \r\n",
+					"AND A.REC_START_DT=b.existing_REC_START_DT\r\n",
+					"\r\n",
+					"\"\"\"\r\n",
+					"\r\n",
+					"df_4_recon3=spark.sql(qry_4_recon3.format(tablename,natural_key,natural_key,natural_key))\r\n",
+					"print('Soft Deletes are:') \r\n",
+					"df_4_recon3.show()"
+				],
 				"execution_count": null
 			}
 		]
