@@ -1168,7 +1168,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "Src_Building",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -1198,6 +1198,107 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Building_Load",
+						"type": "SynapseNotebook",
+						"dependsOn": [
+							{
+								"activity": "Src_Building",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "nb_dht_building_final",
+								"type": "NotebookReference"
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "sPool001494New",
+								"type": "BigDataPoolReference"
+							}
+						}
+					},
+					{
+						"name": "Building_Load_Success_Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Building_Load",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+							"connectVia": {
+								"referenceName": "AutoResolveIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "Application/Json"
+							},
+							"body": {
+								"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilatha.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('Building_Load').output},\n        \"JobStatus\" : \"Success\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Building_Load_Failure_Notification",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Building_Load",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://lpemailalert.azurewebsites.net:443/api/email_alerts_job_status_new/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=H6UgWY_Zx65ADu1blVhcNMBt3KLkG6X9lNIHj7QRiEo",
+							"connectVia": {
+								"referenceName": "AutoResolveIntegrationRuntime",
+								"type": "IntegrationRuntimeReference"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "Application/Json"
+							},
+							"body": {
+								"value": "{\n        \"dataFactoryName\": \"@{pipeline().DataFactory}\",\n        \"message\": \"This is an automated mail notification from Azure\",\n        \"pipelineName\": \"@{pipeline().Pipeline}\",\n        \"receiver\": \"srilatha.palivela@kyndryl.com\",\n        \"ErrorMessage\":@{activity('Building_Load').output}\n}",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -1211,7 +1312,10 @@
 				"lastPublishTime": "2022-07-29T06:53:34Z"
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_LOCATION_SFTP_PULL')]"
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_LOCATION_SFTP_PULL')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/sPool001494New')]",
+				"[concat(variables('workspaceId'), '/notebooks/nb_dht_building_final')]"
 			]
 		},
 		{
@@ -1262,7 +1366,8 @@
 				"lastPublishTime": "2022-08-12T10:35:03Z"
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_OfficeSpace_SFTP_PULL')]"
+				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_OfficeSpace_SFTP_PULL')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -33445,7 +33550,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4200c528-1361-4cc1-bc9e-532125a7198f"
+						"spark.autotune.trackingId": "b8a79954-83e3-4da4-ac89-d1f867c88724"
 					}
 				},
 				"metadata": {
@@ -33470,8 +33575,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
