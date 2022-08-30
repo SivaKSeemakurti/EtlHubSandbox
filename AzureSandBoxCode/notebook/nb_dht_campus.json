@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "53b7403d-309b-41ab-ab00-ee48be5c9cc6"
+				"spark.autotune.trackingId": "baecdd6d-889f-449f-826b-7e8f055b022a"
 			}
 		},
 		"metadata": {
@@ -268,7 +268,7 @@
 					"if RejDataViewcnt1 == 0:\n",
 					"    status = 'success'\n",
 					"else:\n",
-					"    RejDataDF.write.csv(adls_reject_path + 'IWTRIRIGACampusRejWithSiteID' + '_' + dateonly,header='True', sep=',') \n",
+					"    RejDataDF.toPandas().to_csv(adls_reject_path+dateonly + '/' + 'IWTRIRIGACampusRejWithSiteID.csv', sep=',', header=True, index=False)\n",
 					"\n",
 					"qry_RefIntegrityFailCntryDF=\"\"\"\n",
 					"select A.*\n",
