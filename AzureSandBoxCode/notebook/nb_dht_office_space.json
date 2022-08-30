@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e8d8bd3e-0799-444c-b27f-edd5291d95fa"
+				"spark.autotune.trackingId": "921090d7-cd37-46f0-a4b1-181cc87eafa6"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 2
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -163,7 +163,7 @@
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"execution_count": 3
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -305,7 +305,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 8
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -329,55 +329,6 @@
 					"select * from incrementalData_DF2"
 				],
 				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"collapsed": false
-				},
-				"source": [
-					"\r\n",
-					"qry_IncrementalDataDF=\"\"\"\r\n",
-					"select distinct CAST(COALESCE(TRIM(A.CAMPUS_ID),'')||'~'||COALESCE(TRIM(A.BLDG_ID),'')||'~'||COALESCE(TRIM(A.FLOOR_ID),'')||'~'||COALESCE(TRIM(A.SPACE_ID),'') AS VARCHAR(64)) as BUSINESS_ID,\r\n",
-					"A.CAMPUS_ID,A.BLDG_ID as BUILDING_ID, A.FLOOR_ID, B.FLOOR_DESCR as FLOOR_DESCRIPTION,\r\n",
-					"A.SPACE_ID,A.SPACE_DESCR as SPACE_DESCRIPTION, A.SPACE_CLASS_CODE1 as SPACE_CATEGORY_CODE,\r\n",
-					"CASE WHEN LOCATE('-', trim(C.SPACE_CLASS_DESCR)) = 0 THEN C.SPACE_CLASS_DESCR \r\n",
-					"ELSE substr(trim(C.SPACE_CLASS_DESCR),1,LOCATE('-', trim(C.SPACE_CLASS_DESCR))-1) \r\n",
-					"END AS SPACE_CATEGORY_DESCRIPTION,A.SPACE_CLASS_CODE2 as SPACE_TYPE_CODE,\r\n",
-					"CASE WHEN LOCATE('-', trim(C.SPACE_CLASS_DESCR)) = 0 THEN C.SPACE_CLASS_DESCR \r\n",
-					"ELSE substr(trim(C.SPACE_CLASS_DESCR),1,LOCATE('-', trim(C.SPACE_CLASS_DESCR))-1) \r\n",
-					"END AS SPACE_TYPE_DESCRIPTION,C.OCCUPANCY_TYPE , A.CAPACITY,A.AREA as AREA_SQUARE_FEET,\r\n",
-					"A.OSCRE_CODE,A.WORKPOINT\r\n",
-					"from SrcData A\r\n",
-					"left outer join etlhubconfirmed.dhtr_space_floor_level B on trim(A.FLOOR_ID)=trim(B.FLOOR_ID)\r\n",
-					"left outer join etlhubconfirmed.dhtr_space_class C ON \r\n",
-					"trim(A.SPACE_CLASS_CODE1)=trim(C.SPACE_CLASS_CODE1) AND trim(A.SPACE_CLASS_CODE2)=trim(C.SPACE_CLASS_CODE2)\r\n",
-					"where B.FLOOR_ID IS NOT NULL AND C.SPACE_CLASS_CODE1 IS NOT NULL \r\n",
-					"\"\"\"\r\n",
-					"FinalIncrementalDataDF=spark.sql(qry_IncrementalDataDF)\r\n",
-					"\r\n",
-					"col_list=[]\r\n",
-					"for i in FinalIncrementalDataDF.columns:\r\n",
-					"    col_list.append(i)\r\n",
-					"\r\n",
-					"# Add a checsum column to help identify the changed rows\r\n",
-					"\r\n",
-					"incrementalData_DF1 = FinalIncrementalDataDF.withColumn(\"nk_hash\",md5(natural_key))\r\n",
-					"incrementalData_DF2 = incrementalData_DF1.withColumn(\"column_hash\", md5(concat_ws(\"\", *col_list)))\r\n",
-					"\r\n",
-					"#sell_cyclecolhashDF.show()\r\n",
-					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
-				],
-				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
