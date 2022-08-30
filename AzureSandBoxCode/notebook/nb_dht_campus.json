@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2d0f24c4-6e83-4981-918e-189e1635277e"
+				"spark.autotune.trackingId": "832301b5-0488-4d95-abff-5a2813966d8d"
 			}
 		},
 		"metadata": {
@@ -286,7 +286,6 @@
 					"RejDataViewdf2=spark.sql(RejDataViewqry2)\n",
 					"RejDataViewcnt2=RejDataViewdf2.count()\n",
 					"\n",
-					"print (RejDataViewcnt1)\n",
 					"if RejDataViewcnt2 == 0:\n",
 					"    status = 'success'\n",
 					"else:\n",

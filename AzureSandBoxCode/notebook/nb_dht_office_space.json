@@ -21,14 +21,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "eaf0a8b2-7e93-450f-846f-7b5288d0ace4"
+				"spark.autotune.trackingId": "e8d8bd3e-0799-444c-b27f-edd5291d95fa"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -44,14 +41,13 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.2",
 				"nodeCount": 10,
 				"cores": 80,
 				"memory": 472,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -76,8 +72,7 @@
 					"The script used for file transfer is /home/resodba/trrgprocget.sh\n",
 					"\n",
 					"File Name: resodb_space_tririga_staging.csv from /GlobalDir/CustomerFiles/tririga"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -90,8 +85,7 @@
 				},
 				"source": [
 					"Import all the necessary libraries"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -121,7 +115,6 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"attachments": null,
 				"execution_count": 2
 			},
 			{
@@ -135,8 +128,7 @@
 				},
 				"source": [
 					"Define Parameters"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -157,19 +149,20 @@
 					"container_name = 'etlhubfilestorage' # fill in your container name \n",
 					"relative_path = 'extract/Tririga/OfficeSpace/' # fill in your relative folder path \n",
 					"relative_archive_path='archive/'\n",
+					"relative_reject_path='reject/OfficeSpace/'\n",
 					"file_name='ResodbOfficeSpaceTririgaStaging.csv' # 20220705, 20220705_upd1, 20220705_upd2\n",
 					"natural_key=\"BUSINESS_ID\"\n",
 					"MinimumTririgaCampusCount=450\n",
 					"tablename=\"etlhubConfirmed.DHT_OFFICE_SPACE\"\n",
 					"stagingtable=\"DHTS_OFFICE_SPACE\"\n",
 					"keycolumn=\"SPACE_KEY\"\n",
+					"dateonly=datetime.now().strftime(\"%Y-%m-%d\")\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\n",
 					"extract_dt = datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This is batch/cycle date. It would be common for all the rows inserted in a single run\n",
 					"rec_start_dt=datetime.now().strftime(\"%Y-%m-%d %I:%M:%S\") #This should ideally from the source system. If source doesnt have any date column, use current date \n",
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"attachments": null,
 				"execution_count": 3
 			},
 			{
@@ -183,8 +176,7 @@
 				},
 				"source": [
 					"Copy source CSV file to archive folder including timestamp in file name"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -201,8 +193,7 @@
 					"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/Tririga/campus/IWTRIRIGACampusQuery.csv\n",
 					"\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -223,6 +214,8 @@
 					"\n",
 					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
 					"print('Primary archive path: ' + adls_arch_path) \n",
+					"\n",
+					"adls_reject_path='abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_reject_path) \n",
 					"\n",
 					"print(natural_key)\n",
 					"\n",
@@ -246,6 +239,18 @@
 					"RejDataDF=spark.sql(qry_RefIntegrityFailDF)\n",
 					"RejDataDF.createOrReplaceTempView('RejDataView')\n",
 					"\n",
+					"RejDataViewqry1=\"\"\"\n",
+					"SELECT COUNT(*) as CNT FROM RejDataView\n",
+					";\n",
+					"\"\"\"\n",
+					"RejDataViewdf1=spark.sql(RejDataViewqry1)\n",
+					"RejDataViewcnt1=RejDataViewdf1.count()\n",
+					"\n",
+					"if RejDataViewcnt1 == 0:\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"      RejDataDF.toPandas().to_csv(adls_reject_path+dateonly + '/' + 'IWTRIRIGAOfficeSpaceRejWithFloorID.csv', sep=',', header=True, index=False)\n",
+					"\n",
 					"qry_RefIntegrityFailSpaceClassDF=\"\"\"\n",
 					"select A.*\n",
 					"from SrcData A\n",
@@ -255,6 +260,19 @@
 					"\"\"\"\n",
 					"RejSpaceClassDataDF=spark.sql(qry_RefIntegrityFailSpaceClassDF)\n",
 					"RejSpaceClassDataDF.createOrReplaceTempView('RejSpaceClassDataView')\n",
+					"\n",
+					" \n",
+					"RejDataViewqry2=\"\"\"\n",
+					"SELECT COUNT(*) as CNT FROM RejSpaceClassDataView\n",
+					";\n",
+					"\"\"\"\n",
+					"RejDataViewdf2=spark.sql(RejDataViewqry2)\n",
+					"RejDataViewcnt2=RejDataViewdf2.count()\n",
+					"\n",
+					"if RejDataViewcnt2 == 0:\n",
+					"    status = 'success'\n",
+					"else:\n",
+					"      RejSpaceClassDataDF.toPandas().to_csv(adls_reject_path+dateonly + '/' + 'IWTRIRIGAOfficeSpaceRejWithSpace.csv', sep=',', header=True, index=False)\n",
 					"\n",
 					"qry_IncrementalDataDF=\"\"\"\n",
 					"select distinct CAST(COALESCE(TRIM(A.CAMPUS_ID),'')||'~'||COALESCE(TRIM(A.BLDG_ID),'')||'~'||COALESCE(TRIM(A.FLOOR_ID),'')||'~'||COALESCE(TRIM(A.SPACE_ID),'') AS VARCHAR(64)) as BUSINESS_ID,\n",
@@ -287,7 +305,6 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"attachments": null,
 				"execution_count": 8
 			},
 			{
@@ -311,7 +328,6 @@
 					"%%sql\r\n",
 					"select * from incrementalData_DF2"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -361,7 +377,6 @@
 					"#sell_cyclecolhashDF.show()\r\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"attachments": null,
 				"execution_count": 4
 			},
 			{
@@ -408,7 +423,6 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"attachments": null,
 				"execution_count": 5
 			},
 			{
@@ -428,8 +442,7 @@
 					"- Check for duplicates in target delta lake table based on natural key\n",
 					"- Referential Integrity checks\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -510,7 +523,6 @@
 					"\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 6
 			},
 			{
@@ -575,7 +587,6 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"attachments": null,
 				"execution_count": 7
 			},
 			{
@@ -665,7 +676,6 @@
 					"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 8
 			},
 			{
@@ -710,7 +720,6 @@
 					"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 					"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 				],
-				"attachments": null,
 				"execution_count": 9
 			},
 			{
@@ -744,7 +753,6 @@
 					"f=spark.sql(qry_4_upd_changes_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,natural_key,rec_start_dt))\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 10
 			},
 			{
@@ -821,7 +829,6 @@
 					"\n",
 					"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 				],
-				"attachments": null,
 				"execution_count": 11
 			},
 			{
@@ -856,7 +863,6 @@
 					"\"\"\"\n",
 					"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 				],
-				"attachments": null,
 				"execution_count": 12
 			},
 			{
@@ -902,7 +908,6 @@
 					"#Below code can be used to evaluate if the DMLs are successful or not Exception handling purpose\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 13
 			}
 		]
