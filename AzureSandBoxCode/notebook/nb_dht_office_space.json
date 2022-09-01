@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "921090d7-cd37-46f0-a4b1-181cc87eafa6"
+				"spark.autotune.trackingId": "53d32543-c6df-4988-a481-a19c688b48f4"
 			}
 		},
 		"metadata": {
@@ -115,7 +115,7 @@
 					"import sys\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 3
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -163,7 +163,7 @@
 					"print(extract_dt)\n",
 					"print(natural_key)"
 				],
-				"execution_count": 4
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -305,7 +305,7 @@
 					"#sell_cyclecolhashDF.show()\n",
 					"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 				],
-				"execution_count": 5
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -374,7 +374,7 @@
 					"  .saveAsTable(stagingtable)\n",
 					"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 				],
-				"execution_count": 5
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -436,7 +436,7 @@
 					"    df3.show()\n",
 					"    status = 'fail'\n",
 					"    #os.abort() this will take the spark cluster also down\n",
-					"    --sys.exit(1)\n",
+					"    #sys.exit(1)\n",
 					"    print(\"This will not be printed\")\n",
 					"\n",
 					"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
@@ -474,7 +474,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -538,7 +538,7 @@
 					"print('Soft Deletes are:') \n",
 					"df_4_recon3.show()"
 				],
-				"execution_count": 7
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
