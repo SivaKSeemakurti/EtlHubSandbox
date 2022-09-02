@@ -21,14 +21,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "31f7ecee-c57d-493c-b532-8e5d43abbe81"
+				"spark.autotune.trackingId": "e7ce7af6-8570-4abb-b9c8-1e30eac3a2ca"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -44,14 +41,13 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
 				"cores": 8,
 				"memory": 56,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -93,7 +89,6 @@
 					"-- specify data lake folder location\r\n",
 					"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_COMPANY_UPD'   "
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -116,7 +111,6 @@
 					"%%sql\r\n",
 					"DROP TABLE etlhubconfirmed.DHT_COMPANY"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -139,8 +133,7 @@
 					"%%sql\r\n",
 					"select * FROM etlhubconfirmed.DHT_COMPANY"
 				],
-				"attachments": null,
-				"execution_count": null
+				"execution_count": 1
 			}
 		]
 	}

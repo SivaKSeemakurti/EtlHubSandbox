@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "c2ab8916-c2b9-4e5c-a2b6-3759cd1738ee"
+				"spark.autotune.trackingId": "fdd61d3b-5dde-470a-ad6f-31068b1b95ce"
 			}
 		},
 		"metadata": {
@@ -92,7 +92,7 @@
 					"relative_archive_path='archive/'\r\n",
 					"file_name='DS_COMPANY_DATA.csv' \r\n",
 					"natural_key=\"LEDGER_CODE\"\r\n",
-					"tablename=\"etlhubConfirmed.dht_company_ddl\"\r\n",
+					"tablename=\"etlhubConfirmed.dht_company\"\r\n",
 					"stagingtable=\"DHT_COMPANY\"\r\n",
 					"keycolumn=\"COMPANY_COMPONENT_KEY\"\r\n",
 					"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\r\n",
