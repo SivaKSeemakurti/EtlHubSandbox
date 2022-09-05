@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f5d16166-0246-4b13-ba3d-6339c0e24487"
+				"spark.autotune.trackingId": "c3b910e9-5526-425d-b0d3-417b08a7730b"
 			}
 		},
 		"metadata": {
@@ -776,7 +776,7 @@
 					"qry_ins_changed_rows=\"\"\"\n",
 					"INSERT INTO {}\n",
 					"\tselect \n",
-					"    existing_CAMPUS_KEY\n",
+					"    existing_SPACE_KEY\n",
 					",\t1 + existing_VERSION\n",
 					"BUSINESS_ID ,\n",
 					"CAMPUS_ID ,\n",
