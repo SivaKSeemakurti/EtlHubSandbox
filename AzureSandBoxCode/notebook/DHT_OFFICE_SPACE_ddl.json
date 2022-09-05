@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "759c6da5-5d89-4a6c-89c7-1e28471b3a49"
+				"spark.autotune.trackingId": "58c296ce-652c-4666-a93a-43329d291927"
 			}
 		},
 		"metadata": {
@@ -41,14 +41,13 @@
 				"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.2",
 				"nodeCount": 10,
 				"cores": 80,
 				"memory": 472,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -67,24 +66,24 @@
 					"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_OFFICE_SPACE  (\t\r\n",
 					"SPACE_KEY INT NOT NULL,\r\n",
 					"VERSION INT NOT NULL ,\r\n",
-					"BUSINESS_ID VARCHAR(64),\r\n",
-					"CAMPUS_ID VARCHAR(8),\r\n",
-					"BUILDING_ID VARCHAR(8),\r\n",
-					"FLOOR_ID VARCHAR(4),\r\n",
-					"FLOOR_DESCRIPTION VARCHAR(32),\r\n",
-					"SPACE_ID VARCHAR(16),\r\n",
-					"SPACE_DESCRIPTION VARCHAR(256),\r\n",
-					"SPACE_STATUS VARCHAR(8),\r\n",
-					"SPACE_CATEGORY_CODE VARCHAR(4),\r\n",
-					"SPACE_CATEGORY_DESCRIPTION VARCHAR(64),\r\n",
-					"SPACE_TYPE_CODE VARCHAR(4),\r\n",
-					"SPACE_TYPE_DESCRIPTION VARCHAR(64),\r\n",
-					"OCCUPANCY_TYPE VARCHAR(16),\r\n",
+					"BUSINESS_ID VARCHAR(264),\r\n",
+					"CAMPUS_ID VARCHAR(64),\r\n",
+					"BUILDING_ID VARCHAR(64),\r\n",
+					"FLOOR_ID VARCHAR(64),\r\n",
+					"FLOOR_DESCRIPTION VARCHAR(128),\r\n",
+					"SPACE_ID VARCHAR(128),\r\n",
+					"SPACE_DESCRIPTION VARCHAR(512),\r\n",
+					"SPACE_STATUS VARCHAR(64),\r\n",
+					"SPACE_CATEGORY_CODE VARCHAR(64),\r\n",
+					"SPACE_CATEGORY_DESCRIPTION VARCHAR(512),\r\n",
+					"SPACE_TYPE_CODE VARCHAR(64),\r\n",
+					"SPACE_TYPE_DESCRIPTION VARCHAR(512),\r\n",
+					"OCCUPANCY_TYPE VARCHAR(256),\r\n",
 					"CAPACITY INTEGER,\r\n",
 					"AREA_SQUARE_FEET INTEGER ,\r\n",
-					"OSCRE_CODE VARCHAR(8),\r\n",
-					"WORKPOINT VARCHAR(8),\r\n",
-					"RSYP_ID VARCHAR(8),\r\n",
+					"OSCRE_CODE VARCHAR(64),\r\n",
+					"WORKPOINT VARCHAR(64),\r\n",
+					"RSYP_ID VARCHAR(64),\r\n",
 					"CURRENT_IND\tVARCHAR(1), -- Y for active row and N for all rows expired\r\n",
 					"EXTRACT_DT TIMESTAMP, -- Load Cycle date, contains same value for all the records inserted in a single batch\r\n",
 					"REC_START_DT TIMESTAMP, --SCD TYpe 2 start date\r\n",
@@ -96,12 +95,11 @@
 					")\r\n",
 					"USING DELTA\r\n",
 					"PARTITIONED BY (CURRENT_IND)\r\n",
-					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE'\r\n",
+					"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE_n'\r\n",
 					"\r\n",
 					""
 				],
-				"attachments": null,
-				"execution_count": 1
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -124,8 +122,7 @@
 					"%%sql\r\n",
 					"select * from etlhubConfirmed.DHT_OFFICE_SPACE"
 				],
-				"attachments": null,
-				"execution_count": null
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -148,8 +145,7 @@
 					"%%sql\n",
 					"DROP TABLE etlhubConfirmed.DHT_OFFICE_SPACE"
 				],
-				"attachments": null,
-				"execution_count": 4
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -172,7 +168,6 @@
 					"%%sql\n",
 					"DELETE FROM etlhubConfirmed.DHT_OFFICE_SPACE"
 				],
-				"attachments": null,
 				"execution_count": 2
 			}
 		]
