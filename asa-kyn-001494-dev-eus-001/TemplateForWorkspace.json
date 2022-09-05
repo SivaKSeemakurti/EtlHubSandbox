@@ -26963,7 +26963,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e75f7fe3-be7b-484b-a8f9-d601b688b2e4"
+						"spark.autotune.trackingId": "3d1d9580-2a54-46c8-948b-a767fbb8be66"
 					}
 				},
 				"metadata": {
@@ -47715,7 +47715,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "17cda6d4-a486-446c-9aa6-d54b5f66a30b"
+						"spark.autotune.trackingId": "538cc60e-a7ca-4ebb-8341-f6bae7c6c535"
 					}
 				},
 				"metadata": {
@@ -54861,7 +54861,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4ae9c8d6-0def-44f1-8fef-f7f39870f4b8"
+						"spark.autotune.trackingId": "4274a6eb-496f-46ad-ba5c-237df71bef34"
 					}
 				},
 				"metadata": {
@@ -55195,7 +55195,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 100
+						"execution_count": 109
 					},
 					{
 						"cell_type": "markdown",
@@ -55296,7 +55296,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 101
+						"execution_count": 110
 					},
 					{
 						"cell_type": "code",
@@ -55329,7 +55329,7 @@
 							"--SELECT COUNT(*) as CNT,business_id FROM incrementalData_DF2 GROUP BY business_id HAVING COUNT(*)>1"
 						],
 						"outputs": [],
-						"execution_count": 107
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -55394,7 +55394,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 90
+						"execution_count": 111
 					},
 					{
 						"cell_type": "code",
@@ -55450,8 +55450,8 @@
 							"WORKPOINT  ,\n",
 							"'' AS RSYP_ID ,\n",
 							"'Y' AS CURRENT_IND,\n",
-							"'extract_dt' AS EXTRACT_DT,\n",
-							"'rec_start_dt' AS REC_START_DT,\n",
+							"'2022-09-05 07:16:02' AS EXTRACT_DT,\n",
+							"'2022-09-05 07:16:02' AS REC_START_DT,\n",
 							"'9999-12-31 00:00:00' as REC_END_DT,\n",
 							"'Tririga' AS SOURCE_SYSTEM,\n",
 							"column_hash as REC_CHECKSUM,\n",
@@ -55472,7 +55472,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 113
 					},
 					{
 						"cell_type": "code",
@@ -55516,7 +55516,7 @@
 							"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 92
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -55550,7 +55550,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 89
+						"execution_count": 115
 					},
 					{
 						"cell_type": "code",
@@ -55571,8 +55571,8 @@
 							"qry_ins_changed_rows=\"\"\"\n",
 							"INSERT INTO {}\n",
 							"\tselect \n",
-							"    existing_SPACE_KEY\n",
-							",\t1 + existing_VERSION\n",
+							"existing_SPACE_KEY,\n",
+							"1 + existing_VERSION,\n",
 							"BUSINESS_ID ,\n",
 							"CAMPUS_ID ,\n",
 							"BUILDING_ID ,\n",
@@ -55611,10 +55611,10 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"e=spark.sql(qry_ins_changed_rows.format(tablename,extract_dt,rec_start_dt,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
+							"e=spark.sql(qry_ins_changed_rows.format(tablename,stagingtable,natural_key,natural_key,tablename,natural_key,natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 118
 					},
 					{
 						"cell_type": "code",
@@ -55638,18 +55638,19 @@
 							"USING {} B\n",
 							"ON A.{} = B.existing_{}\n",
 							"AND B.{} is NULL\n",
-							"AND A.CURRENT_IND='Y' --AND A.ACTIVE_IN_SOURCE_IND='Y' \n",
+							"AND A.CURRENT_IND='Y'  \n",
 							"AND A.REC_START_DT=b.existing_REC_START_DT\n",
 							"WHEN MATCHED THEN UPDATE SET CURRENT_IND='N'\n",
 							"    ,IMG_LST_UPD_DT=current_timestamp\n",
 							"    ,REC_END_DT= '{}' -  INTERVAL 1 seconds\n",
+							"    ,SPACE_STATUS='Retired'\n",
 							"\n",
 							";\n",
 							"\"\"\"\n",
 							"g=spark.sql(qry_4_upd_deleted_rows.format(tablename,stagingtable,natural_key,natural_key,natural_key,rec_start_dt))"
 						],
 						"outputs": [],
-						"execution_count": 12
+						"execution_count": 120
 					},
 					{
 						"cell_type": "code",
@@ -55695,7 +55696,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 13
+						"execution_count": 121
 					}
 				]
 			},
