@@ -567,7 +567,13 @@
 							"sparkPool": {
 								"referenceName": "sPoolKyn001494",
 								"type": "BigDataPoolReference"
-							}
+							},
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					}
 				],
@@ -788,7 +794,13 @@
 								"referenceName": "nb_dht_employee_load",
 								"type": "NotebookReference"
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -808,7 +820,13 @@
 								"referenceName": "nb_dht_market_load",
 								"type": "NotebookReference"
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -1032,7 +1050,13 @@
 							"sparkPool": {
 								"referenceName": "sPool001494New",
 								"type": "BigDataPoolReference"
-							}
+							},
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -1227,7 +1251,13 @@
 							"sparkPool": {
 								"referenceName": "sPool001494New",
 								"type": "BigDataPoolReference"
-							}
+							},
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -1313,9 +1343,9 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_LOCATION_SFTP_PULL')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
+				"[concat(variables('workspaceId'), '/notebooks/nb_dht_building_final')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/sPool001494New')]",
-				"[concat(variables('workspaceId'), '/notebooks/nb_dht_building_final')]"
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -1382,7 +1412,13 @@
 							"sparkPool": {
 								"referenceName": "sPool001494New",
 								"type": "BigDataPoolReference"
-							}
+							},
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -1468,9 +1504,9 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/DF_TRIRIGA_OfficeSpace_SFTP_PULL')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
+				"[concat(variables('workspaceId'), '/notebooks/nb_dht_office_space')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/sPool001494New')]",
-				"[concat(variables('workspaceId'), '/notebooks/nb_dht_office_space')]"
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -3208,7 +3244,13 @@
 								"referenceName": "Notebook_R",
 								"type": "NotebookReference"
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -3235,7 +3277,13 @@
 								"referenceName": "Notebook_R",
 								"type": "NotebookReference"
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					}
 				],
@@ -3993,7 +4041,13 @@
 							"sparkPool": {
 								"referenceName": "sPoolKyn001494",
 								"type": "BigDataPoolReference"
-							}
+							},
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -4024,7 +4078,13 @@
 							"sparkPool": {
 								"referenceName": "sPoolKyn001494",
 								"type": "BigDataPoolReference"
-							}
+							},
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					}
 				],
@@ -25096,14 +25156,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "31f7ecee-c57d-493c-b532-8e5d43abbe81"
+						"spark.autotune.trackingId": "e7ce7af6-8570-4abb-b9c8-1e30eac3a2ca"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -25119,14 +25176,12 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"extraHeader": null
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -25168,7 +25223,6 @@
 							"-- specify data lake folder location\r\n",
 							"LOCATION 'abfss://deltalake@adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/deltalake/dimensions/DHT_COMPANY_UPD'   "
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -25192,7 +25246,6 @@
 							"%%sql\r\n",
 							"DROP TABLE etlhubconfirmed.DHT_COMPANY"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -25216,9 +25269,8 @@
 							"%%sql\r\n",
 							"select * FROM etlhubconfirmed.DHT_COMPANY"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 1
 					}
 				]
 			},
@@ -26911,7 +26963,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "759c6da5-5d89-4a6c-89c7-1e28471b3a49"
+						"spark.autotune.trackingId": "c7770bdc-6272-4da2-aa66-747afe2b4af3"
 					}
 				},
 				"metadata": {
@@ -26931,14 +26983,13 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPool001494New",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net",
-							"authHeader": null
+							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
 						"memory": 472,
-						"extraHeader": null
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -26957,24 +27008,24 @@
 							"CREATE TABLE IF NOT EXISTS etlhubConfirmed.DHT_OFFICE_SPACE  (\t\r\n",
 							"SPACE_KEY INT NOT NULL,\r\n",
 							"VERSION INT NOT NULL ,\r\n",
-							"BUSINESS_ID VARCHAR(64),\r\n",
-							"CAMPUS_ID VARCHAR(8),\r\n",
-							"BUILDING_ID VARCHAR(8),\r\n",
-							"FLOOR_ID VARCHAR(4),\r\n",
-							"FLOOR_DESCRIPTION VARCHAR(32),\r\n",
-							"SPACE_ID VARCHAR(16),\r\n",
-							"SPACE_DESCRIPTION VARCHAR(256),\r\n",
-							"SPACE_STATUS VARCHAR(8),\r\n",
-							"SPACE_CATEGORY_CODE VARCHAR(4),\r\n",
-							"SPACE_CATEGORY_DESCRIPTION VARCHAR(64),\r\n",
-							"SPACE_TYPE_CODE VARCHAR(4),\r\n",
-							"SPACE_TYPE_DESCRIPTION VARCHAR(64),\r\n",
-							"OCCUPANCY_TYPE VARCHAR(16),\r\n",
+							"BUSINESS_ID VARCHAR(264),\r\n",
+							"CAMPUS_ID VARCHAR(64),\r\n",
+							"BUILDING_ID VARCHAR(64),\r\n",
+							"FLOOR_ID VARCHAR(64),\r\n",
+							"FLOOR_DESCRIPTION VARCHAR(128),\r\n",
+							"SPACE_ID VARCHAR(128),\r\n",
+							"SPACE_DESCRIPTION VARCHAR(512),\r\n",
+							"SPACE_STATUS VARCHAR(64),\r\n",
+							"SPACE_CATEGORY_CODE VARCHAR(64),\r\n",
+							"SPACE_CATEGORY_DESCRIPTION VARCHAR(512),\r\n",
+							"SPACE_TYPE_CODE VARCHAR(64),\r\n",
+							"SPACE_TYPE_DESCRIPTION VARCHAR(512),\r\n",
+							"OCCUPANCY_TYPE VARCHAR(256),\r\n",
 							"CAPACITY INTEGER,\r\n",
 							"AREA_SQUARE_FEET INTEGER ,\r\n",
-							"OSCRE_CODE VARCHAR(8),\r\n",
-							"WORKPOINT VARCHAR(8),\r\n",
-							"RSYP_ID VARCHAR(8),\r\n",
+							"OSCRE_CODE VARCHAR(64),\r\n",
+							"WORKPOINT VARCHAR(64),\r\n",
+							"RSYP_ID VARCHAR(64),\r\n",
 							"CURRENT_IND\tVARCHAR(1), -- Y for active row and N for all rows expired\r\n",
 							"EXTRACT_DT TIMESTAMP, -- Load Cycle date, contains same value for all the records inserted in a single batch\r\n",
 							"REC_START_DT TIMESTAMP, --SCD TYpe 2 start date\r\n",
@@ -26986,13 +27037,12 @@
 							")\r\n",
 							"USING DELTA\r\n",
 							"PARTITIONED BY (CURRENT_IND)\r\n",
-							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE'\r\n",
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE_n'\r\n",
 							"\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -27015,9 +27065,8 @@
 							"%%sql\r\n",
 							"select * from etlhubConfirmed.DHT_OFFICE_SPACE"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 7
 					},
 					{
 						"cell_type": "code",
@@ -27040,9 +27089,8 @@
 							"%%sql\n",
 							"DROP TABLE etlhubConfirmed.DHT_OFFICE_SPACE"
 						],
-						"attachments": null,
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -27065,7 +27113,6 @@
 							"%%sql\n",
 							"DELETE FROM etlhubConfirmed.DHT_OFFICE_SPACE"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					}
@@ -33653,7 +33700,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "03e54096-7835-4046-8659-73166062e194"
+						"spark.autotune.trackingId": "2f98f246-a565-446e-b74c-ecc5da6564d3"
 					}
 				},
 				"metadata": {
@@ -33678,8 +33725,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 80,
-						"memory": 472,
-						"automaticScaleJobs": false
+						"memory": 472
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -34706,7 +34752,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c2ab8916-c2b9-4e5c-a2b6-3759cd1738ee"
+						"spark.autotune.trackingId": "fdd61d3b-5dde-470a-ad6f-31068b1b95ce"
 					}
 				},
 				"metadata": {
@@ -34777,7 +34823,7 @@
 							"relative_archive_path='archive/'\r\n",
 							"file_name='DS_COMPANY_DATA.csv' \r\n",
 							"natural_key=\"LEDGER_CODE\"\r\n",
-							"tablename=\"etlhubConfirmed.dht_company_ddl\"\r\n",
+							"tablename=\"etlhubConfirmed.dht_company\"\r\n",
 							"stagingtable=\"DHT_COMPANY\"\r\n",
 							"keycolumn=\"COMPANY_COMPONENT_KEY\"\r\n",
 							"date = datetime.now().strftime(\"%Y-%m-%d-%I:%M:%S_%p\")\r\n",
@@ -47669,7 +47715,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "53b0c6fc-6c69-4c76-b523-38299d6147be"
+						"spark.autotune.trackingId": "b97641f0-4c33-48f9-84a6-2d2b9016efae"
 					}
 				},
 				"metadata": {
@@ -54815,7 +54861,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3499d8f0-cd9d-44bf-84dc-67854a96fdff"
+						"spark.autotune.trackingId": "3480e40f-cd6a-4d59-b617-0a00f30f1835"
 					}
 				},
 				"metadata": {
@@ -54910,7 +54956,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 11
 					},
 					{
 						"cell_type": "markdown",
@@ -54959,7 +55005,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 12
 					},
 					{
 						"cell_type": "markdown",
@@ -55102,7 +55148,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 13
 					},
 					{
 						"cell_type": "code",
@@ -55173,7 +55219,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 14
 					},
 					{
 						"cell_type": "markdown",
@@ -55235,7 +55281,7 @@
 							"    df3.show()\n",
 							"    status = 'fail'\n",
 							"    #os.abort() this will take the spark cluster also down\n",
-							"    --sys.exit(1)\n",
+							"    #sys.exit(1)\n",
 							"    print(\"This will not be printed\")\n",
 							"\n",
 							"df4=spark.sql(qry4.format(natural_key,tablename,natural_key))\n",
@@ -55274,7 +55320,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -55339,7 +55385,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": 7
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -55372,64 +55418,199 @@
 							"df_4_recon1=spark.sql(qry_4_recon1.format(stagingtable, tablename, natural_key, natural_key))\n",
 							"\n",
 							"qry_ins_new_rows=\"\"\"\n",
-							"INSERT INTO {}\n",
+							"INSERT INTO etlhubConfirmed.DHT_OFFICE_SPACE\n",
 							"select \n",
-							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
-							",1 AS VERSION\n",
-							",GEOGRAPHY_ID\n",
-							",GEOGRAPHY_NAME\n",
-							",REGION_ID\n",
-							",REGION_NAME\n",
-							",SITE_ID\n",
-							",SITE_NAME\n",
-							",WORLD_REGION_CODE\n",
-							",WORLD_REGION_NAME\n",
-							",MARKET_TEAM_REGION_CODE\n",
-							",MARKET_TEAM_REGION_NAME\n",
-							",COUNTRY_CODE\n",
-							",COUNTRY_NAME\n",
-							",CAMPUS_ID\n",
-							",CAMPUS_NAME\n",
-							",CAMPUS_STATUS\n",
-							",WORK_LOCATION_CODE\n",
-							",ADDRESS, CITY\n",
-							",STATE_PROVINCE_ID\n",
-							",STATE_PROVINCE_NAME\n",
-							",POSTAL_CODE\n",
-							",LATITUDE\n",
-							",LONGITUDE\n",
-							",UTC_OFFSET\n",
-							",ICU_TIME_ZONE\n",
-							",PEOPLE_HOUSED_FLAG\n",
-							",REMOTE_SUPPORT_FLAG\n",
-							",PRIMARY_CAMPUS_USE_NAME\n",
-							",PRIMARY_CAMPUS_USE_DESCR\n",
-							",CAMPUS_OWNERSHIP\n",
-							",CAMPUS_ACTIVATION_YEAR\n",
-							",CAMPUS_INACTIVATION_YEAR\n",
-							",   'Y' AS CURRENT_IND\n",
-							",   '{}' AS EXTRACT_DT\n",
-							",   '{}' AS REC_START_DT\n",
-							",   '9999-12-31 00:00:00' as REC_END_DT\n",
-							",   'Tririga' AS SOURCE_SYSTEM\n",
-							",    column_hash as REC_CHECKSUM\n",
-							",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
-							",    CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
-							"    from {} A \n",
+							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY BUSINESS_ID) AS SPACE_KEY, \n",
+							"1 AS VERSION,\n",
+							"BUSINESS_ID ,\n",
+							"CAMPUS_ID ,\n",
+							"BUILDING_ID ,\n",
+							"FLOOR_ID ,\n",
+							"FLOOR_DESCRIPTION ,\n",
+							"SPACE_ID  ,\n",
+							"SPACE_DESCRIPTION ,\n",
+							"'Active' AS SPACE_STATUS ,\n",
+							"SPACE_CATEGORY_CODE ,\n",
+							"SPACE_CATEGORY_DESCRIPTION ,\n",
+							"SPACE_TYPE_CODE,\n",
+							"SPACE_TYPE_DESCRIPTION ,\n",
+							"OCCUPANCY_TYPE ,\n",
+							"CAPACITY ,\n",
+							"AREA_SQUARE_FEET   ,\n",
+							"OSCRE_CODE ,\n",
+							"WORKPOINT  ,\n",
+							"'' AS RSYP_ID ,\n",
+							"'Y' AS CURRENT_IND,\n",
+							"'extract_dt' AS EXTRACT_DT,\n",
+							"'rec_start_dt' AS REC_START_DT,\n",
+							"'9999-12-31 00:00:00' as REC_END_DT,\n",
+							"'Tririga' AS SOURCE_SYSTEM,\n",
+							"column_hash as REC_CHECKSUM,\n",
+							"CURRENT_TIMESTAMP as IMG_LST_UPD_DT,\n",
+							"CURRENT_TIMESTAMP AS IMG_CREATED_DT\n",
+							"from DHTS_OFFICE_SPACE A \n",
 							"WHERE existing_REC_CHECKSUM is null\n",
 							"AND NOT EXISTS\n",
-							"(SELECT 1 FROM {} B\n",
-							"WHERE A.{}=B.{}\n",
+							"(SELECT 1 FROM etlhubConfirmed.DHT_OFFICE_SPACE B\n",
+							"WHERE A.BUSINESS_ID=B.BUSINESS_ID\n",
 							"and b.CURRENT_IND='Y'\n",
 							"AND A.column_hash=B.REC_CHECKSUM)\n",
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"d=spark.sql(qry_ins_new_rows.format(tablename,natural_key,keycolumn,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+							"ins_new_rows_df=spark.sql(qry_ins_new_rows)\n",
+							"#.format(tablename,natural_key,keycolumn,stagingtable,tablename,natural_key, natural_key))\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"INSERT INTO etlhubConfirmed.DHT_OFFICE_SPACE\r\n",
+							"select * from (\r\n",
+							"select \r\n",
+							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY BUSINESS_ID) AS SPACE_KEY, \r\n",
+							"1 AS VERSION,\r\n",
+							"BUSINESS_ID ,\r\n",
+							"CAMPUS_ID ,\r\n",
+							"BUILDING_ID ,\r\n",
+							"FLOOR_ID ,\r\n",
+							"FLOOR_DESCRIPTION ,\r\n",
+							"SPACE_ID  ,\r\n",
+							"SPACE_DESCRIPTION ,\r\n",
+							"'Active'  ,\r\n",
+							"SPACE_CATEGORY_CODE ,\r\n",
+							"SPACE_CATEGORY_DESCRIPTION ,\r\n",
+							"SPACE_TYPE_CODE,\r\n",
+							"SPACE_TYPE_DESCRIPTION ,\r\n",
+							"OCCUPANCY_TYPE ,\r\n",
+							"CAPACITY ,\r\n",
+							"AREA_SQUARE_FEET   ,\r\n",
+							"OSCRE_CODE ,\r\n",
+							"WORKPOINT  ,\r\n",
+							"' '   ,\r\n",
+							"'Y' ,\r\n",
+							"CURRENT_TIMESTAMP ,\r\n",
+							"CURRENT_TIMESTAMP ,\r\n",
+							"'9999-12-31 00:00:00',\r\n",
+							"'Tririga'  ,\r\n",
+							"column_hash ,\r\n",
+							"CURRENT_TIMESTAMP ,\r\n",
+							"CURRENT_TIMESTAMP  \r\n",
+							"from DHTS_OFFICE_SPACE A \r\n",
+							"WHERE existing_REC_CHECKSUM is null\r\n",
+							"AND NOT EXISTS\r\n",
+							"(SELECT 1 FROM etlhubConfirmed.DHT_OFFICE_SPACE B\r\n",
+							"WHERE A.BUSINESS_ID=B.BUSINESS_ID\r\n",
+							"and b.CURRENT_IND='Y'\r\n",
+							"AND A.column_hash=B.REC_CHECKSUM)\r\n",
+							") as dfg where SPACE_KEY = 2   --122344\r\n",
+							";\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select * from etlhubConfirmed.DHT_OFFICE_SPACE"
+						],
+						"outputs": [],
+						"execution_count": 43
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"select \r\n",
+							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY BUSINESS_ID) AS SPACE_KEY, \r\n",
+							"1 AS VERSION,\r\n",
+							"BUSINESS_ID,\r\n",
+							"CAMPUS_ID ,\r\n",
+							"BUILDING_ID ,\r\n",
+							"FLOOR_ID ,\r\n",
+							"FLOOR_DESCRIPTION ,\r\n",
+							"SPACE_ID  ,\r\n",
+							"SPACE_DESCRIPTION ,\r\n",
+							"'Active' AS SPACE_STATUS ,\r\n",
+							"SPACE_CATEGORY_CODE ,\r\n",
+							"SPACE_CATEGORY_DESCRIPTION ,\r\n",
+							"SPACE_TYPE_CODE,\r\n",
+							"SPACE_TYPE_DESCRIPTION ,\r\n",
+							"OCCUPANCY_TYPE ,\r\n",
+							"CAPACITY ,\r\n",
+							"AREA_SQUARE_FEET   ,\r\n",
+							"OSCRE_CODE ,\r\n",
+							"WORKPOINT  ,\r\n",
+							"'' AS RSYP_ID ,\r\n",
+							"'Y' AS CURRENT_IND,\r\n",
+							"'2022-09-05 07:16:02' AS EXTRACT_DT,\r\n",
+							"'2022-09-05 07:16:02' AS REC_START_DT,\r\n",
+							"'9999-12-31 00:00:00' as REC_END_DT,\r\n",
+							"'Tririga' AS SOURCE_SYSTEM,\r\n",
+							"column_hash as REC_CHECKSUM,\r\n",
+							"CURRENT_TIMESTAMP as IMG_LST_UPD_DT,\r\n",
+							"CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
+							"from DHTS_OFFICE_SPACE A \r\n",
+							"WHERE existing_REC_CHECKSUM is null\r\n",
+							"AND NOT EXISTS\r\n",
+							"(SELECT 1 FROM etlhubConfirmed.DHT_OFFICE_SPACE B\r\n",
+							"WHERE A.BUSINESS_ID=B.BUSINESS_ID\r\n",
+							"and b.CURRENT_IND='Y'\r\n",
+							"AND A.column_hash=B.REC_CHECKSUM)"
+						],
+						"outputs": [],
+						"execution_count": 19
 					},
 					{
 						"cell_type": "code",
@@ -60196,7 +60377,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "eb3b7e00-e1da-4ab8-be7e-3a0d02b9a7cc"
+						"spark.autotune.trackingId": "fbbfbaa8-87d5-496d-97fe-b4677cd2d250"
 					}
 				},
 				"metadata": {
@@ -60216,13 +60397,14 @@
 						"endpoint": "https://asa-kyn-001494-dev-eus-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sPoolKyn001494",
 						"auth": {
 							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
 						},
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 8,
 						"memory": 56,
-						"automaticScaleJobs": false
+						"extraHeader": null
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -60240,7 +60422,8 @@
 							"**SPACE CLASS Reference Data**\n",
 							"\n",
 							"This notebook loads data to deltalake table etlhubconfirmed.dhtr_space_class by sourceing data from GREIW database."
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -60253,7 +60436,8 @@
 						},
 						"source": [
 							"Import all the necessary libraries"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -60284,6 +60468,7 @@
 							"import sys\n",
 							"from datetime import datetime"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 12
 					},
@@ -60298,7 +60483,8 @@
 						},
 						"source": [
 							"Define Parameters"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -60324,6 +60510,7 @@
 							"stagingtable=\"dhtsr_space_class\"\n",
 							"date = datetime.now().strftime(\"%Y_%m_%d-%I:%M:%S_%p\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 13
 					},
@@ -60338,7 +60525,8 @@
 						},
 						"source": [
 							"Copy source CSV file to archive folder including timestamp in file name"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
@@ -60353,7 +60541,8 @@
 							"\n",
 							"#Read data from adls csv file extracted from source at \n",
 							"https://adls4fsoetlhubdevuseast.dfs.core.windows.net/etlhubfilestorage/extract/reference/space_class.csv"
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -60395,6 +60584,7 @@
 							"  .saveAsTable(stagingtable)\n",
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 14
 					},
@@ -60419,6 +60609,7 @@
 							"%%sql\r\n",
 							"select * from dhtsr_space_class"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 16
 					},
@@ -60461,6 +60652,7 @@
 							"\n",
 							"#d.show(10)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 20
 					},
@@ -60485,6 +60677,7 @@
 							"%%sql\r\n",
 							"select count(*) from etlhubconfirmed.dhtr_space_class"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 21
 					}
