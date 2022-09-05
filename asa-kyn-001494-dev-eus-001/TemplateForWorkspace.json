@@ -26963,7 +26963,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c7770bdc-6272-4da2-aa66-747afe2b4af3"
+						"spark.autotune.trackingId": "86cb6a51-1609-433f-b717-3431598841a3"
 					}
 				},
 				"metadata": {
@@ -27021,8 +27021,8 @@
 							"SPACE_TYPE_CODE VARCHAR(64),\r\n",
 							"SPACE_TYPE_DESCRIPTION VARCHAR(512),\r\n",
 							"OCCUPANCY_TYPE VARCHAR(256),\r\n",
-							"CAPACITY INTEGER,\r\n",
-							"AREA_SQUARE_FEET INTEGER ,\r\n",
+							"CAPACITY DECIMAL(17,5),\r\n",
+							"AREA_SQUARE_FEET DECIMAL(17,5) ,\r\n",
 							"OSCRE_CODE VARCHAR(64),\r\n",
 							"WORKPOINT VARCHAR(64),\r\n",
 							"RSYP_ID VARCHAR(64),\r\n",
@@ -27037,12 +27037,12 @@
 							")\r\n",
 							"USING DELTA\r\n",
 							"PARTITIONED BY (CURRENT_IND)\r\n",
-							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE_n'\r\n",
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE_ne'\r\n",
 							"\r\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 6
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -27090,7 +27090,7 @@
 							"DROP TABLE etlhubConfirmed.DHT_OFFICE_SPACE"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -47715,7 +47715,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b97641f0-4c33-48f9-84a6-2d2b9016efae"
+						"spark.autotune.trackingId": "b3039c15-b6d4-4c63-81e8-0fb30623163b"
 					}
 				},
 				"metadata": {
@@ -54861,7 +54861,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3480e40f-cd6a-4d59-b617-0a00f30f1835"
+						"spark.autotune.trackingId": "3c88dd6a-9ef9-43fb-9a74-b76bd5d0d035"
 					}
 				},
 				"metadata": {
@@ -54956,7 +54956,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 66
 					},
 					{
 						"cell_type": "markdown",
@@ -55005,7 +55005,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 12
+						"execution_count": 67
 					},
 					{
 						"cell_type": "markdown",
@@ -55148,7 +55148,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 13
+						"execution_count": 68
 					},
 					{
 						"cell_type": "code",
@@ -55219,7 +55219,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 14
+						"execution_count": 70
 					},
 					{
 						"cell_type": "markdown",
@@ -55496,92 +55496,6 @@
 							"FLOOR_DESCRIPTION ,\r\n",
 							"SPACE_ID  ,\r\n",
 							"SPACE_DESCRIPTION ,\r\n",
-							"'Active'  ,\r\n",
-							"SPACE_CATEGORY_CODE ,\r\n",
-							"SPACE_CATEGORY_DESCRIPTION ,\r\n",
-							"SPACE_TYPE_CODE,\r\n",
-							"SPACE_TYPE_DESCRIPTION ,\r\n",
-							"OCCUPANCY_TYPE ,\r\n",
-							"CAPACITY ,\r\n",
-							"AREA_SQUARE_FEET   ,\r\n",
-							"OSCRE_CODE ,\r\n",
-							"WORKPOINT  ,\r\n",
-							"' '   ,\r\n",
-							"'Y' ,\r\n",
-							"CURRENT_TIMESTAMP ,\r\n",
-							"CURRENT_TIMESTAMP ,\r\n",
-							"'9999-12-31 00:00:00',\r\n",
-							"'Tririga'  ,\r\n",
-							"column_hash ,\r\n",
-							"CURRENT_TIMESTAMP ,\r\n",
-							"CURRENT_TIMESTAMP  \r\n",
-							"from DHTS_OFFICE_SPACE A \r\n",
-							"WHERE existing_REC_CHECKSUM is null\r\n",
-							"AND NOT EXISTS\r\n",
-							"(SELECT 1 FROM etlhubConfirmed.DHT_OFFICE_SPACE B\r\n",
-							"WHERE A.BUSINESS_ID=B.BUSINESS_ID\r\n",
-							"and b.CURRENT_IND='Y'\r\n",
-							"AND A.column_hash=B.REC_CHECKSUM)\r\n",
-							") as dfg where SPACE_KEY = 2   --122344\r\n",
-							";\r\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 46
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\r\n",
-							"select * from etlhubConfirmed.DHT_OFFICE_SPACE"
-						],
-						"outputs": [],
-						"execution_count": 43
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\r\n",
-							"select \r\n",
-							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY BUSINESS_ID) AS SPACE_KEY, \r\n",
-							"1 AS VERSION,\r\n",
-							"BUSINESS_ID,\r\n",
-							"CAMPUS_ID ,\r\n",
-							"BUILDING_ID ,\r\n",
-							"FLOOR_ID ,\r\n",
-							"FLOOR_DESCRIPTION ,\r\n",
-							"SPACE_ID  ,\r\n",
-							"SPACE_DESCRIPTION ,\r\n",
 							"'Active' AS SPACE_STATUS ,\r\n",
 							"SPACE_CATEGORY_CODE ,\r\n",
 							"SPACE_CATEGORY_DESCRIPTION ,\r\n",
@@ -55607,10 +55521,13 @@
 							"(SELECT 1 FROM etlhubConfirmed.DHT_OFFICE_SPACE B\r\n",
 							"WHERE A.BUSINESS_ID=B.BUSINESS_ID\r\n",
 							"and b.CURRENT_IND='Y'\r\n",
-							"AND A.column_hash=B.REC_CHECKSUM)"
+							"AND A.column_hash=B.REC_CHECKSUM)\r\n",
+							") as dfg where SPACE_KEY <> 2   --122344\r\n",
+							";\r\n",
+							""
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": 78
 					},
 					{
 						"cell_type": "code",
@@ -55632,7 +55549,7 @@
 							"\tselect \n",
 							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
 							",\t1 AS VERSION\n",
-							",{}\n",
+							",   {}\n",
 							",   'Y' AS CURRENT_IND\n",
 							",   '{}' AS EXTRACT_DT\n",
 							",   '{}' AS REC_START_DT\n",
@@ -55655,7 +55572,7 @@
 							"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": 9
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -55689,7 +55606,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 81
 					},
 					{
 						"cell_type": "code",
@@ -55712,45 +55629,32 @@
 							"\tselect \n",
 							"    existing_CAMPUS_KEY\n",
 							",\t1 + existing_VERSION\n",
-							",GEOGRAPHY_ID\n",
-							",GEOGRAPHY_NAME\n",
-							",REGION_ID\n",
-							",REGION_NAME\n",
-							",SITE_ID\n",
-							",SITE_NAME\n",
-							",WORLD_REGION_CODE\n",
-							",WORLD_REGION_NAME\n",
-							",MARKET_TEAM_REGION_CODE\n",
-							",MARKET_TEAM_REGION_NAME\n",
-							",COUNTRY_CODE\n",
-							",COUNTRY_NAME\n",
-							",CAMPUS_ID\n",
-							",CAMPUS_NAME\n",
-							",CAMPUS_STATUS\n",
-							",WORK_LOCATION_CODE\n",
-							",ADDRESS, CITY\n",
-							",STATE_PROVINCE_ID\n",
-							",STATE_PROVINCE_NAME\n",
-							",POSTAL_CODE\n",
-							",LATITUDE\n",
-							",LONGITUDE\n",
-							",UTC_OFFSET\n",
-							",ICU_TIME_ZONE\n",
-							",PEOPLE_HOUSED_FLAG\n",
-							",REMOTE_SUPPORT_FLAG\n",
-							",PRIMARY_CAMPUS_USE_NAME\n",
-							",PRIMARY_CAMPUS_USE_DESCR\n",
-							",CAMPUS_OWNERSHIP\n",
-							",CAMPUS_ACTIVATION_YEAR\n",
-							",CAMPUS_INACTIVATION_YEAR\n",
-							",   'Y' AS CURRENT_IND\n",
-							",   '{}' AS EXTRACT_DT\n",
-							",   '{}' AS REC_START_DT\n",
-							",   '9999-12-31 00:00:00' as REC_END_DT\n",
-							",   'Tririga' AS SOURCE_SYSTEM\n",
-							",    column_hash as REC_CHECKSUM\n",
-							",    CURRENT_TIMESTAMP as IMG_LST_UPD_DT\n",
-							",    existing_IMG_CREATED_DT\n",
+							"BUSINESS_ID ,\n",
+							"CAMPUS_ID ,\n",
+							"BUILDING_ID ,\n",
+							"FLOOR_ID ,\n",
+							"FLOOR_DESCRIPTION ,\n",
+							"SPACE_ID  ,\n",
+							"SPACE_DESCRIPTION ,\n",
+							"'Active' AS SPACE_STATUS ,\n",
+							"SPACE_CATEGORY_CODE ,\n",
+							"SPACE_CATEGORY_DESCRIPTION ,\n",
+							"SPACE_TYPE_CODE,\n",
+							"SPACE_TYPE_DESCRIPTION ,\n",
+							"OCCUPANCY_TYPE ,\n",
+							"CAPACITY ,\n",
+							"AREA_SQUARE_FEET   ,\n",
+							"OSCRE_CODE ,\n",
+							"WORKPOINT  ,\n",
+							"'' AS RSYP_ID ,\n",
+							"'Y' AS CURRENT_IND,\n",
+							"'2022-09-05 07:16:02' AS EXTRACT_DT,\n",
+							"'2022-09-05 07:16:02' AS REC_START_DT,\n",
+							"'9999-12-31 00:00:00' as REC_END_DT,\n",
+							"'Tririga' AS SOURCE_SYSTEM,\n",
+							"column_hash as REC_CHECKSUM,\n",
+							"CURRENT_TIMESTAMP as IMG_LST_UPD_DT,\n",
+							"existing_IMG_CREATED_DT\n",
 							"from {} A \n",
 							"WHERE LOWER({}) = LOWER(existing_{}) \n",
 							"and LOWER(column_hash) <> LOWER(existing_rec_checksum)\n",
