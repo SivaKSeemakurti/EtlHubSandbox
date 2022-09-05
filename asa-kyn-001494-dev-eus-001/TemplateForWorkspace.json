@@ -26963,7 +26963,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "17134199-1299-4b2c-8f9a-f670dbe33ab3"
+						"spark.autotune.trackingId": "e75f7fe3-be7b-484b-a8f9-d601b688b2e4"
 					}
 				},
 				"metadata": {
@@ -27037,12 +27037,12 @@
 							")\r\n",
 							"USING DELTA\r\n",
 							"PARTITIONED BY (CURRENT_IND)\r\n",
-							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE_ne'\r\n",
+							"LOCATION 'abfss://etlhubfilestorage@adls4fsoetlhubdevuseast.dfs.core.windows.net/deltalake/dimensions/DHT_OFFICE_SPACE_new1'\r\n",
 							"\r\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 5
 					},
 					{
 						"cell_type": "code",
@@ -27066,7 +27066,7 @@
 							"select * from etlhubConfirmed.DHT_OFFICE_SPACE"
 						],
 						"outputs": [],
-						"execution_count": 7
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -27090,7 +27090,7 @@
 							"DROP TABLE etlhubConfirmed.DHT_OFFICE_SPACE"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -47715,7 +47715,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "cb8f6b62-8d11-4dd5-8361-eb4159390bd7"
+						"spark.autotune.trackingId": "17cda6d4-a486-446c-9aa6-d54b5f66a30b"
 					}
 				},
 				"metadata": {
@@ -54861,7 +54861,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "468019fb-5a6a-49e5-964a-c307f7057836"
+						"spark.autotune.trackingId": "4ae9c8d6-0def-44f1-8fef-f7f39870f4b8"
 					}
 				},
 				"metadata": {
@@ -54956,7 +54956,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 66
+						"execution_count": 97
 					},
 					{
 						"cell_type": "markdown",
@@ -55005,7 +55005,7 @@
 							"print(natural_key)"
 						],
 						"outputs": [],
-						"execution_count": 67
+						"execution_count": 98
 					},
 					{
 						"cell_type": "markdown",
@@ -55117,7 +55117,7 @@
 							"      RejSpaceClassDataDF.toPandas().to_csv(adls_reject_path+dateonly + '/' + 'IWTRIRIGAOfficeSpaceRejWithSpace.csv', sep=',', header=True, index=False)\n",
 							"\n",
 							"qry_IncrementalDataDF=\"\"\"\n",
-							"select distinct CAST(COALESCE(TRIM(A.CAMPUS_ID),'')||'~'||COALESCE(TRIM(A.BLDG_ID),'')||'~'||COALESCE(TRIM(A.FLOOR_ID),'')||'~'||COALESCE(TRIM(A.SPACE_ID),'') AS VARCHAR(64)) as BUSINESS_ID,\n",
+							"select distinct CAST(COALESCE(TRIM(A.CAMPUS_ID),'')||'~'||COALESCE(TRIM(A.BLDG_ID),'')||'~'||COALESCE(TRIM(A.FLOOR_ID),'')||'~'||COALESCE(TRIM(A.SPACE_ID),'')||'~'||COALESCE(TRIM(A.SPACE_DESCR),'') ||'~'||COALESCE(TRIM(A.CAPACITY),'') AS VARCHAR(64)) as BUSINESS_ID,\n",
 							"A.CAMPUS_ID,A.BLDG_ID as BUILDING_ID, A.FLOOR_ID, B.FLOOR_DESCR as FLOOR_DESCRIPTION,\n",
 							"A.SPACE_ID,A.SPACE_DESCR as SPACE_DESCRIPTION, A.SPACE_CLASS_CODE1 as SPACE_CATEGORY_CODE,\n",
 							"CASE WHEN LOCATE('-', trim(C.SPACE_CLASS_DESCR)) = 0 THEN C.SPACE_CLASS_DESCR \n",
@@ -55148,31 +55148,7 @@
 							"incrementalData_DF2.createOrReplaceTempView(\"incrementalData_DF2\")"
 						],
 						"outputs": [],
-						"execution_count": 68
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\r\n",
-							"select * from incrementalData_DF2"
-						],
-						"outputs": [],
-						"execution_count": null
+						"execution_count": 108
 					},
 					{
 						"cell_type": "code",
@@ -55219,7 +55195,7 @@
 							"   #.option(\"overwriteSchema\", \"true\") \\  .save(\"\") \\"
 						],
 						"outputs": [],
-						"execution_count": 70
+						"execution_count": 100
 					},
 					{
 						"cell_type": "markdown",
@@ -55320,7 +55296,40 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 101
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"--select * from dhts_office_space where business_id in('CNISSCCD~A5~04~IT ROOM~NEW','DEKELAM~51~01~210068.07~WORKSTATION OPEN SHARED (MOBILITY)',\r\n",
+							"--'ILTELHQ~TAHQ~06~06-B08-MAZ10~DEDICATED ENCLOSED WORKSTATION','SE152146~SKHM~05~5023~CORRIDOR','SE152146~SKHM~05~5029~CORRIDOR')\r\n",
+							"select * from (\r\n",
+							"select A.*,CAST(COALESCE(TRIM(A.CAMPUS_ID),'')||'~'||COALESCE(TRIM(A.BLDG_ID),'')||'~'||COALESCE(TRIM(A.FLOOR_ID),'')||'~'||COALESCE(TRIM(A.SPACE_ID),'')||'~'||COALESCE(TRIM(A.SPACE_DESCR),'') AS VARCHAR(64)) as BUSINESS_ID\r\n",
+							"from SrcData A ) as dfg\r\n",
+							"where business_id in('CNISSCCD~A5~04~IT ROOM~NEW','DEKELAM~51~01~210068.07~WORKSTATION OPEN SHARED (MOBILITY)',\r\n",
+							"'ILTELHQ~TAHQ~06~06-B08-MAZ10~DEDICATED ENCLOSED WORKSTATION','SE152146~SKHM~05~5023~CORRIDOR','SE152146~SKHM~05~5029~CORRIDOR')\r\n",
+							"\r\n",
+							"\r\n",
+							"--SELECT COUNT(*) as CNT,business_id FROM incrementalData_DF2 GROUP BY business_id HAVING COUNT(*)>1"
+						],
+						"outputs": [],
+						"execution_count": 107
 					},
 					{
 						"cell_type": "code",
@@ -55385,7 +55394,7 @@
 							"df_4_recon3.show()"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 90
 					},
 					{
 						"cell_type": "code",
@@ -55476,76 +55485,11 @@
 								"transient": {
 									"deleting": false
 								}
-							},
-							"microsoft": {
-								"language": "sparksql"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%sql\r\n",
-							"INSERT INTO etlhubConfirmed.DHT_OFFICE_SPACE\r\n",
-							"select * from (\r\n",
-							"select \r\n",
-							"COALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY BUSINESS_ID) AS SPACE_KEY, \r\n",
-							"1 AS VERSION,\r\n",
-							"BUSINESS_ID ,\r\n",
-							"CAMPUS_ID ,\r\n",
-							"BUILDING_ID ,\r\n",
-							"FLOOR_ID ,\r\n",
-							"FLOOR_DESCRIPTION ,\r\n",
-							"SPACE_ID  ,\r\n",
-							"SPACE_DESCRIPTION ,\r\n",
-							"'Active' AS SPACE_STATUS ,\r\n",
-							"SPACE_CATEGORY_CODE ,\r\n",
-							"SPACE_CATEGORY_DESCRIPTION ,\r\n",
-							"SPACE_TYPE_CODE,\r\n",
-							"SPACE_TYPE_DESCRIPTION ,\r\n",
-							"OCCUPANCY_TYPE ,\r\n",
-							"CAPACITY ,\r\n",
-							"AREA_SQUARE_FEET   ,\r\n",
-							"OSCRE_CODE ,\r\n",
-							"WORKPOINT  ,\r\n",
-							"'' AS RSYP_ID ,\r\n",
-							"'Y' AS CURRENT_IND,\r\n",
-							"'2022-09-05 07:16:02' AS EXTRACT_DT,\r\n",
-							"'2022-09-05 07:16:02' AS REC_START_DT,\r\n",
-							"'9999-12-31 00:00:00' as REC_END_DT,\r\n",
-							"'Tririga' AS SOURCE_SYSTEM,\r\n",
-							"column_hash as REC_CHECKSUM,\r\n",
-							"CURRENT_TIMESTAMP as IMG_LST_UPD_DT,\r\n",
-							"CURRENT_TIMESTAMP AS IMG_CREATED_DT\r\n",
-							"from DHTS_OFFICE_SPACE A \r\n",
-							"WHERE existing_REC_CHECKSUM is null\r\n",
-							"AND NOT EXISTS\r\n",
-							"(SELECT 1 FROM etlhubConfirmed.DHT_OFFICE_SPACE B\r\n",
-							"WHERE A.BUSINESS_ID=B.BUSINESS_ID\r\n",
-							"and b.CURRENT_IND='Y'\r\n",
-							"AND A.column_hash=B.REC_CHECKSUM)\r\n",
-							") as dfg where SPACE_KEY <> 2   --122344\r\n",
-							";\r\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 78
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
 							}
 						},
 						"source": [
 							"\n",
 							"qry_ins_new_rows_test=\"\"\"\n",
-							"\n",
 							"\tselect \n",
 							"\tCOALESCE(A.existing_MAX_KEY,0) + ROW_NUMBER () OVER (ORDER BY {}) AS {} \n",
 							",\t1 AS VERSION\n",
@@ -55568,11 +55512,11 @@
 							";\n",
 							"\"\"\"\n",
 							"\n",
-							"d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
+							"#d_test=spark.sql(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))\n",
 							"print(qry_ins_new_rows_test.format(natural_key,keycolumn,my_string,extract_dt,rec_start_dt,stagingtable,tablename,natural_key, natural_key))"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 92
 					},
 					{
 						"cell_type": "code",
@@ -55606,7 +55550,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 81
+						"execution_count": 89
 					},
 					{
 						"cell_type": "code",
