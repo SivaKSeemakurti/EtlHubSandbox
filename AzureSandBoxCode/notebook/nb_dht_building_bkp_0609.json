@@ -21,7 +21,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "436d9d8a-16cb-4723-a998-c5966d783f49"
+				"spark.autotune.trackingId": "ef243221-7def-4e35-aecf-57a1e27a0636"
 			}
 		},
 		"metadata": {
@@ -215,7 +215,8 @@
 					"adls_path1 = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path1)\n",
 					"print('Primary storage account path: ' + adls_path)\n",
 					"\n",
-					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path) \n",
+					"adls_arch_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_archive_path)\n",
+					"adls_reject_path='abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_reject_path)  \n",
 					"print('Primary storage account path: ' + adls_path) \n",
 					"\n",
 					"print(natural_key)\n",
